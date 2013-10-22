@@ -38,10 +38,10 @@
 #include "zmq_message_handler.hpp"
 
 OID latency_oid = OID("1.2.826.0.1.1578918.9.2.2");
-OID client_count_oid = OID("1.2.826.0.1.1578918.9.2.2");
-OID sprouts_oid = OID("1.2.826.0.1.1578918.9.2.2");
+OID client_count_oid = OID("1.2.826.0.1.1578918.9.2.1");
+OID sprouts_oid = OID("1.2.826.0.1.1578918.9.2.3.1");
 
-MultipleNumberStatHandler latency_handler(latency_oid, &tree);
+LatencyStatHandler latency_handler(latency_oid, &tree);
 SingleNumberStatHandler client_count_handler(client_count_oid, &tree);
 IPCountStatHandler connected_sprouts_handler(sprouts_oid, &tree);
 
@@ -51,9 +51,9 @@ NodeData::NodeData()
   port = "6666";
   root_oid = OID("1.2.826.0.1.1578918.9.2");
   stats = {"latency_us", "client_count", "connected_sprouts"};
-  stat_to_handler = {{"latency_us", latency_handler},
-                     {"client_count", client_count_handler},
-                     {"connected_sprouts", connected_sprouts_handler}};
+  stat_to_handler = {{"latency_us", &latency_handler},
+                     {"client_count", &client_count_handler},
+                     {"connected_sprouts", &connected_sprouts_handler}};
 };
 
 NodeData node_data;

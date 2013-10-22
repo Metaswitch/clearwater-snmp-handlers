@@ -37,12 +37,6 @@
 #include "globals.hpp"
 #include <cstdlib>
 
-ZMQMessageHandler::ZMQMessageHandler(OID root_oid, OIDTree* tree)
-{
-  _root_oid = root_oid;
-  _tree = tree;
-}
-
 void IPCountStatHandler::handle(std::vector<std::string> msgs)
 {
   // Messages are in [ip_address, count, ip_address, count] pairs
@@ -77,48 +71,26 @@ void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
   _tree->replace_subtree(_root_oid, new_subtree);
 }
 
-/* OIDMap LatencyStatHandler::handle(std::vector<std::string> msgs)
+void LatencyStatHandler::handle(std::vector<std::string> msgs)
 {
-  OIDMap returnmap;
-  OID root_oid = node_data.stat_to_root_oid[msgs[0]];
+  OID average_oid = _root_oid;
+  average_oid.append("1.2");
 
-  OID average_oid = root_oid;
-  average_oid.append("1");
+  OID variance_oid = _root_oid;
+  variance_oid.append("1.3");
 
-  OID variance_oid = root_oid;
-  variance_oid.append("2");
+  OID lwm_oid = _root_oid;
+  lwm_oid.append("1.4");
 
-  OID lwm_oid = root_oid;
-  lwm_oid.append("3");
-
-  OID hwm_oid = root_oid;
-  hwm_oid.append("4");
+  OID hwm_oid = _root_oid;
+  hwm_oid.append("1.5");
 
   // First two entries are the statistic name and the string "OK", so
   // skip them
-  returnmap[average_oid] = atoi(msgs[2].c_str());
-  returnmap[variance_oid] = atoi(msgs[3].c_str());
-  returnmap[lwm_oid] = atoi(msgs[4].c_str());
-  returnmap[hwm_oid] = atoi(msgs[5].c_str());
-  return returnmap;
-  } */
+  OIDMap new_subtree = {{average_oid, atoi(msgs[2].c_str())},
+                        {variance_oid, atoi(msgs[3].c_str())},
+                        {lwm_oid, atoi(msgs[3].c_str())},
+                        {hwm_oid, atoi(msgs[4].c_str())}};
 
-void MultipleNumberStatHandler::handle(std::vector<std::string> msgs)
-{
-  OIDMap new_subtree;
-  // First two entries are the statistic name and the string "OK", so
-  // skip them
-  int oid_index = 1;
-  for (std::vector<std::string>::iterator it = msgs.begin() + 2;
-       it != msgs.end();
-       it++, oid_index++)
-  {
-    OID this_oid = _root_oid;
-    char oid_index_str[4];
-    snprintf(oid_index_str, 3, "%d", oid_index);
-    this_oid.append(oid_index_str);
-
-    new_subtree[this_oid] = atoi(it->c_str());
-  }
   _tree->replace_subtree(_root_oid, new_subtree);
 }

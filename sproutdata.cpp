@@ -44,11 +44,11 @@ OID xdm_latency_oid = OID("1.2.826.0.1.1578918.9.3.2.2");
 OID homers_oid = OID("1.2.826.0.1.1578918.9.3.3.1");
 OID homesteads_oid = OID("1.2.826.0.1.1578918.9.3.2.1");
 
-MultipleNumberStatHandler latency_handler(latency_oid, &tree);
-MultipleNumberStatHandler hss_latency_handler(hss_latency_oid, &tree);
-MultipleNumberStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
-MultipleNumberStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
-MultipleNumberStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
+LatencyStatHandler latency_handler(latency_oid, &tree);
+LatencyStatHandler hss_latency_handler(hss_latency_oid, &tree);
+LatencyStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
+LatencyStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
+LatencyStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
 IPCountStatHandler connected_homers_handler(homers_oid, &tree);
 IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
 
@@ -64,13 +64,13 @@ NodeData::NodeData() {
            "xdm_latency_us",
            "connected_homers",
            "connected_homesteads"};
-  stat_to_handler = {{"latency_us", latency_handler},
-                     {"hss_latency_us", hss_latency_handler},
-                     {"hss_digest_latency_us", hss_digest_latency_handler},
-                     {"hss_subscription_latency_us", hss_subscription_latency_handler},
-                     {"xdm_latency_us", xdm_latency_handler},
-                     {"connected_homers", connected_homers_handler},
-                     {"connected_homesteads", connected_homesteads_handler}};
+  stat_to_handler = {{"latency_us", &latency_handler},
+                     {"hss_latency_us", &hss_latency_handler},
+                     {"hss_digest_latency_us", &hss_digest_latency_handler},
+                     {"hss_subscription_latency_us", &hss_subscription_latency_handler},
+                     {"xdm_latency_us", &xdm_latency_handler},
+                     {"connected_homers", &connected_homers_handler},
+                     {"connected_homesteads", &connected_homesteads_handler}};
 };
 
 NodeData node_data;

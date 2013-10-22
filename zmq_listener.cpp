@@ -119,10 +119,12 @@ void* ZMQListener::listen_thread(void* args)
     }
     while (more);
     last_seen_time.store(time(NULL));
-    std::string message_type = msgs[0];
-    ZMQMessageHandler* handler = &node_data.stat_to_handler.at(message_type);
-    handler->handle(msgs);
+    if ((msgs.size() > 2) && (msgs[1].compare("OK") == 0)) {
+      std::string message_type = msgs[0];
+      ZMQMessageHandler* handler = node_data.stat_to_handler.at(message_type);
+      handler->handle(msgs);
     }
+  }
 };
 
 ZMQListener::~ZMQListener()

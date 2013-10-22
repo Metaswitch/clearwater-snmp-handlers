@@ -43,8 +43,8 @@
 class ZMQMessageHandler
 {
 public:
-  ZMQMessageHandler(OID, OIDTree*);
-  void handle(std::vector<std::string>);
+  ZMQMessageHandler(OID oid, OIDTree* tree) : _root_oid(oid), _tree(tree) {};
+  virtual void handle(std::vector<std::string>) = 0;
 protected:
   OID _root_oid;
   OIDTree* _tree;
@@ -62,10 +62,9 @@ public:
   void handle(std::vector<std::string>);
 };
 
-class MultipleNumberStatHandler: public ZMQMessageHandler {
+class LatencyStatHandler: public ZMQMessageHandler {
 public:
-  MultipleNumberStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
-
+  LatencyStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string>);
 };
 

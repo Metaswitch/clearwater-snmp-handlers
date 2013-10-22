@@ -57,7 +57,7 @@ public:
   std::string port;
   OID root_oid;
   std::vector<std::string> stats;
-  std::map<std::string, ZMQMessageHandler> stat_to_handler;
+  std::map<std::string, ZMQMessageHandler*> stat_to_handler;
 };
 
 extern NodeData node_data;
