@@ -47,7 +47,8 @@ std::atomic_long last_seen_time;
 const int TIMEOUT_THRESHOLD = 15;
 static pthread_t zmq_thread;
 
-void* start_stats (void* arg) {
+void* start_stats (void* arg)
+{
   ZMQListener listener;
   return listener.listen_thread(arg);
 }
@@ -55,7 +56,7 @@ void* start_stats (void* arg) {
 /** Initialize the Clearwater stats handler and register it */
 void initialize_handler(void)
 {
-  netsnmp_handler_registration *my_handler;
+  netsnmp_handler_registration* my_handler;
   last_seen_time.store(time(NULL));
   static oid* root;
   snmp_clone_mem((void**)&root,
@@ -87,13 +88,14 @@ int clearwater_handler(netsnmp_mib_handler* handler,
                        netsnmp_request_info* requests)
 {
 
-  netsnmp_request_info *request;
-  netsnmp_variable_list *var;
+  netsnmp_request_info* request;
+  netsnmp_variable_list* var;
 
   for(request = requests; request; request = request->next)
   {
     bool failed = ((long)time(NULL) - last_seen_time) > TIMEOUT_THRESHOLD;
-    if (failed) {
+    if (failed)
+    {
       return SNMP_ERR_GENERR;
     }
     OID this_oid(requests->requestvb->name, requests->requestvb->name_length);
@@ -102,7 +104,8 @@ int clearwater_handler(netsnmp_mib_handler* handler,
     OID outoid;
 
     var = request->requestvb;
-    if (request->processed != 0) {
+    if (request->processed != 0)
+    {
       continue;
     }
 

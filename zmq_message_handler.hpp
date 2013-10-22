@@ -50,19 +50,22 @@ protected:
   OIDTree* _tree;
 };
 
-class IPCountStatHandler: public ZMQMessageHandler {
+class IPCountStatHandler: public ZMQMessageHandler
+{
 public:
   IPCountStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string>);
 };
 
-class SingleNumberStatHandler: public ZMQMessageHandler {
+class SingleNumberStatHandler: public ZMQMessageHandler
+{
 public:
   SingleNumberStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string>);
 };
 
-class LatencyStatHandler: public ZMQMessageHandler {
+class LatencyStatHandler: public ZMQMessageHandler
+{
 public:
   LatencyStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string>);

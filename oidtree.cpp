@@ -58,9 +58,12 @@ bool OIDTree::get_next(OID requested_oid, OID& output_oid, int& output_result)
   bool retval = false;
   OIDMap::iterator oid_location = _oidmap.upper_bound(requested_oid);
 
-  if (oid_location == _oidmap.end()) {
+  if (oid_location == _oidmap.end())
+  {
     retval = false;
-  } else {
+  }
+  else
+  {
     output_oid = oid_location->first;
     output_result = oid_location->second;
     retval = true;
@@ -76,7 +79,8 @@ void OIDTree::remove_subtree(OID root_oid)
       it != _oidmap.end(); ++it)
   {
     OID this_oid = it->first;
-    if (root_oid.subtree_contains(this_oid)) {
+    if (root_oid.subtree_contains(this_oid))
+    {
       _oidmap.erase(this_oid);
     }
   }
@@ -92,7 +96,8 @@ void OIDTree::replace_subtree(OID root_oid, OIDMap update)
 }
 
 
-void OIDTree::set(OID key, int value) {
+void OIDTree::set(OID key, int value)
+{
   _map_lock.lock();
   _oidmap[key] = value;
   _map_lock.unlock();

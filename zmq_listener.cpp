@@ -66,7 +66,8 @@ bool ZMQListener::connect_and_subscribe()
 
   for (std::vector<std::string>::iterator it = node_data.stats.begin();
        it != node_data.stats.end();
-       it++) {
+       it++)
+  {
     // Subscribe to the specified statistic.
     if (zmq_setsockopt(_sck, ZMQ_SUBSCRIBE, it->c_str(), strlen(it->c_str())) != 0)
     {
@@ -119,7 +120,8 @@ void* ZMQListener::listen_thread(void* args)
     }
     while (more);
     last_seen_time.store(time(NULL));
-    if ((msgs.size() > 2) && (msgs[1].compare("OK") == 0)) {
+    if ((msgs.size() > 2) && (msgs[1].compare("OK") == 0))
+    {
       std::string message_type = msgs[0];
       ZMQMessageHandler* handler = node_data.stat_to_handler.at(message_type);
       handler->handle(msgs);

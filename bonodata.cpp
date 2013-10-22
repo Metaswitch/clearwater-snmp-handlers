@@ -52,8 +52,9 @@ NodeData::NodeData()
   root_oid = OID("1.2.826.0.1.1578918.9.2");
   stats = {"latency_us", "client_count", "connected_sprouts"};
   stat_to_handler = {{"latency_us", &latency_handler},
-                     {"client_count", &client_count_handler},
-                     {"connected_sprouts", &connected_sprouts_handler}};
+    {"client_count", &client_count_handler},
+    {"connected_sprouts", &connected_sprouts_handler}
+  };
 };
 
 NodeData node_data;

@@ -42,7 +42,8 @@
 OID::OID(oid* oids_ptr, int len)
 {
   int i;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i++)
+  {
     _oids.push_back(*(oids_ptr+i));
   }
 }
@@ -51,8 +52,10 @@ OID::OID(std::string oidstr)
 {
   std::vector<std::string> result;
   boost::split(result, oidstr, boost::is_any_of("."));
-  for (std::vector<std::string>::iterator it = result.begin() ; it != result.end(); ++it) {
-    if (!it->empty()) { // Ignore an initial dot
+  for (std::vector<std::string>::iterator it = result.begin() ; it != result.end(); ++it)
+  {
+    if (!it->empty())   // Ignore an initial dot
+    {
       _oids.push_back(atoi(it->c_str()));
     }
   }
@@ -80,7 +83,7 @@ bool OID::equals(OID other_oid)
 bool OID::subtree_contains(OID other_oid)
 {
   return (snmp_oidtree_compare(get_ptr(), get_len(),
-                             other_oid.get_ptr(), other_oid.get_len()) == 0);
+                               other_oid.get_ptr(), other_oid.get_len()) == 0);
 }
 
 // Appends the given OID string to this OID
@@ -89,7 +92,8 @@ void OID::append(std::string more)
 {
   std::vector<std::string> result;
   boost::split(result, more, boost::is_any_of("."));
-  for (std::vector<std::string>::iterator it = result.begin() ; it != result.end(); ++it) {
+  for (std::vector<std::string>::iterator it = result.begin() ; it != result.end(); ++it)
+  {
     _oids.push_back(atoi(it->c_str()));
   }
 }

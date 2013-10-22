@@ -53,7 +53,8 @@ IPCountStatHandler connected_homers_handler(homers_oid, &tree);
 IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
 
 
-NodeData::NodeData() {
+NodeData::NodeData()
+{
   name = "sprout_handler";
   port = "6666";
   root_oid = OID("1.2.826.0.1.1578918.9.3");
@@ -63,21 +64,24 @@ NodeData::NodeData() {
            "hss_subscription_latency_us",
            "xdm_latency_us",
            "connected_homers",
-           "connected_homesteads"};
+           "connected_homesteads"
+          };
   stat_to_handler = {{"latency_us", &latency_handler},
-                     {"hss_latency_us", &hss_latency_handler},
-                     {"hss_digest_latency_us", &hss_digest_latency_handler},
-                     {"hss_subscription_latency_us", &hss_subscription_latency_handler},
-                     {"xdm_latency_us", &xdm_latency_handler},
-                     {"connected_homers", &connected_homers_handler},
-                     {"connected_homesteads", &connected_homesteads_handler}};
+    {"hss_latency_us", &hss_latency_handler},
+    {"hss_digest_latency_us", &hss_digest_latency_handler},
+    {"hss_subscription_latency_us", &hss_subscription_latency_handler},
+    {"xdm_latency_us", &xdm_latency_handler},
+    {"connected_homers", &connected_homers_handler},
+    {"connected_homesteads", &connected_homesteads_handler}
+  };
 };
 
 NodeData node_data;
 
 extern "C" {
   // SNMPd looks for an init_<module_name> function in this library
-  void init_sprout_handler() {
+  void init_sprout_handler()
+  {
     initialize_handler();
   }
 }

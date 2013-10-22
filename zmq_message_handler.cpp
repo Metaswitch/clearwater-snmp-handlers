@@ -88,9 +88,10 @@ void LatencyStatHandler::handle(std::vector<std::string> msgs)
   // First two entries are the statistic name and the string "OK", so
   // skip them
   OIDMap new_subtree = {{average_oid, atoi(msgs[2].c_str())},
-                        {variance_oid, atoi(msgs[3].c_str())},
-                        {lwm_oid, atoi(msgs[3].c_str())},
-                        {hwm_oid, atoi(msgs[4].c_str())}};
+    {variance_oid, atoi(msgs[3].c_str())},
+    {lwm_oid, atoi(msgs[3].c_str())},
+    {hwm_oid, atoi(msgs[4].c_str())}
+  };
 
   _tree->replace_subtree(_root_oid, new_subtree);
 }
