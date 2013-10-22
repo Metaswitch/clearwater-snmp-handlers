@@ -56,19 +56,7 @@ bool OIDTree::get_next(OID requested_oid, OID& output_oid, int& output_result)
 {
   _map_lock.lock();
   bool retval = false;
-  OIDMap::iterator oid_location = _oidmap.end();
-  for(std::map<OID, int>::iterator it = _oidmap.begin();
-      it != _oidmap.end(); ++it)
-  {
-    OID this_oid = it->first;
-    if (requested_oid.equals(this_oid)) {
-        oid_location = ++it;
-        break;
-    } else if (requested_oid.subtree_contains(this_oid)) {
-      oid_location = it;
-      break;
-    }
-  }
+  OIDMap::iterator oid_location = _oidmap.upper_bound(requested_oid);
 
   if (oid_location == _oidmap.end()) {
     retval = false;
