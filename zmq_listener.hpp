@@ -41,7 +41,6 @@
 class ZMQListener
 {
 public:
-  ZMQListener();
   ~ZMQListener();
   bool connect_and_subscribe();
   void* listen_thread(void* args);
@@ -49,7 +48,6 @@ public:
 private:
   void* _ctx;
   void* _sck;
-  ZMQMessageHandler _message_handler;
 };
 
 #endif

@@ -32,8 +32,26 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
+#include "globals.hpp"
 #include "nodedata.hpp"
 #include "custom_handler.hpp"
+
+OID latency_oid = OID("1.2.826.0.1.1578918.9.3.1");
+OID hss_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.2");
+OID hss_digest_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.3");
+OID hss_subscription_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.4");
+OID xdm_latency_oid = OID("1.2.826.0.1.1578918.9.3.2.2");
+OID homers_oid = OID("1.2.826.0.1.1578918.9.3.3.1");
+OID homesteads_oid = OID("1.2.826.0.1.1578918.9.3.2.1");
+
+MultipleNumberStatHandler latency_handler(latency_oid, &tree);
+MultipleNumberStatHandler hss_latency_handler(hss_latency_oid, &tree);
+MultipleNumberStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
+MultipleNumberStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
+MultipleNumberStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
+IPCountStatHandler connected_homers_handler(homers_oid, &tree);
+IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
+
 
 NodeData::NodeData() {
   name = "sprout_handler";
@@ -46,20 +64,13 @@ NodeData::NodeData() {
            "xdm_latency_us",
            "connected_homers",
            "connected_homesteads"};
-  stat_to_type = {{"latency_us", STAT_LATENCY},
-                  {"hss_latency_us", STAT_LATENCY},
-                  {"hss_digest_latency_us", STAT_LATENCY},
-                  {"hss_subscription_latency_us", STAT_LATENCY},
-                  {"xdm_latency_us", STAT_LATENCY},
-                  {"connected_homers", STAT_PER_IP_COUNT},
-                  {"connected_homesteads", STAT_PER_IP_COUNT}};
-  stat_to_root_oid = {{"latency_us", OID("1.2.826.0.1.1578918.9.3.1")},
-                      {"hss_latency_us", OID("1.2.826.0.1.1578918.9.3.3.2")},
-                      {"hss_digest_latency_us", OID("1.2.826.0.1.1578918.9.3.3.3")},
-                      {"hss_subscription_latency_us", OID("1.2.826.0.1.1578918.9.3.3.4")},
-                      {"xdm_latency_us", OID("1.2.826.0.1.1578918.9.3.2.2")},
-                      {"connected_homers", OID("1.2.826.0.1.1578918.9.3.3.1")},
-                      {"connected_homesteads", OID("1.2.826.0.1.1578918.9.3.2.1")}};
+  stat_to_handler = {{"latency_us", latency_handler},
+                     {"hss_latency_us", hss_latency_handler},
+                     {"hss_digest_latency_us", hss_digest_latency_handler},
+                     {"hss_subscription_latency_us", hss_subscription_latency_handler},
+                     {"xdm_latency_us", xdm_latency_handler},
+                     {"connected_homers", connected_homers_handler},
+                     {"connected_homesteads", connected_homesteads_handler}};
 };
 
 NodeData node_data;

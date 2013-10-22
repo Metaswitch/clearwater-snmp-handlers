@@ -37,65 +37,47 @@
 #include "globals.hpp"
 #include <cstdlib>
 
-void ZMQMessageHandler::handle(std::vector<std::string> msgs)
+ZMQMessageHandler::ZMQMessageHandler(OID root_oid, OIDTree* tree)
 {
-  if ((msgs.size() > 2) && (msgs[1].compare("OK") == 0))
-  {
-    StatType type = node_data.stat_to_type[msgs[0]];
-    OIDMap returnmap;
-    switch (type) {
-      case STAT_PER_IP_COUNT:
-        returnmap = handle_ip_count_stats(msgs);
-        break;
-      case STAT_LATENCY:
-        returnmap = handle_latency_stats(msgs);
-        break;
-      case STAT_SINGLE_NUMBER:
-        returnmap = handle_single_number_stat(msgs);
-        break;
-      case STAT_UNKNOWN:
-      default:
-        fprintf(stderr, "Statistic %s is unknown\n", msgs[0].c_str());
-    }
-    OID this_oid = node_data.stat_to_root_oid[msgs[0]];
-    tree.replace_subtree(this_oid, returnmap);
-  }
+  _root_oid = root_oid;
+  _tree = tree;
 }
 
-OIDMap ZMQMessageHandler::handle_ip_count_stats(std::vector<std::string> msgs)
+void IPCountStatHandler::handle(std::vector<std::string> msgs)
 {
   // Messages are in [ip_address, count, ip_address, count] pairs
-  OIDMap returnmap;
+  OIDMap new_subtree;
   // First two entries are the statistic name and the string "OK", so
   // skip them
   for (std::vector<std::string>::iterator it_ip = (msgs.begin() + 2), it_val = (msgs.begin() + 3);
        (it_ip != msgs.end()) && (it_val != msgs.end());
        it_ip++++, it_val++++)
   {
-    OID this_oid = node_data.stat_to_root_oid[msgs[0]];
+    OID this_oid = _root_oid;
     std::string ip_address = *it_ip;
     int connections_to_this_ip = atoi(it_val->c_str());
     this_oid.append(ip_address);
 
-    returnmap[this_oid] = connections_to_this_ip;
+    new_subtree[this_oid] = connections_to_this_ip;
   }
-  return returnmap;
+  _tree->replace_subtree(_root_oid, new_subtree);
 }
 
-OIDMap ZMQMessageHandler::handle_single_number_stat(std::vector<std::string> msgs)
+void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
 {
-  OIDMap returnmap;
-  OID this_oid = node_data.stat_to_root_oid[msgs[0]];
+  OIDMap new_subtree;
+
+  OID this_oid = _root_oid;
   this_oid.append("0"); // Indicates a scalar value in SNMP
 
   // First two entries are the statistic name and the string "OK", so
   // skip them
 
-  returnmap[this_oid] = atoi(msgs[2].c_str());
-  return returnmap;
+  new_subtree[this_oid] = atoi(msgs[2].c_str());
+  _tree->replace_subtree(_root_oid, new_subtree);
 }
 
-OIDMap ZMQMessageHandler::handle_latency_stats(std::vector<std::string> msgs)
+/* OIDMap LatencyStatHandler::handle(std::vector<std::string> msgs)
 {
   OIDMap returnmap;
   OID root_oid = node_data.stat_to_root_oid[msgs[0]];
@@ -119,4 +101,24 @@ OIDMap ZMQMessageHandler::handle_latency_stats(std::vector<std::string> msgs)
   returnmap[lwm_oid] = atoi(msgs[4].c_str());
   returnmap[hwm_oid] = atoi(msgs[5].c_str());
   return returnmap;
+  } */
+
+void MultipleNumberStatHandler::handle(std::vector<std::string> msgs)
+{
+  OIDMap new_subtree;
+  // First two entries are the statistic name and the string "OK", so
+  // skip them
+  int oid_index = 1;
+  for (std::vector<std::string>::iterator it = msgs.begin() + 2;
+       it != msgs.end();
+       it++, oid_index++)
+  {
+    OID this_oid = _root_oid;
+    char oid_index_str[4];
+    snprintf(oid_index_str, 3, "%d", oid_index);
+    this_oid.append(oid_index_str);
+
+    new_subtree[this_oid] = atoi(it->c_str());
+  }
+  _tree->replace_subtree(_root_oid, new_subtree);
 }

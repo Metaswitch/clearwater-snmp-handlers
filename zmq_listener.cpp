@@ -40,11 +40,6 @@
 #include <vector>
 #include <ctime>
 
-ZMQListener::ZMQListener()
-{
-  _message_handler = ZMQMessageHandler();
-}
-
 bool ZMQListener::connect_and_subscribe()
 {
   // Create the context.
@@ -124,7 +119,9 @@ void* ZMQListener::listen_thread(void* args)
     }
     while (more);
     last_seen_time.store(time(NULL));
-    _message_handler.handle(msgs);
+    std::string message_type = msgs[0];
+    ZMQMessageHandler* handler = &node_data.stat_to_handler.at(message_type);
+    handler->handle(msgs);
     }
 };
 

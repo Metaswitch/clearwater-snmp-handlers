@@ -43,12 +43,30 @@
 class ZMQMessageHandler
 {
 public:
+  ZMQMessageHandler(OID, OIDTree*);
   void handle(std::vector<std::string>);
-private:
-  OIDMap handle_single_number_stat(std::vector<std::string>);
-  OIDMap handle_latency_stats(std::vector<std::string>);
-  OIDMap handle_call_stats(std::vector<std::string>);
-  OIDMap handle_ip_count_stats(std::vector<std::string>);
+protected:
+  OID _root_oid;
+  OIDTree* _tree;
+};
+
+class IPCountStatHandler: public ZMQMessageHandler {
+public:
+  IPCountStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  void handle(std::vector<std::string>);
+};
+
+class SingleNumberStatHandler: public ZMQMessageHandler {
+public:
+  SingleNumberStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  void handle(std::vector<std::string>);
+};
+
+class MultipleNumberStatHandler: public ZMQMessageHandler {
+public:
+  MultipleNumberStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+
+  void handle(std::vector<std::string>);
 };
 
 #endif

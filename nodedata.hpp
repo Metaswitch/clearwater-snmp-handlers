@@ -39,6 +39,7 @@
 #include <map>
 #include <string>
 #include "oid.hpp"
+#include "zmq_message_handler.hpp"
 
 enum StatType
 {
@@ -56,8 +57,7 @@ public:
   std::string port;
   OID root_oid;
   std::vector<std::string> stats;
-  std::map<std::string, StatType> stat_to_type;
-  std::map<std::string, OID> stat_to_root_oid;
+  std::map<std::string, ZMQMessageHandler> stat_to_handler;
 };
 
 extern NodeData node_data;
