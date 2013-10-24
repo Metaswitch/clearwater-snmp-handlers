@@ -73,6 +73,7 @@ void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
 
 void LatencyStatHandler::handle(std::vector<std::string> msgs)
 {
+  fprintf(stderr, "Received ZMQ latency statistics: average %s, variance %s, lwm %s, hwm %s\n", msgs[2].c_str(), msgs[3].c_str(), msgs[4].c_str(), msgs[5].c_str());
   OID average_oid = _root_oid;
   average_oid.append("1.2");
 

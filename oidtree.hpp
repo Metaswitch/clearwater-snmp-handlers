@@ -62,6 +62,7 @@ public:
   void remove(OID);
   void remove_subtree(OID);
   void replace_subtree(OID, OIDMap);
+  void dump();
 
 private:
   OIDMap _oidmap;

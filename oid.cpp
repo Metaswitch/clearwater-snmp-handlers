@@ -98,3 +98,13 @@ void OID::append(std::string more)
   }
 }
 
+// Appends the given OID string to this OID
+// e.g. OID("1.2.3.4").append("5.6") is OID("1.2.3.4.5.6")
+void OID::to_string() const
+{
+  for (std::vector<oid>::const_iterator it = _oids.begin() ; it != _oids.end(); ++it)
+  {
+    std::cerr << "." << *it;
+  }
+}
+
