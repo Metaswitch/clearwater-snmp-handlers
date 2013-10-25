@@ -64,10 +64,17 @@ public:
   void handle(std::vector<std::string>);
 };
 
-class LatencyStatHandler: public ZMQMessageHandler
+class SingleNumberWithScopeStatHandler: public ZMQMessageHandler
 {
 public:
-  LatencyStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  SingleNumberWithScopeStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  void handle(std::vector<std::string>);
+};
+
+class AccumulatedStatHandler: public ZMQMessageHandler
+{
+public:
+  AccumulatedStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string>);
 };
 

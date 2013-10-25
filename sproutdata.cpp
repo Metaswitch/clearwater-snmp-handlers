@@ -43,15 +43,20 @@ OID hss_subscription_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.4");
 OID xdm_latency_oid = OID("1.2.826.0.1.1578918.9.3.2.2");
 OID homers_oid = OID("1.2.826.0.1.1578918.9.3.3.1");
 OID homesteads_oid = OID("1.2.826.0.1.1578918.9.3.2.1");
+OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.3.6");
+OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.3.7");
+OID queue_size_oid = OID("1.2.826.0.1.1578918.9.3.8");
 
-LatencyStatHandler latency_handler(latency_oid, &tree);
-LatencyStatHandler hss_latency_handler(hss_latency_oid, &tree);
-LatencyStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
-LatencyStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
-LatencyStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
+AccumulatedStatHandler latency_handler(latency_oid, &tree);
+AccumulatedStatHandler hss_latency_handler(hss_latency_oid, &tree);
+AccumulatedStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
+AccumulatedStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
+AccumulatedStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
 IPCountStatHandler connected_homers_handler(homers_oid, &tree);
 IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
-
+SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
+SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
+AccumulatedStatHandler queue_size_handler(queue_size_oid, &tree);
 
 NodeData::NodeData()
 {
@@ -64,7 +69,10 @@ NodeData::NodeData()
            "hss_subscription_latency_us",
            "xdm_latency_us",
            "connected_homers",
-           "connected_homesteads"
+           "connected_homesteads",
+           "incoming_requests",
+           "rejected_overload",
+           "queue_size"
           };
   stat_to_handler = {{"latency_us", &latency_handler},
     {"hss_latency_us", &hss_latency_handler},
@@ -72,7 +80,10 @@ NodeData::NodeData()
     {"hss_subscription_latency_us", &hss_subscription_latency_handler},
     {"xdm_latency_us", &xdm_latency_handler},
     {"connected_homers", &connected_homers_handler},
-    {"connected_homesteads", &connected_homesteads_handler}
+    {"connected_homesteads", &connected_homesteads_handler},
+    {"incoming_requests", &incoming_requests_handler},
+    {"rejected_overload", &rejected_overload_handler},
+    {"queue_size", &queue_size_handler}
   };
 };
 

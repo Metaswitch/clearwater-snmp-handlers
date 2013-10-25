@@ -64,7 +64,7 @@ bonoConnectedClients OBJECT-TYPE
 
                  This is calculated by counting the allocated
                  flow records and thus:
-                 
+
                   * Only counts clients if they have attempted
                     to register (either successfully or not)
                   * Multiple clients muxed onto a single connection
@@ -77,7 +77,7 @@ bonoLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of SIP requests handled by this Bono
-                 over a 5-minute period.  Latency measured in
+                 over the given period.  Latency measured in
                  microseconds"
     ::= { bono 2 }
 
@@ -101,7 +101,7 @@ BonoLatencyEntry ::= SEQUENCE
 
 bonoLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopeCurrent5MinutePeriod(1)
+                  scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -175,6 +175,144 @@ bonoSproutConnectionCount OBJECT-TYPE
                  up state"
     ::= { bonoConnectedSproutsEntry 2 }
 
+bonoIncomingRequestsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoIncomingRequestsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of incoming requests handled by this Bono over
+                 the given period."
+    ::= { bono 4 }
+
+bonoIncomingRequestsEntry OBJECT-TYPE
+    SYNTAX      BonoIncomingRequestsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of incoming requests"
+    INDEX       { bonoIncomingRequestsScope }
+    ::= { bonoIncomingRequestsTable 1 }
+
+BonoIncomingRequestsEntry ::= SEQUENCE
+{
+  bonoIncomingRequestsScope          INTEGER,
+  bonoIncomingRequestsCount          Unsigned32
+}
+
+bonoIncomingRequestsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoIncomingRequestsEntry 1 }
+
+bonoIncomingRequestsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of incoming requests over the period."
+    ::= { bonoIncomingRequestsEntry 2 }
+
+bonoRejectedOverloadTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoRejectedOverloadEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of requests rejected due to overload handled by
+                 this Bono over the given period."
+    ::= { bono 5 }
+
+bonoRejectedOverloadEntry OBJECT-TYPE
+    SYNTAX      BonoRejectedOverloadEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of requests rejected due to overload"
+    INDEX       { bonoRejectedOverloadScope }
+    ::= { bonoRejectedOverloadTable 1 }
+
+BonoRejectedOverloadEntry ::= SEQUENCE
+{
+  bonoRejectedOverloadScope          INTEGER,
+  bonoRejectedOverloadCount          Unsigned32
+}
+
+bonoRejectedOverloadScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoRejectedOverloadEntry 1 }
+
+bonoRejectedOverloadCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of rejected requests due to overload over the
+                 period."
+    ::= { bonoRejectedOverloadEntry 2 }
+
+bonoQueueSizeTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoQueueSizeEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Average request queue size for this Bono"
+    ::= { bono 6 }
+
+bonoQueueSizeEntry OBJECT-TYPE
+    SYNTAX      BonoQueueSizeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of request queue size"
+    INDEX       { bonoQueueSizeScope }
+    ::= { bonoQueueSizeTable 1 }
+
+BonoQueueSizeEntry ::= SEQUENCE
+{
+  bonoQueueSizeScope          INTEGER,
+  bonoQueueSizeAverage        Unsigned32,
+  bonoQueueSizeVariance       Unsigned32,
+  bonoQueueSizeHWM            Unsigned32,
+  bonoQueueSizeLWM            Unsigned32
+}
+
+bonoQueueSizeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoQueueSizeEntry 1 }
+
+bonoQueueSizeAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average request queue size over the period."
+    ::= { bonoQueueSizeEntry 2 }
+
+bonoQueueSizeVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the queue size over the period."
+    ::= { bonoQueueSizeEntry 3 }
+
+bonoQueueSizeHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest queue size over the period."
+    ::= { bonoQueueSizeEntry 4 }
+
+bonoQueueSizeLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest queue size over the period."
+    ::= { bonoQueueSizeEntry 5 }
+
 bonoGroup OBJECT-GROUP
     OBJECTS {
       bonoConnectedClients,
@@ -182,7 +320,13 @@ bonoGroup OBJECT-GROUP
       bonoLatencyVariance,
       bonoLatencyHWM,
       bonoLatencyLWM,
-      bonoSproutConnectionCount
+      bonoSproutConnectionCount,
+      bonoIncomingRequestsCount,
+      bonoRejectedOverloadCount,
+      bonoQueueSizeAverage,
+      bonoQueueSizeVariance,
+      bonoQueueSizeHWM,
+      bonoQueueSizeLWM
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Bono"
@@ -195,7 +339,7 @@ sproutLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of SIP requests handled by this Bono
-                 over a 5-minute period.  Latency measured in
+                 over the given period.  Latency measured in
                  microseconds"
     ::= { sprout 1 }
 
@@ -219,7 +363,7 @@ SproutLatencyEntry ::= SEQUENCE
 
 sproutLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopeCurrent5MinutePeriod(1)
+                  scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -298,7 +442,7 @@ sproutHomerLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of Homer requests made by this Sprout
-                 over a 5-minute period.  Latency measured in
+                 over the given period.  Latency measured in
                  microseconds"
     ::= { xdm 2 }
 
@@ -322,7 +466,7 @@ SproutHomerLatencyEntry ::= SEQUENCE
 
 sproutHomerLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopeCurrent5MinutePeriod(1)
+                  scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -401,7 +545,7 @@ sproutHomesteadLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of Homestead requests made by this Sprout
-                 over a 5-minute period.  Latency measured in
+                 over a the given period.  Latency measured in
                  microseconds"
     ::= { hss 2 }
 
@@ -425,7 +569,7 @@ SproutHomesteadLatencyEntry ::= SEQUENCE
 
 sproutHomesteadLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopeCurrent5MinutePeriod(1)
+                  scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -465,7 +609,7 @@ sproutIMPILatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for IMPIs made by this Sprout
-                 over a 5-minute period.  Latency measured in
+                 over the given period.  Latency measured in
                  microseconds"
     ::= { hss 3 }
 
@@ -489,7 +633,7 @@ SproutIMPILatencyEntry ::= SEQUENCE
 
 sproutIMPILatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopeCurrent5MinutePeriod(1)
+                  scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -529,7 +673,7 @@ sproutIMPULatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for IMPUs made by this Sprout
-                 over a 5-minute period.  Latency measured in
+                 over the given period.  Latency measured in
                  microseconds"
     ::= { hss 4 }
 
@@ -553,7 +697,7 @@ SproutIMPULatencyEntry ::= SEQUENCE
 
 sproutIMPULatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopeCurrent5MinutePeriod(1)
+                  scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -588,6 +732,144 @@ sproutIMPULatencyLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { sproutIMPULatencyEntry 5 }
 
+sproutIncomingRequestsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutIncomingRequestsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of incoming requests handled by this Sprout over
+                 the given period."
+    ::= { sprout 6 }
+
+sproutIncomingRequestsEntry OBJECT-TYPE
+    SYNTAX      SproutIncomingRequestsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of incoming requests"
+    INDEX       { sproutIncomingRequestsScope }
+    ::= { sproutIncomingRequestsTable 1 }
+
+SproutIncomingRequestsEntry ::= SEQUENCE
+{
+  sproutIncomingRequestsScope          INTEGER,
+  sproutIncomingRequestsCount          Unsigned32
+}
+
+sproutIncomingRequestsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutIncomingRequestsEntry 1 }
+
+sproutIncomingRequestsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of incoming requests over the period."
+    ::= { sproutIncomingRequestsEntry 2 }
+
+sproutRejectedOverloadTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutRejectedOverloadEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of requests rejected due to overload handled by
+                 this Sprout over the given period."
+    ::= { sprout 7 }
+
+sproutRejectedOverloadEntry OBJECT-TYPE
+    SYNTAX      SproutRejectedOverloadEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of requests rejected due to overload"
+    INDEX       { sproutRejectedOverloadScope }
+    ::= { sproutRejectedOverloadTable 1 }
+
+SproutRejectedOverloadEntry ::= SEQUENCE
+{
+  sproutRejectedOverloadScope          INTEGER,
+  sproutRejectedOverloadCount          Unsigned32
+}
+
+sproutRejectedOverloadScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutRejectedOverloadEntry 1 }
+
+sproutRejectedOverloadCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of rejected requests due to overload over the
+                 period."
+    ::= { sproutRejectedOverloadEntry 2 }
+
+sproutQueueSizeTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutQueueSizeEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Average request queue size for this Sprout"
+    ::= { sprout 8 }
+
+sproutQueueSizeEntry OBJECT-TYPE
+    SYNTAX      SproutQueueSizeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of request queue size"
+    INDEX       { sproutQueueSizeScope }
+    ::= { sproutQueueSizeTable 1 }
+
+SproutQueueSizeEntry ::= SEQUENCE
+{
+  sproutQueueSizeScope          INTEGER,
+  sproutQueueSizeAverage        Unsigned32,
+  sproutQueueSizeVariance       Unsigned32,
+  sproutQueueSizeHWM            Unsigned32,
+  sproutQueueSizeLWM            Unsigned32
+}
+
+sproutQueueSizeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutQueueSizeEntry 1 }
+
+sproutQueueSizeAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average request queue size over the period."
+    ::= { sproutQueueSizeEntry 2 }
+
+sproutQueueSizeVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the queue size over the period."
+    ::= { sproutQueueSizeEntry 3 }
+
+sproutQueueSizeHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest queue size over the period."
+    ::= { sproutQueueSizeEntry 4 }
+
+sproutQueueSizeLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest queue size over the period."
+    ::= { sproutQueueSizeEntry 5 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -611,7 +893,13 @@ sproutGroup OBJECT-GROUP
       sproutIMPULatencyAverage,
       sproutIMPULatencyVariance,
       sproutIMPULatencyHWM,
-      sproutIMPULatencyLWM
+      sproutIMPULatencyLWM,
+      sproutIncomingRequestsCount,
+      sproutRejectedOverloadCount,
+      sproutQueueSizeAverage,
+      sproutQueueSizeVariance,
+      sproutQueueSizeHWM,
+      sproutQueueSizeLWM
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
