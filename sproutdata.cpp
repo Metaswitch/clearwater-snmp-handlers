@@ -47,16 +47,16 @@ OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.3.6");
 OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.3.7");
 OID queue_size_oid = OID("1.2.826.0.1.1578918.9.3.8");
 
-LatencyStatHandler latency_handler(latency_oid, &tree);
-LatencyStatHandler hss_latency_handler(hss_latency_oid, &tree);
-LatencyStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
-LatencyStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
-LatencyStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
+AccumulatedStatHandler latency_handler(latency_oid, &tree);
+AccumulatedStatHandler hss_latency_handler(hss_latency_oid, &tree);
+AccumulatedStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
+AccumulatedStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
+AccumulatedStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
 IPCountStatHandler connected_homers_handler(homers_oid, &tree);
 IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
 SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
-LatencyStatHandler queue_size_handler(queue_size_oid, &tree);
+AccumulatedStatHandler queue_size_handler(queue_size_oid, &tree);
 
 NodeData::NodeData()
 {

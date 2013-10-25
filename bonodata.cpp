@@ -44,12 +44,12 @@ OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.2.4");
 OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.2.5");
 OID queue_size_oid = OID("1.2.826.0.1.1578918.9.2.6");
 
-LatencyStatHandler latency_handler(latency_oid, &tree);
+AccumulatedStatHandler latency_handler(latency_oid, &tree);
 SingleNumberStatHandler client_count_handler(client_count_oid, &tree);
 IPCountStatHandler connected_sprouts_handler(sprouts_oid, &tree);
 SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
-LatencyStatHandler queue_size_handler(queue_size_oid, &tree);
+AccumulatedStatHandler queue_size_handler(queue_size_oid, &tree);
 
 NodeData::NodeData()
 {

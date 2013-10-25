@@ -71,6 +71,9 @@ void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
   _tree->replace_subtree(_root_oid, new_subtree);
 }
 
+// This handler is provided for the case where a stat only provides a single
+// value, but it is only refreshed at set periods of time, not every time it 
+// changes. 
 void SingleNumberWithScopeStatHandler::handle(std::vector<std::string> msgs)
 {
   OIDMap new_subtree;
@@ -84,7 +87,7 @@ void SingleNumberWithScopeStatHandler::handle(std::vector<std::string> msgs)
   _tree->replace_subtree(_root_oid, new_subtree);
 }
 
-void LatencyStatHandler::handle(std::vector<std::string> msgs)
+void AccumulatedStatHandler::handle(std::vector<std::string> msgs)
 {
   OID average_oid = _root_oid;
   average_oid.append("1.2");
