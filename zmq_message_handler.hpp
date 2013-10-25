@@ -64,6 +64,13 @@ public:
   void handle(std::vector<std::string>);
 };
 
+class SingleNumberWithScopeStatHandler: public ZMQMessageHandler
+{
+public:
+  SingleNumberWithScopeStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  void handle(std::vector<std::string>);
+};
+
 class LatencyStatHandler: public ZMQMessageHandler
 {
 public:
