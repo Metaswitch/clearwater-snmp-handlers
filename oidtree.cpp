@@ -35,7 +35,7 @@
 #include "oidtree.hpp"
 #include <iostream>
 
-void dump_oidmap(OIDMap m);
+static void dump_oidmap(OIDMap m);
 
 bool OIDTree::get(OID requested_oid, int& output_result)
 {
@@ -117,12 +117,12 @@ void OIDTree::dump()
   dump_oidmap(_oidmap);
 }
 
-void dump_oidmap(OIDMap m) {
+static void dump_oidmap(OIDMap m) {
   for(OIDMap::iterator it = m.begin();
       it != m.end();
       ++it)
   {
-    it->first.to_string();
+    it->first.dump();
     std::cerr << " " << it->second << "\n";
   }
 }
