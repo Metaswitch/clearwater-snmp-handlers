@@ -59,6 +59,7 @@ public:
   const oid* get_ptr() const;
   int get_len() const;
   void append(std::string);
+  void dump() const;
 private:
   std::vector<oid> _oids;
 };

@@ -33,6 +33,9 @@
 */
 
 #include "oidtree.hpp"
+#include <iostream>
+
+static void dump_oidmap(OIDMap m);
 
 bool OIDTree::get(OID requested_oid, int& output_result)
 {
@@ -75,8 +78,13 @@ bool OIDTree::get_next(OID requested_oid, OID& output_oid, int& output_result)
 void OIDTree::remove_subtree(OID root_oid)
 {
   _map_lock.lock();
-  for(std::map<OID, int>::iterator it = _oidmap.begin();
-      it != _oidmap.end(); ++it)
+
+  // Create a temporary copy, to avoid iterating over the map we're
+  // deleting items from.
+  OIDMap tmp_oidmap = _oidmap;
+  for(OIDMap::iterator it = tmp_oidmap.begin();
+      it != tmp_oidmap.end();
+      ++it)
   {
     OID this_oid = it->first;
     if (root_oid.subtree_contains(this_oid))
@@ -92,6 +100,7 @@ void OIDTree::replace_subtree(OID root_oid, OIDMap update)
   _map_lock.lock();
   remove_subtree(root_oid);
   _oidmap.insert(update.begin(), update.end());
+
   _map_lock.unlock();
 }
 
@@ -101,4 +110,19 @@ void OIDTree::set(OID key, int value)
   _map_lock.lock();
   _oidmap[key] = value;
   _map_lock.unlock();
+}
+
+void OIDTree::dump()
+{
+  dump_oidmap(_oidmap);
+}
+
+static void dump_oidmap(OIDMap m) {
+  for(OIDMap::iterator it = m.begin();
+      it != m.end();
+      ++it)
+  {
+    it->first.dump();
+    std::cerr << " " << it->second << "\n";
+  }
 }

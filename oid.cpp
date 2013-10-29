@@ -98,3 +98,12 @@ void OID::append(std::string more)
   }
 }
 
+// Debugging tool - prints this OID to stderr
+void OID::dump() const
+{
+  for (std::vector<oid>::const_iterator it = _oids.begin() ; it != _oids.end(); ++it)
+  {
+    std::cerr << "." << *it;
+  }
+}
+
