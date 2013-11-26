@@ -40,6 +40,8 @@ OID latency_oid = OID("1.2.826.0.1.1578918.9.3.1");
 OID hss_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.2");
 OID hss_digest_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.3");
 OID hss_subscription_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.4");
+OID hss_user_auth_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.5");
+OID hss_location_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.6");
 OID xdm_latency_oid = OID("1.2.826.0.1.1578918.9.3.2.2");
 OID homers_oid = OID("1.2.826.0.1.1578918.9.3.3.1");
 OID homesteads_oid = OID("1.2.826.0.1.1578918.9.3.2.1");
@@ -51,6 +53,8 @@ AccumulatedStatHandler latency_handler(latency_oid, &tree);
 AccumulatedStatHandler hss_latency_handler(hss_latency_oid, &tree);
 AccumulatedStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
 AccumulatedStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
+AccumulatedStatHandler hss_user_auth_latency_handler(hss_user_auth_latency_oid, &tree);
+AccumulatedStatHandler hss_location_latency_handler(hss_location_latency_oid, &tree);
 AccumulatedStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
 IPCountStatHandler connected_homers_handler(homers_oid, &tree);
 IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
@@ -67,6 +71,8 @@ NodeData::NodeData()
            "hss_latency_us",
            "hss_digest_latency_us",
            "hss_subscription_latency_us",
+           "hss_user_auth_latency_us",
+           "hss_location_latency_us",
            "xdm_latency_us",
            "connected_homers",
            "connected_homesteads",
@@ -78,6 +84,8 @@ NodeData::NodeData()
     {"hss_latency_us", &hss_latency_handler},
     {"hss_digest_latency_us", &hss_digest_latency_handler},
     {"hss_subscription_latency_us", &hss_subscription_latency_handler},
+    {"hss_user_auth_latency_us", &hss_user_auth_latency_handler},
+    {"hss_location_latency_us", &hss_location_latency_handler},
     {"xdm_latency_us", &xdm_latency_handler},
     {"connected_homers", &connected_homers_handler},
     {"connected_homesteads", &connected_homesteads_handler},
