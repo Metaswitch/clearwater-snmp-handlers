@@ -604,200 +604,200 @@ sproutHomesteadLatencyLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { sproutHomesteadLatencyEntry 5 }
 
-sproutIMPILatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutIMPILatencyEntry
+sproutMARLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutMARLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Latency of requests for IMPIs made by this Sprout
+    DESCRIPTION "Latency of requests for MARs made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
     ::= { hss 3 }
 
-sproutIMPILatencyEntry OBJECT-TYPE
-    SYNTAX      SproutIMPILatencyEntry
+sproutMARLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutMARLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request
                  latency"
-    INDEX       { sproutIMPILatencyScope }
-    ::= { sproutIMPILatencyTable 1 }
+    INDEX       { sproutMARLatencyScope }
+    ::= { sproutMARLatencyTable 1 }
 
-SproutIMPILatencyEntry ::= SEQUENCE
+SproutMARLatencyEntry ::= SEQUENCE
 {
-  sproutIMPILatencyScope          INTEGER,
-  sproutIMPILatencyAverage        Unsigned32,
-  sproutIMPILatencyVariance       Unsigned32,
-  sproutIMPILatencyHWM            Unsigned32,
-  sproutIMPILatencyLWM            Unsigned32
+  sproutMARLatencyScope          INTEGER,
+  sproutMARLatencyAverage        Unsigned32,
+  sproutMARLatencyVariance       Unsigned32,
+  sproutMARLatencyHWM            Unsigned32,
+  sproutMARLatencyLWM            Unsigned32
 }
 
-sproutIMPILatencyScope OBJECT-TYPE
+sproutMARLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutIMPILatencyEntry 1 }
+    ::= { sproutMARLatencyEntry 1 }
 
-sproutIMPILatencyAverage OBJECT-TYPE
+sproutMARLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutIMPILatencyEntry 2 }
+    ::= { sproutMARLatencyEntry 2 }
 
-sproutIMPILatencyVariance OBJECT-TYPE
+sproutMARLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutIMPILatencyEntry 3 }
+    ::= { sproutMARLatencyEntry 3 }
 
-sproutIMPILatencyHWM OBJECT-TYPE
+sproutMARLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutIMPILatencyEntry 4 }
+    ::= { sproutMARLatencyEntry 4 }
 
-sproutIMPILatencyLWM OBJECT-TYPE
+sproutMARLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { sproutIMPILatencyEntry 5 }
+    ::= { sproutMARLatencyEntry 5 }
 
-sproutIMPULatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutIMPULatencyEntry
+sproutSARLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSARLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Latency of requests for IMPUs made by this Sprout
+    DESCRIPTION "Latency of requests for SARs made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
     ::= { hss 4 }
 
-sproutIMPULatencyEntry OBJECT-TYPE
-    SYNTAX      SproutIMPULatencyEntry
+sproutSARLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutSARLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request
                  latency"
-    INDEX       { sproutIMPULatencyScope }
-    ::= { sproutIMPULatencyTable 1 }
+    INDEX       { sproutSARLatencyScope }
+    ::= { sproutSARLatencyTable 1 }
 
-SproutIMPULatencyEntry ::= SEQUENCE
+SproutSARLatencyEntry ::= SEQUENCE
 {
-  sproutIMPULatencyScope          INTEGER,
-  sproutIMPULatencyAverage        Unsigned32,
-  sproutIMPULatencyVariance       Unsigned32,
-  sproutIMPULatencyHWM            Unsigned32,
-  sproutIMPULatencyLWM            Unsigned32
+  sproutSARLatencyScope          INTEGER,
+  sproutSARLatencyAverage        Unsigned32,
+  sproutSARLatencyVariance       Unsigned32,
+  sproutSARLatencyHWM            Unsigned32,
+  sproutSARLatencyLWM            Unsigned32
 }
 
-sproutIMPULatencyScope OBJECT-TYPE
+sproutSARLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutIMPULatencyEntry 1 }
+    ::= { sproutSARLatencyEntry 1 }
 
-sproutIMPULatencyAverage OBJECT-TYPE
+sproutSARLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutIMPULatencyEntry 2 }
+    ::= { sproutSARLatencyEntry 2 }
 
-sproutIMPULatencyVariance OBJECT-TYPE
+sproutSARLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutIMPULatencyEntry 3 }
+    ::= { sproutSARLatencyEntry 3 }
 
-sproutIMPULatencyHWM OBJECT-TYPE
+sproutSARLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutIMPULatencyEntry 4 }
+    ::= { sproutSARLatencyEntry 4 }
 
-sproutIMPULatencyLWM OBJECT-TYPE
+sproutSARLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { sproutIMPULatencyEntry 5 }
+    ::= { sproutSARLatencyEntry 5 }
 
-sproutUserAuthLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutUserAuthLatencyEntry
+sproutUARLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutUARLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Latency of requests for user authenticaion made by this Sprout
+    DESCRIPTION "Latency of requests for user authentication made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
     ::= { hss 5 }
 
-sproutUserAuthLatencyEntry OBJECT-TYPE
-    SYNTAX      SproutUserAuthLatencyEntry
+sproutUARLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutUARLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request
                  latency"
-    INDEX       { sproutUserAuthLatencyScope }
-    ::= { sproutUserAuthLatencyTable 1 }
+    INDEX       { sproutUARLatencyScope }
+    ::= { sproutUARLatencyTable 1 }
 
-SproutUserAuthLatencyEntry ::= SEQUENCE
+SproutUARLatencyEntry ::= SEQUENCE
 {
-  sproutUserAuthLatencyScope          INTEGER,
-  sproutUserAuthLatencyAverage        Unsigned32,
-  sproutUserAuthLatencyVariance       Unsigned32,
-  sproutUserAuthLatencyHWM            Unsigned32,
-  sproutUserAuthLatencyLWM            Unsigned32
+  sproutUARLatencyScope          INTEGER,
+  sproutUARLatencyAverage        Unsigned32,
+  sproutUARLatencyVariance       Unsigned32,
+  sproutUARLatencyHWM            Unsigned32,
+  sproutUARLatencyLWM            Unsigned32
 }
 
-sproutUserAuthLatencyScope OBJECT-TYPE
+sproutUARLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutUserAuthLatencyEntry 1 }
+    ::= { sproutUARLatencyEntry 1 }
 
-sproutUserAuthLatencyAverage OBJECT-TYPE
+sproutUARLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutUserAuthLatencyEntry 2 }
+    ::= { sproutUARLatencyEntry 2 }
 
-sproutUserAuthLatencyVariance OBJECT-TYPE
+sproutUARLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutUserAuthLatencyEntry 3 }
+    ::= { sproutUARLatencyEntry 3 }
 
-sproutUserAuthLatencyHWM OBJECT-TYPE
+sproutUARLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutUserAuthLatencyEntry 4 }
+    ::= { sproutUARLatencyEntry 4 }
 
-sproutUserAuthLatencyLWM OBJECT-TYPE
+sproutUARLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { sproutUserAuthLatencyEntry 5 }
+    ::= { sproutUARLatencyEntry 5 }
 
-sproutLocationLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutLocationLatencyEntry
+sproutLIRLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutLIRLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of location requests made by this Sprout
@@ -805,60 +805,60 @@ sproutLocationLatencyTable OBJECT-TYPE
                  microseconds"
     ::= { hss 6 }
 
-sproutLocationLatencyEntry OBJECT-TYPE
-    SYNTAX      SproutLocationLatencyEntry
+sproutLIRLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutLIRLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request
                  latency"
-    INDEX       { sproutLocationLatencyScope }
-    ::= { sproutLocationLatencyTable 1 }
+    INDEX       { sproutLIRLatencyScope }
+    ::= { sproutLIRLatencyTable 1 }
 
-SproutLocationLatencyEntry ::= SEQUENCE
+SproutLIRLatencyEntry ::= SEQUENCE
 {
-  sproutLocationLatencyScope          INTEGER,
-  sproutLocationLatencyAverage        Unsigned32,
-  sproutLocationLatencyVariance       Unsigned32,
-  sproutLocationLatencyHWM            Unsigned32,
-  sproutLocationLatencyLWM            Unsigned32
+  sproutLIRLatencyScope          INTEGER,
+  sproutLIRLatencyAverage        Unsigned32,
+  sproutLIRLatencyVariance       Unsigned32,
+  sproutLIRLatencyHWM            Unsigned32,
+  sproutLIRLatencyLWM            Unsigned32
 }
 
-sproutLocationLatencyScope OBJECT-TYPE
+sproutLIRLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopeCurrent5SecondPeriod(1)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutLocationLatencyEntry 1 }
+    ::= { sproutLIRLatencyEntry 1 }
 
-sproutLocationLatencyAverage OBJECT-TYPE
+sproutLIRLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutLocationLatencyEntry 2 }
+    ::= { sproutLIRLatencyEntry 2 }
 
-sproutLocationLatencyVariance OBJECT-TYPE
+sproutLIRLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutLocationLatencyEntry 3 }
+    ::= { sproutLIRLatencyEntry 3 }
 
-sproutLocationLatencyHWM OBJECT-TYPE
+sproutLIRLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutLocationLatencyEntry 4 }
+    ::= { sproutLIRLatencyEntry 4 }
 
-sproutLocationLatencyLWM OBJECT-TYPE
+sproutLIRLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { sproutLocationLatencyEntry 5 }
+    ::= { sproutLIRLatencyEntry 5 }
 
 sproutIncomingRequestsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutIncomingRequestsEntry
@@ -1014,22 +1014,22 @@ sproutGroup OBJECT-GROUP
       sproutHomesteadLatencyVariance,
       sproutHomesteadLatencyHWM,
       sproutHomesteadLatencyLWM,
-      sproutIMPILatencyAverage,
-      sproutIMPILatencyVariance,
-      sproutIMPILatencyHWM,
-      sproutIMPILatencyLWM,
-      sproutIMPULatencyAverage,
-      sproutIMPULatencyVariance,
-      sproutIMPULatencyHWM,
-      sproutIMPULatencyLWM,
-      sproutUserAuthLatencyAverage,
-      sproutUserAuthLatencyVariance,
-      sproutUserAuthLatencyHWM,
-      sproutUserAuthLatencyLWM,
-      sproutLocationLatencyAverage,
-      sproutLocationLatencyVariance,
-      sproutLocationLatencyHWM,
-      sproutLocationLatencyLWM,
+      sproutMARLatencyAverage,
+      sproutMARLatencyVariance,
+      sproutMARLatencyHWM,
+      sproutMARLatencyLWM,
+      sproutSARLatencyAverage,
+      sproutSARLatencyVariance,
+      sproutSARLatencyHWM,
+      sproutSARLatencyLWM,
+      sproutUARLatencyAverage,
+      sproutUARLatencyVariance,
+      sproutUARLatencyHWM,
+      sproutUARLatencyLWM,
+      sproutLIRLatencyAverage,
+      sproutLIRLatencyVariance,
+      sproutLIRLatencyHWM,
+      sproutLIRLatencyLWM,
       sproutIncomingRequestsCount,
       sproutRejectedOverloadCount,
       sproutQueueSizeAverage,
