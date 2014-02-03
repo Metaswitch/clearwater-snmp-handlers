@@ -45,7 +45,6 @@ bono_handler.so: *.cpp *.hpp
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0
 DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout
-DEB_ARCH := amd64
 
 include build-infra/cw-deb.mk
 
