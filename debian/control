@@ -10,12 +10,12 @@ Standards-Version: 3.9.2
 Homepage: http://projectclearwater.org/
 
 Package: clearwater-snmp-handler-bono
-Architecture: amd64
+Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Bono
 
 Package: clearwater-snmp-handler-sprout
-Architecture: amd64
+Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Bono
 
