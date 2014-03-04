@@ -44,17 +44,17 @@ OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.2.4");
 OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.2.5");
 OID queue_size_oid = OID("1.2.826.0.1.1578918.9.2.6");
 
-AccumulatedStatHandler latency_handler(latency_oid, &tree);
+AccumulatedWithCountStatHandler latency_handler(latency_oid, &tree);
 SingleNumberStatHandler client_count_handler(client_count_oid, &tree);
 IPCountStatHandler connected_sprouts_handler(sprouts_oid, &tree);
 SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
-AccumulatedStatHandler queue_size_handler(queue_size_oid, &tree);
+AccumulatedWithCountStatHandler queue_size_handler(queue_size_oid, &tree);
 
 NodeData::NodeData()
 {
   name = "bono_handler";
-  port = "6666";
+  port = "6669";
   root_oid = OID("1.2.826.0.1.1578918.9.2");
   stats = {"latency_us", 
            "client_count", 

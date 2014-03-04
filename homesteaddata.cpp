@@ -36,62 +36,42 @@
 #include "nodedata.hpp"
 #include "custom_handler.hpp"
 
-OID latency_oid = OID("1.2.826.0.1.1578918.9.3.1");
-OID hss_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.2");
-OID hss_digest_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.3");
-OID hss_subscription_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.4");
-OID hss_user_auth_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.5");
-OID hss_location_latency_oid = OID("1.2.826.0.1.1578918.9.3.3.6");
-OID xdm_latency_oid = OID("1.2.826.0.1.1578918.9.3.2.2");
-OID homers_oid = OID("1.2.826.0.1.1578918.9.3.3.1");
-OID homesteads_oid = OID("1.2.826.0.1.1578918.9.3.2.1");
-OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.3.6");
-OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.3.7");
-OID queue_size_oid = OID("1.2.826.0.1.1578918.9.3.8");
+OID latency_oid = OID("1.2.826.0.1.1578918.9.5.1");
+OID hss_latency_oid = OID("1.2.826.0.1.1578918.9.5.2");
+OID cache_latency_oid = OID("1.2.826.0.1.1578918.9.5.3");
+OID hss_digest_latency_oid = OID("1.2.826.0.1.1578918.9.5.4");
+OID hss_subscription_latency_oid = OID("1.2.826.0.1.1578918.9.5.5");
+OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.5.6");
+OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.5.7");
 
 AccumulatedWithCountStatHandler latency_handler(latency_oid, &tree);
 AccumulatedWithCountStatHandler hss_latency_handler(hss_latency_oid, &tree);
+AccumulatedWithCountStatHandler cache_latency_handler(cache_latency_oid, &tree);
 AccumulatedWithCountStatHandler hss_digest_latency_handler(hss_digest_latency_oid, &tree);
 AccumulatedWithCountStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
-AccumulatedWithCountStatHandler hss_user_auth_latency_handler(hss_user_auth_latency_oid, &tree);
-AccumulatedWithCountStatHandler hss_location_latency_handler(hss_location_latency_oid, &tree);
-AccumulatedWithCountStatHandler xdm_latency_handler(xdm_latency_oid, &tree);
-IPCountStatHandler connected_homers_handler(homers_oid, &tree);
-IPCountStatHandler connected_homesteads_handler(homesteads_oid, &tree);
 SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
-AccumulatedWithCountStatHandler queue_size_handler(queue_size_oid, &tree);
 
 NodeData::NodeData()
 {
-  name = "sprout_handler";
-  port = "6666";
-  root_oid = OID("1.2.826.0.1.1578918.9.3");
-  stats = {"latency_us",
-           "hss_latency_us",
-           "hss_digest_latency_us",
-           "hss_subscription_latency_us",
-           "hss_user_auth_latency_us",
-           "hss_location_latency_us",
-           "xdm_latency_us",
-           "connected_homers",
-           "connected_homesteads",
-           "incoming_requests",
-           "rejected_overload",
-           "queue_size"
+  name = "homestead_handler";
+  port = "6668";
+  root_oid = OID("1.2.826.0.1.1578918.9.5");
+  stats = {"H_latency_us",
+           "H_hss_latency_us",
+           "H_cache_latency_us",
+           "H_hss_digest_latency_us",
+           "H_hss_subscription_latency_us",
+           "H_incoming_requests",
+           "H_rejected_overload"
           };
-  stat_to_handler = {{"latency_us", &latency_handler},
-    {"hss_latency_us", &hss_latency_handler},
-    {"hss_digest_latency_us", &hss_digest_latency_handler},
-    {"hss_subscription_latency_us", &hss_subscription_latency_handler},
-    {"hss_user_auth_latency_us", &hss_user_auth_latency_handler},
-    {"hss_location_latency_us", &hss_location_latency_handler},
-    {"xdm_latency_us", &xdm_latency_handler},
-    {"connected_homers", &connected_homers_handler},
-    {"connected_homesteads", &connected_homesteads_handler},
-    {"incoming_requests", &incoming_requests_handler},
-    {"rejected_overload", &rejected_overload_handler},
-    {"queue_size", &queue_size_handler}
+  stat_to_handler = {{"H_latency_us", &latency_handler},
+                     {"H_hss_latency_us", &hss_latency_handler},
+                     {"H_cache_latency_us", &cache_latency_handler},
+                     {"H_hss_digest_latency_us", &hss_digest_latency_handler},
+                     {"H_hss_subscription_latency_us", &hss_subscription_latency_handler},
+                     {"H_incoming_requests", &incoming_requests_handler},
+                     {"H_rejected_overload", &rejected_overload_handler}
   };
 };
 
@@ -99,7 +79,7 @@ NodeData node_data;
 
 extern "C" {
   // SNMPd looks for an init_<module_name> function in this library
-  void init_sprout_handler()
+  void init_homestead_handler()
   {
     initialize_handler();
   }

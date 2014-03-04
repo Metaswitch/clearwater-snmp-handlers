@@ -41,14 +41,6 @@
 #include "oid.hpp"
 #include "zmq_message_handler.hpp"
 
-enum StatType
-{
-  STAT_UNKNOWN,
-  STAT_LATENCY,
-  STAT_SINGLE_NUMBER,
-  STAT_PER_IP_COUNT
-};
-
 class NodeData
 {
 public:

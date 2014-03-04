@@ -71,10 +71,10 @@ public:
   void handle(std::vector<std::string>);
 };
 
-class AccumulatedStatHandler: public ZMQMessageHandler
+class AccumulatedWithCountStatHandler: public ZMQMessageHandler
 {
 public:
-  AccumulatedStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  AccumulatedWithCountStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string>);
 };
 
