@@ -17,5 +17,9 @@ Description: The SNMP handler library for statistics about Bono
 Package: clearwater-snmp-handler-sprout
 Architecture: any
 Depends: clearwater-snmpd
-Description: The SNMP handler library for statistics about Bono
+Description: The SNMP handler library for statistics about Sprout
 
+Package: clearwater-snmp-handler-homestead
+Architecture: any
+Depends: clearwater-snmpd
+Description: The SNMP handler library for statistics about Homestead

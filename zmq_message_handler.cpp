@@ -87,27 +87,33 @@ void SingleNumberWithScopeStatHandler::handle(std::vector<std::string> msgs)
   _tree->replace_subtree(_root_oid, new_subtree);
 }
 
-void AccumulatedStatHandler::handle(std::vector<std::string> msgs)
+// This handler is provided for the case where average statistics are required
+// as well as a total count
+void AccumulatedWithCountStatHandler::handle(std::vector<std::string> msgs)
 {
+  OID count_oid = _root_oid;
+  count_oid.append("1.2");
+
   OID average_oid = _root_oid;
-  average_oid.append("1.2");
+  average_oid.append("1.3");
 
   OID variance_oid = _root_oid;
-  variance_oid.append("1.3");
+  variance_oid.append("1.4");
 
   OID hwm_oid = _root_oid;
-  hwm_oid.append("1.4");
+  hwm_oid.append("1.5");
 
   OID lwm_oid = _root_oid;
-  lwm_oid.append("1.5");
+  lwm_oid.append("1.6");
 
   // First two entries are the statistic name and the string "OK", so
   // skip them
-  OIDMap new_subtree = {{average_oid, atoi(msgs[2].c_str())},
-                        {variance_oid, atoi(msgs[3].c_str())},
+  OIDMap new_subtree = {{count_oid, atoi(msgs[2].c_str())},
+                        {average_oid, atoi(msgs[3].c_str())},
+                        {variance_oid, atoi(msgs[4].c_str())},
 // Note that HWM and LWM are in a different order in SNMP and 0MQ
-                        {hwm_oid, atoi(msgs[5].c_str())},
-                        {lwm_oid, atoi(msgs[4].c_str())}
+                        {hwm_oid, atoi(msgs[6].c_str())},
+                        {lwm_oid, atoi(msgs[5].c_str())}
   };
 
   _tree->replace_subtree(_root_oid, new_subtree);
