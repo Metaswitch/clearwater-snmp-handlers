@@ -94,11 +94,11 @@ bonoLatencyEntry OBJECT-TYPE
 BonoLatencyEntry ::= SEQUENCE
 {
   bonoLatencyScope          INTEGER,
-  bonoLatencyCount          Unsigned32,
   bonoLatencyAverage        Unsigned32,
   bonoLatencyVariance       Unsigned32,
   bonoLatencyHWM            Unsigned32,
-  bonoLatencyLWM            Unsigned32
+  bonoLatencyLWM            Unsigned32,
+  bonoLatencyCount          Unsigned32
 }
 
 bonoLatencyScope OBJECT-TYPE
@@ -110,39 +110,39 @@ bonoLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { bonoLatencyEntry 1 }
 
-bonoLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { bonoLatencyEntry 2 }
-
 bonoLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { bonoLatencyEntry 3 }
+    ::= { bonoLatencyEntry 2 }
 
 bonoLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { bonoLatencyEntry 4 }
+    ::= { bonoLatencyEntry 3 }
 
 bonoLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { bonoLatencyEntry 5 }
+    ::= { bonoLatencyEntry 4 }
 
 bonoLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { bonoLatencyEntry 5 }
+
+bonoLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { bonoLatencyEntry 6 }
 
 core OBJECT IDENTIFIER ::= { bono 3 }
@@ -279,11 +279,11 @@ bonoQueueSizeEntry OBJECT-TYPE
 BonoQueueSizeEntry ::= SEQUENCE
 {
   bonoQueueSizeScope          INTEGER,
-  bonoQueueSizeCount          Unsigned32,
   bonoQueueSizeAverage        Unsigned32,
   bonoQueueSizeVariance       Unsigned32,
   bonoQueueSizeHWM            Unsigned32,
-  bonoQueueSizeLWM            Unsigned32
+  bonoQueueSizeLWM            Unsigned32,
+  bonoQueueSizeCount          Unsigned32
 }
 
 bonoQueueSizeScope OBJECT-TYPE
@@ -295,57 +295,57 @@ bonoQueueSizeScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { bonoQueueSizeEntry 1 }
 
-bonoQueueSizeCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { bonoQueueSizeEntry 2 }
-
 bonoQueueSizeAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average request queue size over the period."
-    ::= { bonoQueueSizeEntry 3 }
+    ::= { bonoQueueSizeEntry 2 }
 
 bonoQueueSizeVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the queue size over the period."
-    ::= { bonoQueueSizeEntry 4 }
+    ::= { bonoQueueSizeEntry 3 }
 
 bonoQueueSizeHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest queue size over the period."
-    ::= { bonoQueueSizeEntry 5 }
+    ::= { bonoQueueSizeEntry 4 }
 
 bonoQueueSizeLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest queue size over the period."
+    ::= { bonoQueueSizeEntry 5 }
+
+bonoQueueSizeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { bonoQueueSizeEntry 6 }
 
 bonoGroup OBJECT-GROUP
     OBJECTS {
       bonoConnectedClients,
-      bonoLatencyCount,
       bonoLatencyAverage,
       bonoLatencyVariance,
       bonoLatencyHWM,
       bonoLatencyLWM,
+      bonoLatencyCount,
       bonoSproutConnectionCount,
       bonoIncomingRequestsCount,
       bonoRejectedOverloadCount,
-      bonoQueueSizeCount,
       bonoQueueSizeAverage,
       bonoQueueSizeVariance,
       bonoQueueSizeHWM,
-      bonoQueueSizeLWM
+      bonoQueueSizeLWM,
+      bonoQueueSizeCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Bono"
@@ -374,11 +374,11 @@ sproutLatencyEntry OBJECT-TYPE
 SproutLatencyEntry ::= SEQUENCE
 {
   sproutLatencyScope          INTEGER,
-  sproutLatencyCount          Unsigned32,
   sproutLatencyAverage        Unsigned32,
   sproutLatencyVariance       Unsigned32,
   sproutLatencyHWM            Unsigned32,
-  sproutLatencyLWM            Unsigned32
+  sproutLatencyLWM            Unsigned32,
+  sproutLatencyCount          Unsigned32
 }
 
 sproutLatencyScope OBJECT-TYPE
@@ -390,39 +390,39 @@ sproutLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutLatencyEntry 1 }
 
-sproutLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutLatencyEntry 2 }
-
 sproutLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutLatencyEntry 3 }
+    ::= { sproutLatencyEntry 2 }
 
 sproutLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutLatencyEntry 4 }
+    ::= { sproutLatencyEntry 3 }
 
 sproutLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutLatencyEntry 5 }
+    ::= { sproutLatencyEntry 4 }
 
 sproutLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutLatencyEntry 5 }
+
+sproutLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutLatencyEntry 6 }
 
 xdm OBJECT IDENTIFIER ::= { sprout 2 }
@@ -485,11 +485,11 @@ sproutHomerLatencyEntry OBJECT-TYPE
 SproutHomerLatencyEntry ::= SEQUENCE
 {
   sproutHomerLatencyScope          INTEGER,
-  sproutHomerLatencyCount          Unsigned32,
   sproutHomerLatencyAverage        Unsigned32,
   sproutHomerLatencyVariance       Unsigned32,
   sproutHomerLatencyHWM            Unsigned32,
-  sproutHomerLatencyLWM            Unsigned32
+  sproutHomerLatencyLWM            Unsigned32,
+  sproutHomerLatencyCount          Unsigned32
 }
 
 sproutHomerLatencyScope OBJECT-TYPE
@@ -501,39 +501,39 @@ sproutHomerLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutHomerLatencyEntry 1 }
 
-sproutHomerLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutHomerLatencyEntry 2 }
-
 sproutHomerLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutHomerLatencyEntry 3 }
+    ::= { sproutHomerLatencyEntry 2 }
 
 sproutHomerLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutHomerLatencyEntry 4 }
+    ::= { sproutHomerLatencyEntry 3 }
 
 sproutHomerLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutHomerLatencyEntry 5 }
+    ::= { sproutHomerLatencyEntry 4 }
 
 sproutHomerLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutHomerLatencyEntry 5 }
+
+sproutHomerLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutHomerLatencyEntry 6 }
 
 hss OBJECT IDENTIFIER ::= { sprout 3 }
@@ -596,11 +596,11 @@ sproutHomesteadLatencyEntry OBJECT-TYPE
 SproutHomesteadLatencyEntry ::= SEQUENCE
 {
   sproutHomesteadLatencyScope          INTEGER,
-  sproutHomesteadLatencyCount          Unsigned32,
   sproutHomesteadLatencyAverage        Unsigned32,
   sproutHomesteadLatencyVariance       Unsigned32,
   sproutHomesteadLatencyHWM            Unsigned32,
-  sproutHomesteadLatencyLWM            Unsigned32
+  sproutHomesteadLatencyLWM            Unsigned32,
+  sproutHomesteadLatencyCount          Unsigned32
 }
 
 sproutHomesteadLatencyScope OBJECT-TYPE
@@ -612,39 +612,39 @@ sproutHomesteadLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutHomesteadLatencyEntry 1 }
 
-sproutHomesteadLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutHomesteadLatencyEntry 2 }
-
 sproutHomesteadLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutHomesteadLatencyEntry 3 }
+    ::= { sproutHomesteadLatencyEntry 2 }
 
 sproutHomesteadLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutHomesteadLatencyEntry 4 }
+    ::= { sproutHomesteadLatencyEntry 3 }
 
 sproutHomesteadLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutHomesteadLatencyEntry 5 }
+    ::= { sproutHomesteadLatencyEntry 4 }
 
 sproutHomesteadLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutHomesteadLatencyEntry 5 }
+
+sproutHomesteadLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutHomesteadLatencyEntry 6 }
 
 sproutMARLatencyTable OBJECT-TYPE
@@ -668,11 +668,11 @@ sproutMARLatencyEntry OBJECT-TYPE
 SproutMARLatencyEntry ::= SEQUENCE
 {
   sproutMARLatencyScope          INTEGER,
-  sproutMARLatencyCount          Unsigned32,
   sproutMARLatencyAverage        Unsigned32,
   sproutMARLatencyVariance       Unsigned32,
   sproutMARLatencyHWM            Unsigned32,
-  sproutMARLatencyLWM            Unsigned32
+  sproutMARLatencyLWM            Unsigned32,
+  sproutMARLatencyCount          Unsigned32
 }
 
 sproutMARLatencyScope OBJECT-TYPE
@@ -684,39 +684,39 @@ sproutMARLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutMARLatencyEntry 1 }
 
-sproutMARLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutMARLatencyEntry 2 }
-
 sproutMARLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutMARLatencyEntry 3 }
+    ::= { sproutMARLatencyEntry 2 }
 
 sproutMARLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutMARLatencyEntry 4 }
+    ::= { sproutMARLatencyEntry 3 }
 
 sproutMARLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutMARLatencyEntry 5 }
+    ::= { sproutMARLatencyEntry 4 }
 
 sproutMARLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutMARLatencyEntry 5 }
+
+sproutMARLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutMARLatencyEntry 6 }
 
 sproutSARLatencyTable OBJECT-TYPE
@@ -740,11 +740,11 @@ sproutSARLatencyEntry OBJECT-TYPE
 SproutSARLatencyEntry ::= SEQUENCE
 {
   sproutSARLatencyScope          INTEGER,
-  sproutSARLatencyCount          Unsigned32,
   sproutSARLatencyAverage        Unsigned32,
   sproutSARLatencyVariance       Unsigned32,
   sproutSARLatencyHWM            Unsigned32,
-  sproutSARLatencyLWM            Unsigned32
+  sproutSARLatencyLWM            Unsigned32,
+  sproutSARLatencyCount          Unsigned32
 }
 
 sproutSARLatencyScope OBJECT-TYPE
@@ -756,39 +756,39 @@ sproutSARLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutSARLatencyEntry 1 }
 
-sproutSARLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutSARLatencyEntry 2 }
-
 sproutSARLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutSARLatencyEntry 3 }
+    ::= { sproutSARLatencyEntry 2 }
 
 sproutSARLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutSARLatencyEntry 4 }
+    ::= { sproutSARLatencyEntry 3 }
 
 sproutSARLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutSARLatencyEntry 5 }
+    ::= { sproutSARLatencyEntry 4 }
 
 sproutSARLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutSARLatencyEntry 5 }
+
+sproutSARLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutSARLatencyEntry 6 }
 
 sproutUARLatencyTable OBJECT-TYPE
@@ -812,11 +812,11 @@ sproutUARLatencyEntry OBJECT-TYPE
 SproutUARLatencyEntry ::= SEQUENCE
 {
   sproutUARLatencyScope          INTEGER,
-  sproutUARLatencyCount          Unsigned32,
   sproutUARLatencyAverage        Unsigned32,
   sproutUARLatencyVariance       Unsigned32,
   sproutUARLatencyHWM            Unsigned32,
-  sproutUARLatencyLWM            Unsigned32
+  sproutUARLatencyLWM            Unsigned32,
+  sproutUARLatencyCount          Unsigned32
 }
 
 sproutUARLatencyScope OBJECT-TYPE
@@ -828,39 +828,39 @@ sproutUARLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutUARLatencyEntry 1 }
 
-sproutUARLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutUARLatencyEntry 2 }
-
 sproutUARLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutUARLatencyEntry 3 }
+    ::= { sproutUARLatencyEntry 2 }
 
 sproutUARLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutUARLatencyEntry 4 }
+    ::= { sproutUARLatencyEntry 3 }
 
 sproutUARLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutUARLatencyEntry 5 }
+    ::= { sproutUARLatencyEntry 4 }
 
 sproutUARLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutUARLatencyEntry 5 }
+
+sproutUARLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutUARLatencyEntry 6 }
 
 sproutLIRLatencyTable OBJECT-TYPE
@@ -884,11 +884,11 @@ sproutLIRLatencyEntry OBJECT-TYPE
 SproutLIRLatencyEntry ::= SEQUENCE
 {
   sproutLIRLatencyScope          INTEGER,
-  sproutLIRLatencyCount          Unsigned32,
   sproutLIRLatencyAverage        Unsigned32,
   sproutLIRLatencyVariance       Unsigned32,
   sproutLIRLatencyHWM            Unsigned32,
-  sproutLIRLatencyLWM            Unsigned32
+  sproutLIRLatencyLWM            Unsigned32,
+  sproutLIRLatencyCount          Unsigned32
 }
 
 sproutLIRLatencyScope OBJECT-TYPE
@@ -900,39 +900,39 @@ sproutLIRLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutLIRLatencyEntry 1 }
 
-sproutLIRLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutLIRLatencyEntry 2 }
-
 sproutLIRLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutLIRLatencyEntry 3 }
+    ::= { sproutLIRLatencyEntry 2 }
 
 sproutLIRLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutLIRLatencyEntry 4 }
+    ::= { sproutLIRLatencyEntry 3 }
 
 sproutLIRLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutLIRLatencyEntry 5 }
+    ::= { sproutLIRLatencyEntry 4 }
 
 sproutLIRLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { sproutLIRLatencyEntry 5 }
+
+sproutLIRLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutLIRLatencyEntry 6 }
 
 sproutIncomingRequestsTable OBJECT-TYPE
@@ -1030,11 +1030,11 @@ sproutQueueSizeEntry OBJECT-TYPE
 SproutQueueSizeEntry ::= SEQUENCE
 {
   sproutQueueSizeScope          INTEGER,
-  sproutQueueSizeCount          Unsigned32,
   sproutQueueSizeAverage        Unsigned32,
   sproutQueueSizeVariance       Unsigned32,
   sproutQueueSizeHWM            Unsigned32,
-  sproutQueueSizeLWM            Unsigned32
+  sproutQueueSizeLWM            Unsigned32,
+  sproutQueueSizeCount          Unsigned32
 }
 
 sproutQueueSizeScope OBJECT-TYPE
@@ -1046,87 +1046,87 @@ sproutQueueSizeScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutQueueSizeEntry 1 }
 
-sproutQueueSizeCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { sproutQueueSizeEntry 2 }
-
 sproutQueueSizeAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average request queue size over the period."
-    ::= { sproutQueueSizeEntry 3 }
+    ::= { sproutQueueSizeEntry 2 }
 
 sproutQueueSizeVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the queue size over the period."
-    ::= { sproutQueueSizeEntry 4 }
+    ::= { sproutQueueSizeEntry 3 }
 
 sproutQueueSizeHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest queue size over the period."
-    ::= { sproutQueueSizeEntry 5 }
+    ::= { sproutQueueSizeEntry 4 }
 
 sproutQueueSizeLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest queue size over the period."
+    ::= { sproutQueueSizeEntry 5 }
+
+sproutQueueSizeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { sproutQueueSizeEntry 6 }
 
 sproutGroup OBJECT-GROUP
     OBJECTS {
-      sproutLatencyCount,
       sproutLatencyAverage,
       sproutLatencyVariance,
       sproutLatencyHWM,
       sproutLatencyLWM,
+      sproutLatencyCount,
       sproutHomerConnectionCount,
-      sproutHomerLatencyCount,
       sproutHomerLatencyAverage,
       sproutHomerLatencyVariance,
       sproutHomerLatencyHWM,
       sproutHomerLatencyLWM,
+      sproutHomerLatencyCount,
       sproutHomesteadConnectionCount,
-      sproutHomesteadLatencyCount,
       sproutHomesteadLatencyAverage,
       sproutHomesteadLatencyVariance,
       sproutHomesteadLatencyHWM,
       sproutHomesteadLatencyLWM,
-      sproutMARLatencyCount,
+      sproutHomesteadLatencyCount,
       sproutMARLatencyAverage,
       sproutMARLatencyVariance,
       sproutMARLatencyHWM,
       sproutMARLatencyLWM,
-      sproutSARLatencyCount,
+      sproutMARLatencyCount,
       sproutSARLatencyAverage,
       sproutSARLatencyVariance,
       sproutSARLatencyHWM,
       sproutSARLatencyLWM,
-      sproutUARLatencyCount,
+      sproutSARLatencyCount,
       sproutUARLatencyAverage,
       sproutUARLatencyVariance,
       sproutUARLatencyHWM,
       sproutUARLatencyLWM,
-      sproutLIRLatencyCount,
+      sproutUARLatencyCount,
       sproutLIRLatencyAverage,
       sproutLIRLatencyVariance,
       sproutLIRLatencyHWM,
       sproutLIRLatencyLWM,
+      sproutLIRLatencyCount,
       sproutIncomingRequestsCount,
       sproutRejectedOverloadCount,
-      sproutQueueSizeCount,
       sproutQueueSizeAverage,
       sproutQueueSizeVariance,
       sproutQueueSizeHWM,
-      sproutQueueSizeLWM
+      sproutQueueSizeLWM,
+      sproutQueueSizeCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
@@ -1155,11 +1155,11 @@ homesteadLatencyEntry OBJECT-TYPE
 HomesteadLatencyEntry ::= SEQUENCE
 {
   homesteadLatencyScope          INTEGER,
-  homesteadLatencyCount          Unsigned32,
   homesteadLatencyAverage        Unsigned32,
   homesteadLatencyVariance       Unsigned32,
   homesteadLatencyHWM            Unsigned32,
-  homesteadLatencyLWM            Unsigned32
+  homesteadLatencyLWM            Unsigned32,
+  homesteadLatencyCount          Unsigned32
 }
 
 homesteadLatencyScope OBJECT-TYPE
@@ -1171,39 +1171,39 @@ homesteadLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadLatencyEntry 1 }
 
-homesteadLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { homesteadLatencyEntry 2 }
-
 homesteadLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { homesteadLatencyEntry 3 }
+    ::= { homesteadLatencyEntry 2 }
 
 homesteadLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { homesteadLatencyEntry 4 }
+    ::= { homesteadLatencyEntry 3 }
 
 homesteadLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { homesteadLatencyEntry 5 }
+    ::= { homesteadLatencyEntry 4 }
 
 homesteadLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { homesteadLatencyEntry 5 }
+
+homesteadLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { homesteadLatencyEntry 6 }
 
 homesteadHSSLatencyTable OBJECT-TYPE
@@ -1227,11 +1227,11 @@ homesteadHSSLatencyEntry OBJECT-TYPE
 HomesteadHSSLatencyEntry ::= SEQUENCE
 {
   homesteadHSSLatencyScope          INTEGER,
-  homesteadHSSLatencyCount          Unsigned32,
   homesteadHSSLatencyAverage        Unsigned32,
   homesteadHSSLatencyVariance       Unsigned32,
   homesteadHSSLatencyHWM            Unsigned32,
-  homesteadHSSLatencyLWM            Unsigned32
+  homesteadHSSLatencyLWM            Unsigned32,
+  homesteadHSSLatencyCount          Unsigned32
 }
 
 homesteadHSSLatencyScope OBJECT-TYPE
@@ -1243,39 +1243,39 @@ homesteadHSSLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadHSSLatencyEntry 1 }
 
-homesteadHSSLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { homesteadHSSLatencyEntry 2 }
-
 homesteadHSSLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { homesteadHSSLatencyEntry 3 }
+    ::= { homesteadHSSLatencyEntry 2 }
 
 homesteadHSSLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { homesteadHSSLatencyEntry 4 }
+    ::= { homesteadHSSLatencyEntry 3 }
 
 homesteadHSSLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { homesteadHSSLatencyEntry 5 }
+    ::= { homesteadHSSLatencyEntry 4 }
 
 homesteadHSSLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { homesteadHSSLatencyEntry 5 }
+
+homesteadHSSLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { homesteadHSSLatencyEntry 6 }
 
 homesteadCacheLatencyTable OBJECT-TYPE
@@ -1299,11 +1299,11 @@ homesteadCacheLatencyEntry OBJECT-TYPE
 HomesteadCacheLatencyEntry ::= SEQUENCE
 {
   homesteadCacheLatencyScope          INTEGER,
-  homesteadCacheLatencyCount          Unsigned32,
   homesteadCacheLatencyAverage        Unsigned32,
   homesteadCacheLatencyVariance       Unsigned32,
   homesteadCacheLatencyHWM            Unsigned32,
-  homesteadCacheLatencyLWM            Unsigned32
+  homesteadCacheLatencyLWM            Unsigned32,
+  homesteadCacheLatencyCount          Unsigned32
 }
 
 homesteadCacheLatencyScope OBJECT-TYPE
@@ -1315,39 +1315,39 @@ homesteadCacheLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCacheLatencyEntry 1 }
 
-homesteadCacheLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { homesteadCacheLatencyEntry 2 }
-
 homesteadCacheLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { homesteadCacheLatencyEntry 3 }
+    ::= { homesteadCacheLatencyEntry 2 }
 
 homesteadCacheLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { homesteadCacheLatencyEntry 4 }
+    ::= { homesteadCacheLatencyEntry 3 }
 
 homesteadCacheLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { homesteadCacheLatencyEntry 5 }
+    ::= { homesteadCacheLatencyEntry 4 }
 
 homesteadCacheLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { homesteadCacheLatencyEntry 5 }
+
+homesteadCacheLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { homesteadCacheLatencyEntry 6 }
 
 homesteadDigestLatencyTable OBJECT-TYPE
@@ -1371,11 +1371,11 @@ homesteadDigestLatencyEntry OBJECT-TYPE
 HomesteadDigestLatencyEntry ::= SEQUENCE
 {
   homesteadDigestLatencyScope          INTEGER,
-  homesteadDigestLatencyCount          Unsigned32,
   homesteadDigestLatencyAverage        Unsigned32,
   homesteadDigestLatencyVariance       Unsigned32,
   homesteadDigestLatencyHWM            Unsigned32,
-  homesteadDigestLatencyLWM            Unsigned32
+  homesteadDigestLatencyLWM            Unsigned32,
+  homesteadDigestLatencyCount          Unsigned32
 }
 
 homesteadDigestLatencyScope OBJECT-TYPE
@@ -1387,39 +1387,39 @@ homesteadDigestLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadDigestLatencyEntry 1 }
 
-homesteadDigestLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { homesteadDigestLatencyEntry 2 }
-
 homesteadDigestLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { homesteadDigestLatencyEntry 3 }
+    ::= { homesteadDigestLatencyEntry 2 }
 
 homesteadDigestLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { homesteadDigestLatencyEntry 4 }
+    ::= { homesteadDigestLatencyEntry 3 }
 
 homesteadDigestLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { homesteadDigestLatencyEntry 5 }
+    ::= { homesteadDigestLatencyEntry 4 }
 
 homesteadDigestLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { homesteadDigestLatencyEntry 5 }
+
+homesteadDigestLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { homesteadDigestLatencyEntry 6 }
 
 homesteadSubscriptionLatencyTable OBJECT-TYPE
@@ -1443,11 +1443,11 @@ homesteadSubscriptionLatencyEntry OBJECT-TYPE
 HomesteadSubscriptionLatencyEntry ::= SEQUENCE
 {
   homesteadSubscriptionLatencyScope          INTEGER,
-  homesteadSubscriptionLatencyCount          Unsigned32,
   homesteadSubscriptionLatencyAverage        Unsigned32,
   homesteadSubscriptionLatencyVariance       Unsigned32,
   homesteadSubscriptionLatencyHWM            Unsigned32,
-  homesteadSubscriptionLatencyLWM            Unsigned32
+  homesteadSubscriptionLatencyLWM            Unsigned32,
+  homesteadSubscriptionLatencyCount          Unsigned32
 }
 
 homesteadSubscriptionLatencyScope OBJECT-TYPE
@@ -1459,39 +1459,39 @@ homesteadSubscriptionLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadSubscriptionLatencyEntry 1 }
 
-homesteadSubscriptionLatencyCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total requests over the period."
-    ::= { homesteadSubscriptionLatencyEntry 2 }
-
 homesteadSubscriptionLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { homesteadSubscriptionLatencyEntry 3 }
+    ::= { homesteadSubscriptionLatencyEntry 2 }
 
 homesteadSubscriptionLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { homesteadSubscriptionLatencyEntry 4 }
+    ::= { homesteadSubscriptionLatencyEntry 3 }
 
 homesteadSubscriptionLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { homesteadSubscriptionLatencyEntry 5 }
+    ::= { homesteadSubscriptionLatencyEntry 4 }
 
 homesteadSubscriptionLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
+    ::= { homesteadSubscriptionLatencyEntry 5 }
+
+homesteadSubscriptionLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
     ::= { homesteadSubscriptionLatencyEntry 6 }
 
 homesteadIncomingRequestsTable OBJECT-TYPE
@@ -1573,31 +1573,31 @@ homesteadRejectedOverloadCount OBJECT-TYPE
 
 homesteadGroup OBJECT-GROUP
     OBJECTS {
-      homesteadLatencyCount,
       homesteadLatencyAverage,
       homesteadLatencyVariance,
       homesteadLatencyHWM,
       homesteadLatencyLWM,
-      homesteadHSSLatencyCount,
+      homesteadLatencyCount,
       homesteadHSSLatencyAverage,
       homesteadHSSLatencyVariance,
       homesteadHSSLatencyHWM,
       homesteadHSSLatencyLWM,
-      homesteadCacheLatencyCount,
+      homesteadHSSLatencyCount,
       homesteadCacheLatencyAverage,
       homesteadCacheLatencyVariance,
       homesteadCacheLatencyHWM,
       homesteadCacheLatencyLWM,
-      homesteadDigestLatencyCount,
+      homesteadCacheLatencyCount,
       homesteadDigestLatencyAverage,
       homesteadDigestLatencyVariance,
       homesteadDigestLatencyHWM,
       homesteadDigestLatencyLWM,
-      homesteadSubscriptionLatencyCount,
+      homesteadDigestLatencyCount,
       homesteadSubscriptionLatencyAverage,
       homesteadSubscriptionLatencyVariance,
       homesteadSubscriptionLatencyHWM,
       homesteadSubscriptionLatencyLWM,
+      homesteadSubscriptionLatencyCount,
       homesteadIncomingRequestsCount,
       homesteadRejectedOverloadCount
     }
