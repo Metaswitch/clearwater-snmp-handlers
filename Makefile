@@ -47,7 +47,7 @@ homestead_handler.so: *.cpp *.hpp
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
-DEB_MAJOR_VERSION := 1.0
+DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
 DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead
 
 include build-infra/cw-deb.mk
