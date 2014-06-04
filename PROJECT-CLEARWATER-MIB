@@ -1,8 +1,9 @@
 PROJECT-CLEARWATER-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
-        MODULE-IDENTITY, OBJECT-TYPE, Unsigned32, IpAddress FROM SNMPv2-SMI
-        MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF;
+        MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
+        MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
+        InetAddressType, InetAddress FROM INET-ADDRESS-MIB;
 
 -- Module definition
 
@@ -159,21 +160,30 @@ bonoConnectedSproutsEntry OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Statistics for a single connected upstream Sprout"
-    INDEX { bonoSproutIPAddress }
+    INDEX { bonoSproutInetAddrType,
+            bonoSproutInetAddr      }
     ::= { bonoConnectedSproutsTable 1 }
 
 BonoConnectedSproutsEntry ::= SEQUENCE
 {
-  bonoSproutIPAddress IpAddress,
+  bonoSproutInetAddrType    InetAddressType,
+  bonoSproutInetAddr        InetAddress,
   bonoSproutConnectionCount Unsigned32
 }
 
-bonoSproutIPAddress OBJECT-TYPE
-    SYNTAX      IpAddress
+bonoSproutInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "IP address of the upstream Sprout"
+    DESCRIPTION "Inet address type of the upstream Sprout"
     ::= { bonoConnectedSproutsEntry 1 }
+
+bonoSproutInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the upstream Sprout"
+    ::= { bonoConnectedSproutsEntry 2 }
 
 bonoSproutConnectionCount OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -182,7 +192,7 @@ bonoSproutConnectionCount OBJECT-TYPE
     DESCRIPTION "Current count of TCP connections from Bono to the
                  Sprout node, may include connections in setting-
                  up state"
-    ::= { bonoConnectedSproutsEntry 2 }
+    ::= { bonoConnectedSproutsEntry 3 }
 
 bonoIncomingRequestsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF BonoIncomingRequestsEntry
@@ -439,21 +449,30 @@ sproutConnectedHomersEntry OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Statistics for a single connected upstream Homer"
-    INDEX { sproutHomerIPAddress }
+    INDEX { sproutHomerInetAddrType, 
+            sproutHomerInetAddr      }
     ::= { sproutConnectedHomersTable 1 }
 
 SproutConnectedHomersEntry ::= SEQUENCE
 {
-  sproutHomerIPAddress IpAddress,
+  sproutHomerInetAddrType    InetAddressType,
+  sproutHomerInetAddr        InetAddress,
   sproutHomerConnectionCount Unsigned32
 }
 
-sproutHomerIPAddress OBJECT-TYPE
-    SYNTAX      IpAddress
+sproutHomerInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "IP address of the upstream Homer"
+    DESCRIPTION "Inet address type of the upstream Homer"
     ::= { sproutConnectedHomersEntry 1 }
+
+sproutHomerInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the upstream Homer"
+    ::= { sproutConnectedHomersEntry 2 }
 
 sproutHomerConnectionCount OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -462,7 +481,7 @@ sproutHomerConnectionCount OBJECT-TYPE
     DESCRIPTION "Current count of TCP connections from Bono to the
                  Homer node, may include connections in setting-
                  up state"
-    ::= { sproutConnectedHomersEntry 2 }
+    ::= { sproutConnectedHomersEntry 3 }
 
 sproutHomerLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutHomerLatencyEntry
@@ -550,21 +569,30 @@ sproutConnectedHomesteadsEntry OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Statistics for a single connected upstream Homestead"
-    INDEX { sproutHomesteadIPAddress }
+    INDEX { sproutHomesteadInetAddrType,
+            sproutHomesteadInetAddr      }
     ::= { sproutConnectedHomesteadsTable 1 }
 
 SproutConnectedHomesteadsEntry ::= SEQUENCE
 {
-  sproutHomesteadIPAddress IpAddress,
+  sproutHomesteadInetAddrType    InetAddressType,
+  sproutHomesteadInetAddr        InetAddress,
   sproutHomesteadConnectionCount Unsigned32
 }
 
-sproutHomesteadIPAddress OBJECT-TYPE
-    SYNTAX      IpAddress
+sproutHomesteadInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "IP address of the upstream Homestead"
+    DESCRIPTION "Inet address type of the upstream Homestead"
     ::= { sproutConnectedHomesteadsEntry 1 }
+
+sproutHomesteadInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the upstream Homestead"
+    ::= { sproutConnectedHomesteadsEntry 2 }
 
 sproutHomesteadConnectionCount OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -573,7 +601,7 @@ sproutHomesteadConnectionCount OBJECT-TYPE
     DESCRIPTION "Current count of TCP connections from Bono to the
                  Homestead node, may include connections in setting-
                  up state"
-    ::= { sproutConnectedHomesteadsEntry 2 }
+    ::= { sproutConnectedHomesteadsEntry 3 }
 
 sproutHomesteadLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutHomesteadLatencyEntry

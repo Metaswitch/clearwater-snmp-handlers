@@ -1,6 +1,6 @@
 /**
 * Project Clearwater - IMS in the Cloud
-* Copyright (C) 2013 Metaswitch Networks Ltd
+* Copyright (C) 2014 Metaswitch Networks Ltd
 *
 * This program is free software: you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -32,39 +32,30 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
-
-#ifndef OID_HPP
-#define OID_HPP
-
-extern "C"
-{
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <net-snmp/agent/net-snmp-agent-includes.h>
-}
-
-#include <vector>
-#include <string>
-
 #include "oid_inet_addr.hpp"
 
-class OID
+
+OIDInetAddr::OIDInetAddr(const std::string& addrStr)
 {
-public:
-  OID() {};
-  OID(oid*, int);
-  OID(std::string);
-  void print_state() const;
-  bool equals(OID);
-  bool subtree_contains(OID);
+  if (inet_pton(AF_INET, addrStr.c_str(), &_addr) == 1) {
+    _type = ipv4; 
+  } else if (inet_pton(AF_INET6, addrStr.c_str(), &_addr) == 1) {
+    _type = ipv6;
+  }
+}
 
-  const oid* get_ptr() const;
-  int get_len() const;
-  void append(std::string);
-  void append(OIDInetAddr);
-  void dump() const;
-private:
-  std::vector<oid> _oids;
-};
+std::vector<unsigned char> OIDInetAddr::toOIDBytes()
+{
+  std::vector<unsigned char> oidBytes;
 
-#endif
+  if (isValid()) {
+    unsigned char addrLen = (_type == ipv4) ? sizeof(struct in_addr) : sizeof(struct in6_addr);
+
+    oidBytes.push_back(_type);
+    oidBytes.push_back(addrLen);
+    oidBytes.insert(oidBytes.end(), (unsigned char *) &_addr, (unsigned char *) &_addr + addrLen);
+  }
+
+  return oidBytes;
+}
+

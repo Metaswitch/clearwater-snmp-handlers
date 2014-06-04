@@ -47,12 +47,16 @@ void IPCountStatHandler::handle(std::vector<std::string> msgs)
        (it_ip != msgs.end()) && (it_val != msgs.end());
        it_ip++++, it_val++++)
   {
-    OID this_oid = _root_oid;
-    std::string ip_address = *it_ip;
-    int connections_to_this_ip = atoi(it_val->c_str());
-    this_oid.append(ip_address);
+    OIDInetAddr oid_addr(*it_ip);
 
-    new_subtree[this_oid] = connections_to_this_ip;
+    if (oid_addr.isValid())
+    {
+      OID this_oid = _root_oid;
+      this_oid.append(oid_addr);
+
+      int connections_to_this_ip = atoi(it_val->c_str());
+      new_subtree[this_oid] = connections_to_this_ip;
+    }
   }
   _tree->replace_subtree(_root_oid, new_subtree);
 }

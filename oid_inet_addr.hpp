@@ -1,6 +1,6 @@
 /**
 * Project Clearwater - IMS in the Cloud
-* Copyright (C) 2013 Metaswitch Networks Ltd
+* Copyright (C) 2014 Metaswitch Networks Ltd
 *
 * This program is free software: you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -32,39 +32,36 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
+#ifndef OID_INET_ADDR_HPP
+#define OID_INET_ADDR_HPP
 
-#ifndef OID_HPP
-#define OID_HPP
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-extern "C"
-{
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <net-snmp/agent/net-snmp-agent-includes.h>
-}
-
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "oid_inet_addr.hpp"
 
-class OID
+// Helper class used to convert IPv4 and IPv6 address strings to protocol
+// independent internet address table index OIDs as described in RFC 4001.
+
+class OIDInetAddr
 {
 public:
-  OID() {};
-  OID(oid*, int);
-  OID(std::string);
-  void print_state() const;
-  bool equals(OID);
-  bool subtree_contains(OID);
+  OIDInetAddr() {_type = unknown;}
+  OIDInetAddr(const std::string&);
 
-  const oid* get_ptr() const;
-  int get_len() const;
-  void append(std::string);
-  void append(OIDInetAddr);
-  void dump() const;
+  bool isValid() {return _type != unknown;}
+  std::vector<unsigned char> toOIDBytes();
+
 private:
-  std::vector<oid> _oids;
+  enum { unknown, ipv4, ipv6 } _type;
+
+  union {
+    struct in_addr  v4;
+    struct in6_addr v6;
+  } _addr;
 };
 
 #endif
+

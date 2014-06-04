@@ -98,6 +98,12 @@ void OID::append(std::string more)
   }
 }
 
+void OID::append(OIDInetAddr oid_addr)
+{
+  std::vector<unsigned char> oid_bytes = oid_addr.toOIDBytes();
+  _oids.insert(_oids.end(), oid_bytes.begin(), oid_bytes.end());
+}
+
 // Debugging tool - prints this OID to stderr
 void OID::dump() const
 {
