@@ -96,6 +96,7 @@ void* ZMQListener::listen_thread(void* args)
     int64_t more = 0;
     size_t more_sz = sizeof(more);
     std::vector<std::string> msgs;
+    int rc;
 
     do
     {
@@ -105,13 +106,15 @@ void* ZMQListener::listen_thread(void* args)
         perror("zmq_msg_init");
         return NULL;
       }
-      if (zmq_msg_recv(&msg, _sck, 0) == -1)
+      while (((rc = zmq_msg_recv(&msg, _sck, 0)) == -1) && (errno == EINTR));
+      if (rc == -1)
       {
         perror("zmq_msg_recv");
         return NULL;
       }
       msgs.push_back(std::string((char*)zmq_msg_data(&msg), zmq_msg_size(&msg)));
-      if (zmq_getsockopt(_sck, ZMQ_RCVMORE, &more, &more_sz) != 0)
+      while (((rc = zmq_getsockopt(_sck, ZMQ_RCVMORE, &more, &more_sz)) == -1) && (errno == EINTR));
+      if (rc == -1)
       {
         perror("zmq_getsockopt");
         return NULL;
