@@ -109,7 +109,7 @@ void* ZMQListener::listen_thread(void* args)
       while (((rc = zmq_msg_recv(&msg, _sck, 0)) == -1) && (errno == EINTR))
       {
         // Ignore possible errors caused by a syscall being interrupted by a signal. This can 
-        // occur at start-up due to SIGRT_1 (for which snmpd does not apparently set SA_RESART). 
+        // occur at start-up due to SIGRT_1 (for which snmpd does not apparently set SA_RESTART). 
       }
       if (rc == -1)
       {
@@ -120,7 +120,7 @@ void* ZMQListener::listen_thread(void* args)
       while (((rc = zmq_getsockopt(_sck, ZMQ_RCVMORE, &more, &more_sz)) == -1) && (errno == EINTR))
       {
         // Ignore possible errors caused by a syscall being interrupted by a signal. This can 
-        // occur at start-up due to SIGRT_1 (for which snmpd does not apparently set SA_RESART). 
+        // occur at start-up due to SIGRT_1 (for which snmpd does not apparently set SA_RESTART). 
       }
       if (rc == -1)
       {
