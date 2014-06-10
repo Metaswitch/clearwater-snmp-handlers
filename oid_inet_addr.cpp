@@ -35,12 +35,14 @@
 #include "oid_inet_addr.hpp"
 
 
-OIDInetAddr::OIDInetAddr(const std::string& addrStr)
+void OIDInetAddr::setAddr(const std::string& addrStr)
 {
   if (inet_pton(AF_INET, addrStr.c_str(), &_addr) == 1) {
     _type = ipv4; 
   } else if (inet_pton(AF_INET6, addrStr.c_str(), &_addr) == 1) {
     _type = ipv6;
+  } else {
+    _type = unknown;
   }
 }
 

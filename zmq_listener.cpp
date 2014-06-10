@@ -106,14 +106,22 @@ void* ZMQListener::listen_thread(void* args)
         perror("zmq_msg_init");
         return NULL;
       }
-      while (((rc = zmq_msg_recv(&msg, _sck, 0)) == -1) && (errno == EINTR));
+      while (((rc = zmq_msg_recv(&msg, _sck, 0)) == -1) && (errno == EINTR))
+      {
+        // Ignore possible errors caused by a syscall being interrupted by a signal. This can 
+        // occur at start-up due to SIGRT_1 (for which snmpd does not apparently set SA_RESART). 
+      }
       if (rc == -1)
       {
         perror("zmq_msg_recv");
         return NULL;
       }
       msgs.push_back(std::string((char*)zmq_msg_data(&msg), zmq_msg_size(&msg)));
-      while (((rc = zmq_getsockopt(_sck, ZMQ_RCVMORE, &more, &more_sz)) == -1) && (errno == EINTR));
+      while (((rc = zmq_getsockopt(_sck, ZMQ_RCVMORE, &more, &more_sz)) == -1) && (errno == EINTR))
+      {
+        // Ignore possible errors caused by a syscall being interrupted by a signal. This can 
+        // occur at start-up due to SIGRT_1 (for which snmpd does not apparently set SA_RESART). 
+      }
       if (rc == -1)
       {
         perror("zmq_getsockopt");

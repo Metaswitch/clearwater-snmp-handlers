@@ -49,8 +49,9 @@ class OIDInetAddr
 {
 public:
   OIDInetAddr() {_type = unknown;}
-  OIDInetAddr(const std::string&);
+  OIDInetAddr(const std::string& addrStr) {setAddr(addrStr);}
 
+  void setAddr(const std::string&);
   bool isValid() {return _type != unknown;}
   std::vector<unsigned char> toOIDBytes();
 
