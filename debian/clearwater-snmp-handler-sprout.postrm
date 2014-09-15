@@ -4,4 +4,5 @@ if [ "$1" = "purge" ] ; then
 fi
 # End automatically added section
 
-service snmpd restart
+# Trigger an snmpd restart to unload the sub-agent
+initctl emit --no-wait snmpd-config-change

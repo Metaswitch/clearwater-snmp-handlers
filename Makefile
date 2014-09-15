@@ -35,6 +35,9 @@
 # this should come first so make does the right thing by default
 all: deb
 
+ROOT ?= ${PWD}
+ALARM_INCLUDES := -I${ROOT}/modules/rapidjson/include
+
 sprout_handler.so: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o sprout_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp sproutdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
 
@@ -44,16 +47,19 @@ bono_handler.so: *.cpp *.hpp
 homestead_handler.so: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o homestead_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp homesteaddata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
 
+alarm_handler.so: *.cpp *.hpp
+	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared ${ALARM_INCLUDES} -o alarm_handler.so alarm_handler.cpp alarm_defs.cpp alarm_model_table.cpp alarm_req_listener.cpp alarm_trap_sender.cpp itu_alarm_table.cpp `net-snmp-config --libs` -lzmq -lpthread
+
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead
+DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-alarm
 
 include build-infra/cw-deb.mk
 
 .PHONY: deb
-deb: sprout_handler.so bono_handler.so homestead_handler.so deb-only
+deb: sprout_handler.so bono_handler.so homestead_handler.so alarm_handler.so deb-only
 
 .PHONY: all deb-only deb
 

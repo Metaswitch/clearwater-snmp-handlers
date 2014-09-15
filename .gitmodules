@@ -1,3 +1,6 @@
 [submodule "build-infra"]
 	path = build-infra
 	url = git@github.com:Metaswitch/clearwater-build-infra.git
+[submodule "modules/rapidjson"]
+	path = modules/rapidjson
+	url = git@github.com:zvelo/rapidjson.git
