@@ -56,7 +56,7 @@ public:
   void stop();
 
 private:
-  enum {ZMQ_PORT = 6665};
+  enum {ZMQ_PORT = 6664};
 
   static void* listener_thread(void* alarm_req_listener);
 
