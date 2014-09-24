@@ -179,7 +179,6 @@ void AlarmReqListener::listener()
 
     if ((msg[0].compare("issue-alarm") == 0) && (msg.size() == 3))
     {
-snmp_log(LOG_ERR, "received issue-alarm: %s %s", msg[1].c_str(), msg[2].c_str());
       AlarmTrapSender::get_instance().issue_alarm(msg[1], msg[2]);
     }
     else if ((msg[0].compare("clear-alarms") == 0) && (msg.size() == 2))
@@ -189,6 +188,10 @@ snmp_log(LOG_ERR, "received issue-alarm: %s %s", msg[1].c_str(), msg[2].c_str())
     else if ((msg[0].compare("sync-alarms") == 0) && (msg.size() == 1))
     {
       AlarmTrapSender::get_instance().sync_alarms();
+    }
+    else
+    {
+      snmp_log(LOG_ERR, "unexpected alarm request: %s", msg[0].c_str());
     }
 
     reply("ok");
