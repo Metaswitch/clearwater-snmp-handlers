@@ -37,8 +37,6 @@
 
 #include <vector>
 #include <string>
-
-
  
 // Singleton which provides a listener thead to accept alarm requests from
 // clients via ZMQ, then generates alarmActiveState/alarmClearState inform

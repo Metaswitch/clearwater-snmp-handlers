@@ -58,14 +58,12 @@ extern "C" {
 #include <net-snmp/library/container.h>
 #include <net-snmp/agent/table_array.h>
 
-
 typedef struct alarmModelTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */
 
     AlarmDef* _alarm_def;
 
 } alarmModelTable_context;
-
 
 /*************************************************************
  *
@@ -77,7 +75,6 @@ int alarmModelTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_tab
 
 alarmModelTable_context* alarmModelTable_create_row_context(char*, unsigned long, unsigned long);
 int alarmModelTable_index_to_oid(char*, unsigned long, unsigned long, netsnmp_index*);
-
 
 /*************************************************************
  *
@@ -92,7 +89,6 @@ extern size_t alarmModelTable_oid_len;
 #define ALARM_ACTIVE_STATE_OID 1,3,6,1,2,1,118,0,2
 #define ALARM_CLEAR_STATE_OID 1,3,6,1,2,1,118,0,3
 #define ITU_ALARM_TABLE_ROW_OID 1,3,6,1,2,1,121,1,1,1,1,2,0,1,1
-
 
 /*************************************************************
  *
@@ -111,12 +107,10 @@ extern size_t alarmModelTable_oid_len;
 #define alarmModelTable_COL_MIN 3
 #define alarmModelTable_COL_MAX 10
 
-
 #define ROWSTATUS_ACTIVE 1
 
 #define ITUALARMTABLEROW_INDEX 13
 #define ITUALARMTABLEROW_SEVERITY 14
-
 
 #ifdef __cplusplus
 }

@@ -42,8 +42,6 @@
 
 #include "alarm_defs.hpp"
 
-
-
 // Definition of an entry in the active alarm list. 
 
 class AlarmListEntry
@@ -61,8 +59,6 @@ private:
   std::string _issuer;
 };
 
-
-
 // Iterator for enumerating entries in the active alarm list. Subclassed
 // from map iterator to hide pair template. Only operations defined are
 // supported.
@@ -75,8 +71,6 @@ public:
   AlarmListEntry& operator*()  {return  (std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
   AlarmListEntry* operator->() {return &(std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
 };
-
-
 
 // Container for all currently active alarms. Currently indexed by alarm
 // model index (may need to be extended to include a resource id going
@@ -102,8 +96,6 @@ public:
 private:
   std::map<unsigned int, AlarmListEntry> _idx_to_entry;
 };
-
-
 
 // Singleton helper used to filter inform notifications (as per their
 // descriptions in section 4.2 of RFC 3877). 
@@ -134,8 +126,6 @@ private:
 
   static AlarmFilter _instance;
 };
-
-
 
 // Singleton class providing methods for generating alarmActiveState and
 // alarmClearState inform notifications. It maintains an active alarm 

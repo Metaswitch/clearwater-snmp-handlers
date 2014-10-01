@@ -41,23 +41,18 @@
 
 #include "itu_alarm_table.hpp"
 
-
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
 
 oid ituAlarmTable_oid[] = { ituAlarmTable_TABLE_OID };
 size_t ituAlarmTable_oid_len = OID_LENGTH(ituAlarmTable_oid);
 
-
 static oid alarm_model_table_row_oid[] = { ALARM_MODEL_TABLE_ROW_OID };
-
-
 
 /************************************************************
  *
  *  Initializes the ituAlarmTable module
  */
-
 void init_ituAlarmTable(void)
 {
   AlarmDefs& defs = AlarmDefs::get_instance();
@@ -79,13 +74,11 @@ void init_ituAlarmTable(void)
   }
 }
 
-
 /************************************************************
  *
  *  Initialize the ituAlarmTable table by defining its contents
  *  and how it's structured
  */
-
 int initialize_table_ituAlarmTable(void)
 {
   netsnmp_table_registration_info *table_info;
@@ -143,13 +136,11 @@ int initialize_table_ituAlarmTable(void)
   return SNMP_ERR_NOERROR;
 }
 
-
 /************************************************************
  *
  *  This routine is called for get requests to copy the data
  *  from the context to the varbind for the request.
  */
-
 int ituAlarmTable_get_value(netsnmp_request_info* request,
                               netsnmp_index* item,
                               netsnmp_table_request_info* table_info)
@@ -206,12 +197,10 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
   return SNMP_ERR_NOERROR;
 }
 
-
 /************************************************************
  * 
  *  Create a new row context and initialize its oid index.
  */
-
 ituAlarmTable_context* ituAlarmTable_create_row_context(char* name,
                                                         unsigned long index,
                                                         long severity)
@@ -237,12 +226,10 @@ ituAlarmTable_context* ituAlarmTable_create_row_context(char* name,
   return ctx;
 }
 
-
 /************************************************************
  *
  *  Convert table index components to an oid.
  */
-
 int ituAlarmTable_index_to_oid(char* name,
                                  unsigned long index,
                                  long severity,

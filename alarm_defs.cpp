@@ -45,7 +45,6 @@
 #include <fstream>
 #include <stdexcept>
 
-
 // Override rapidjson assert macro to ensure that an unexpected error will
 // not cause snmpd to terminate.
 
@@ -59,15 +58,11 @@
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 
-
 #include "alarm_defs.hpp"
-
 
 std::vector<AlarmDefFile> AlarmDefFile::_def_files;
 
 AlarmDefs AlarmDefs::_instance;
-
-
 
 // Translate ituAlarmPerceivedSeverity to alarmModelState based upon mapping
 // defined in section 5.4 of RFC 3877.
@@ -84,8 +79,6 @@ unsigned int AlarmDef::state()
 
   return severity_to_state[idx];
 }
-
-
 
 bool AlarmDefFile::parse(std::list<AlarmDef>& defs)
 {
@@ -141,7 +134,6 @@ bool AlarmDefFile::parse(std::list<AlarmDef>& defs)
   return true;
 }
 
-
 time_t AlarmDefFile::last_modified()
 {
   time_t mod_time = 0;
@@ -155,11 +147,10 @@ time_t AlarmDefFile::last_modified()
   return mod_time;
 }
 
-
 std::vector<AlarmDefFile>& AlarmDefFile::alarm_def_files()
 {
   static const char def_file_root[]  = "/etc/clearwater/alarm-defs/";
-  static const char def_file_sufix[] = "-alarms.json";
+  static const char def_file_suffix[] = "-alarms.json";
 
   if (_def_files.size() == 0)
   {
@@ -174,7 +165,7 @@ std::vector<AlarmDefFile>& AlarmDefFile::alarm_def_files()
       {
         if (entry.d_type == DT_REG)
         {
-          if (boost::algorithm::ends_with(entry.d_name, def_file_sufix))
+          if (boost::algorithm::ends_with(entry.d_name, def_file_suffix))
           {
             AlarmDefFile def_file(std::string(def_file_root) + entry.d_name);
 
@@ -193,7 +184,6 @@ std::vector<AlarmDefFile>& AlarmDefFile::alarm_def_files()
 
   return _def_files;
 }
-
 
 // Open alarm definition file and perform a stream parse to rapidjson
 // document representation.
@@ -224,14 +214,14 @@ bool AlarmDefFile::parse_doc(rapidjson::Document& doc)
   return doc_ok;
 }
 
-
 // Extract alarm details from JSON object to internal representation while
 // verifying all expected fields are present and valid.
 bool AlarmDefFile::parse_def(unsigned int idx, const rapidjson::Value& obj, AlarmDef& def)
 {
   bool def_ok = true;
 
-  // zero relative to 1 relative for error logs
+  // Adjust the alarm definition index from zero relative to 1 relative for error logging
+  // (i.e. the first definition will be 1 (vs. 0) when reporting an error).
   idx++;
 
   if (obj.HasMember("identifier") && obj["identifier"].IsString())
@@ -345,8 +335,6 @@ bool AlarmDefFile::parse_def(unsigned int idx, const rapidjson::Value& obj, Alar
   return def_ok;
 }
 
-
-
 bool AlarmDefs::load()
 {
   bool load_ok = true;
@@ -397,7 +385,6 @@ bool AlarmDefs::load()
 
   return load_ok;
 }
-
 
 AlarmDef* AlarmDefs::get_definition(const std::string& id)
 {

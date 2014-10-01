@@ -32,7 +32,6 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
-
 #ifndef ALARM_DEFS_HPP
 #define ALARM_DEFS_HPP
 
@@ -44,8 +43,6 @@
 #include <map>
 
 #include <rapidjson/document.h>
-
-
 
 // Container for data needed to generate an entry of the Alarm Model Table
 // and ITU Alarm Table; and for sending alarmActiveState and alarmClearState
@@ -100,8 +97,6 @@ private:
   std::string _details;
 };
 
-
-
 // Abstraction for an alarm definition file. Each of these files, located in
 // /etc/clearwater/alarm-defs, contains JSON representations of the alarms that
 // may be issued by a single clearwater component (e.g. sprout, chronos, etc).
@@ -131,8 +126,6 @@ private:
   static std::vector<AlarmDefFile> _def_files;
 };
 
-
-
 // Iterators for enumerating all alarm definitions, and only those with a severity
 // of CLEARED. Subclassed from map iterator to hide pair template. Only operations
 // defined are supported.
@@ -155,8 +148,6 @@ public:
   AlarmDef& operator*()  {return *(std::map<unsigned int, AlarmDef*>::iterator::operator*().second);}
   AlarmDef* operator->() {return   std::map<unsigned int, AlarmDef*>::iterator::operator*().second ;}
 };
-
-
 
 // Singleton class providing access to the alarm definitions for this node.
 

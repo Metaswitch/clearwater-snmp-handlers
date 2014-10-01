@@ -39,9 +39,7 @@
 #include "alarm_req_listener.hpp"
 #include "itu_alarm_table.hpp"
 
-
 static bool loaded = false;
-
 
 extern "C" {
   // Sub-agent entry point. SNMPd looks for an 'init_<module_name>' function in this

@@ -58,14 +58,12 @@ extern "C" {
 #include <net-snmp/library/container.h>
 #include <net-snmp/agent/table_array.h>
 
-
 typedef struct ituAlarmTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */
 
     AlarmDef* _alarm_def;
 
 } ituAlarmTable_context;
-
 
 /*************************************************************
  *
@@ -78,7 +76,6 @@ int ituAlarmTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table
 ituAlarmTable_context* ituAlarmTable_create_row_context(char*, unsigned long, long);
 int ituAlarmTable_index_to_oid(char*, unsigned long, long, netsnmp_index*);
 
-
 /*************************************************************
  *
  *  oid declarations
@@ -89,7 +86,6 @@ extern size_t ituAlarmTable_oid_len;
 #define ituAlarmTable_TABLE_OID 1,3,6,1,2,1,121,1,1,1
 
 #define ALARM_MODEL_TABLE_ROW_OID 1,3,6,1,2,1,118,1,1,2,1,3,0,1,2
-
 
 /*************************************************************
  *
@@ -103,12 +99,10 @@ extern size_t ituAlarmTable_oid_len;
 #define ituAlarmTable_COL_MIN 2
 #define ituAlarmTable_COL_MAX 5
 
-
 #define IANAITUEVENTTYPE_OPERATIONALVIOLATION 8
 
 #define ALARMMODELTABLEROW_INDEX 13
 #define ALARMMODELTABLEROW_STATE 14
-
 
 #ifdef __cplusplus
 }

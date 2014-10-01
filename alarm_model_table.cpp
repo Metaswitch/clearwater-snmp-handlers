@@ -41,26 +41,21 @@
 
 #include "alarm_model_table.hpp"
 
-
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
 
 oid alarmModelTable_oid[] = { alarmModelTable_TABLE_OID };
 size_t alarmModelTable_oid_len = OID_LENGTH(alarmModelTable_oid);
 
-
 static oid zero_dot_zero_oid[] = { ZERO_DOT_ZERO_OID };
 static oid alarm_active_state_oid[] = { ALARM_ACTIVE_STATE_OID };
 static oid alarm_clear_state_oid[] = { ALARM_CLEAR_STATE_OID };
 static oid itu_alarm_table_row_oid[] = { ITU_ALARM_TABLE_ROW_OID };
 
-
-
 /************************************************************
  *
  *  Initializes the alarmModelTable module
  */
-
 void init_alarmModelTable(void)
 {
   AlarmDefs& defs = AlarmDefs::get_instance();
@@ -82,13 +77,11 @@ void init_alarmModelTable(void)
   }
 }
 
-
 /************************************************************
  *
  *  Initialize the alarmModelTable table by defining its contents
  *  and how it's structured
  */
-
 int initialize_table_alarmModelTable(void)
 {
   netsnmp_table_registration_info *table_info;
@@ -146,13 +139,11 @@ int initialize_table_alarmModelTable(void)
   return SNMP_ERR_NOERROR;
 }
 
-
 /************************************************************
  *
  *  This routine is called for get requests to copy the data
  *  from the context to the varbind for the request.
  */
-
 int alarmModelTable_get_value(netsnmp_request_info* request,
                               netsnmp_index* item,
                               netsnmp_table_request_info* table_info)
@@ -251,12 +242,10 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
   return SNMP_ERR_NOERROR;
 }
 
-
 /************************************************************
  * 
  *  Create a new row context and initialize its oid index.
  */
-
 alarmModelTable_context* alarmModelTable_create_row_context(char* name,
                                                             unsigned long index,
                                                             unsigned long state)
@@ -282,12 +271,10 @@ alarmModelTable_context* alarmModelTable_create_row_context(char* name,
   return ctx;
 }
 
-
 /************************************************************
  *
  *  Convert table index components to an oid.
  */
-
 int alarmModelTable_index_to_oid(char* name,
                                  unsigned long index,
                                  unsigned long state,

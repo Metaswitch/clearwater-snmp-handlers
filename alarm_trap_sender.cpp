@@ -41,13 +41,9 @@
 #include "alarm_trap_sender.hpp"
 #include "itu_alarm_table.hpp"
 
-
-
 AlarmFilter AlarmFilter::_instance;
 
 AlarmTrapSender AlarmTrapSender::_instance;
-
-
 
 bool ActiveAlarmList::update(AlarmDef* alarm_def, const std::string& issuer)
 {
@@ -75,13 +71,10 @@ bool ActiveAlarmList::update(AlarmDef* alarm_def, const std::string& issuer)
   return updated;
 }
 
-
 void ActiveAlarmList::remove(ActiveAlarmIterator& it)
 {
   _idx_to_entry.erase(it);
 }
-
-
 
 bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity)
 {
@@ -129,8 +122,6 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
   return filtered;
 }
 
-
-
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
   AlarmDef* alarm_def = AlarmDefs::get_instance().get_definition(identifier);
@@ -146,7 +137,6 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
     }
   }
 }
-
 
 void AlarmTrapSender::clear_alarms(const std::string& issuer)
 {
@@ -172,7 +162,6 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
   }
 }
 
-
 void AlarmTrapSender::sync_alarms()
 {
   AlarmDefs& defs = AlarmDefs::get_instance();
@@ -187,8 +176,6 @@ void AlarmTrapSender::sync_alarms()
     send_trap(it->alarm_def());
   }
 }
-
-
 
 // Sends an alarmActiveState or alarmClearState inform notification based
 // upon the specified alarm definition. net-snmp will handle the required

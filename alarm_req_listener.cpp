@@ -44,11 +44,7 @@
 #include "alarm_req_listener.hpp"
 #include "alarm_trap_sender.hpp"
 
-
-
 AlarmReqListener AlarmReqListener::_instance;
-
-
 
 bool AlarmReqListener::start()
 {
@@ -69,14 +65,12 @@ bool AlarmReqListener::start()
   return true;
 }
 
-
 void AlarmReqListener::stop()
 {
   zmq_clean_ctx();
 
   pthread_join(_thread, NULL);
 }
-
 
 void* AlarmReqListener::listener_thread(void* alarm_req_listener)
 {
@@ -85,11 +79,9 @@ void* AlarmReqListener::listener_thread(void* alarm_req_listener)
   return NULL;
 }
 
-
 AlarmReqListener::AlarmReqListener() : _ctx(NULL), _sck(NULL)
 {
 }
-
 
 bool AlarmReqListener::zmq_init_ctx()
 {
@@ -102,7 +94,6 @@ bool AlarmReqListener::zmq_init_ctx()
 
   return true;
 }
-
 
 bool AlarmReqListener::zmq_init_sck()
 {
@@ -131,7 +122,6 @@ bool AlarmReqListener::zmq_init_sck()
   return true;
 }
 
-
 void AlarmReqListener::zmq_clean_ctx()
 {
   if (_ctx)
@@ -145,7 +135,6 @@ void AlarmReqListener::zmq_clean_ctx()
   }
 }
 
-
 void AlarmReqListener::zmq_clean_sck()
 {
   if (_sck)
@@ -158,7 +147,6 @@ void AlarmReqListener::zmq_clean_sck()
     _sck = NULL;
   }
 }
-
 
 void AlarmReqListener::listener()
 {
@@ -194,7 +182,6 @@ snmp_log(LOG_ERR, "received issue-alarm: %s %s", msg[1].c_str(), msg[2].c_str())
     reply("ok");
   }
 }
-
 
 bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
 {
@@ -255,7 +242,6 @@ bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
 
   return true;
 }
-
 
 void AlarmReqListener::reply(const char* response)
 {
