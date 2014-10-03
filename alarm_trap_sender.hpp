@@ -114,15 +114,17 @@ public:
 private:
   enum 
   { 
-    ALARM_FILTER_TIME = 5,
-    CLEAN_FILTER_TIME = 60
+    ALARM_FILTER_TIME = 5000,
+    CLEAN_FILTER_TIME = 60000
   };
 
   AlarmFilter() : _clean_time(0) {}
 
-  std::map<unsigned int, time_t> _issue_times;
+  unsigned long current_time_ms();
 
-  time_t _clean_time;
+  std::map<unsigned int, unsigned long> _issue_times;
+
+  unsigned long _clean_time;
 
   static AlarmFilter _instance;
 };

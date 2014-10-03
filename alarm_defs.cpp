@@ -50,7 +50,7 @@
 
 #define  RAPIDJSON_ASSERT(x)                          \
            do {                                       \
-             if (! (x)) {                             \
+             if (!(x)) {                              \
                throw std::domain_error("rapidjson");  \
              }                                        \
            } while (0) 
@@ -86,7 +86,7 @@ bool AlarmDefFile::parse(std::list<AlarmDef>& defs)
   {
     rapidjson::Document doc;
 
-    if (! parse_doc(doc))
+    if (!parse_doc(doc))
     {
       return false;
     }
@@ -95,7 +95,7 @@ bool AlarmDefFile::parse(std::list<AlarmDef>& defs)
     // contains alarm objects, which in turn contain the defails for an
     // alarm.
 
-    if (! (doc.HasMember("alarms") && doc["alarms"].IsArray()))
+    if (!(doc.HasMember("alarms") && doc["alarms"].IsArray()))
     {
       snmp_log(LOG_ERR, "%s: 'alarms' array missing", _path.c_str());
       return false;
@@ -111,7 +111,7 @@ bool AlarmDefFile::parse(std::list<AlarmDef>& defs)
       {
         const rapidjson::Value& alarm_obj = alarm_objs[idx];
 
-        if (! parse_def(idx, alarm_obj, def))
+        if (!parse_def(idx, alarm_obj, def))
         {
           return false;
         }
@@ -353,7 +353,7 @@ bool AlarmDefs::load()
 
   if (_defs.size() > 0)
   {
-    std::map<unsigned int, unsigned int> dup_check;
+    std::map<unsigned int, AlarmDef*> dup_check;
 
     for (std::list<AlarmDef>::iterator d_it = _defs.begin(); d_it != _defs.end(); d_it++)
     {
@@ -364,16 +364,17 @@ bool AlarmDefs::load()
         _idx_to_clear_def[d_it->index()] = &(*d_it);
       }
 
-      unsigned int index_severity = ((*d_it).index() << 3) | (*d_it).severity();
+      unsigned int index_severity = (d_it->index() << 3) | d_it->severity();
 
       if (dup_check.count(index_severity))
       {
-        snmp_log(LOG_ERR, "duplicate index/severity (%d/%d)", (*d_it).index(), (*d_it).severity());
+        snmp_log(LOG_ERR, "duplicate index/severity: %d/%d; conflicting identifiers: %s, %s", d_it->index(), d_it->severity(),
+                                                  d_it->identifier().c_str(), dup_check[index_severity]->identifier().c_str());
         load_ok = false;
       }
       else
       {
-        dup_check[index_severity] = 1;
+        dup_check[index_severity] = &(*d_it);
       }
     } 
   }

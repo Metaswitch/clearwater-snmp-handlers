@@ -50,7 +50,7 @@ extern "C" {
     // Start alarm request listener thread and initialize supported tables if alarm
     // definitions have been loaded successfully.
 
-    if ((! loaded) && AlarmDefs::get_instance().load())
+    if (!loaded && AlarmDefs::get_instance().load())
     {
       AlarmReqListener::get_instance().start();
 

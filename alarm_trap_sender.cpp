@@ -78,18 +78,18 @@ void ActiveAlarmList::remove(ActiveAlarmIterator& it)
 
 bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity)
 {
-  time_t now = time(NULL);
+  unsigned long now = current_time_ms();
 
   if (now > _clean_time)
   {
     _clean_time = now + CLEAN_FILTER_TIME;
 
-    std::map<unsigned int, time_t>::iterator it = _issue_times.begin();
+    std::map<unsigned int, unsigned long>::iterator it = _issue_times.begin();
     while (it != _issue_times.end())
     {
       if (now > (it->second + ALARM_FILTER_TIME))
       {
-        std::map<unsigned int, time_t>::iterator it_tmp = it;
+        std::map<unsigned int, unsigned long>::iterator it_tmp = it;
         _issue_times.erase(it_tmp);
       }
 
@@ -99,7 +99,7 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
 
   unsigned int index_severity = (index << 3) | severity;
 
-  std::map<unsigned int, time_t>::iterator it = _issue_times.find(index_severity);
+  std::map<unsigned int, unsigned long>::iterator it = _issue_times.find(index_severity);
  
   bool filtered = false;
 
@@ -122,6 +122,16 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
   return filtered;
 }
 
+
+unsigned long AlarmFilter::current_time_ms()
+{
+  struct timespec ts;
+
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+
+  return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
+}
+
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
   AlarmDef* alarm_def = AlarmDefs::get_instance().get_definition(identifier);
@@ -130,7 +140,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
   {
     if (_active_alarms.update(alarm_def, issuer))
     {
-      if (! AlarmFilter::get_instance().alarm_filtered(alarm_def->index(), alarm_def->severity()))
+      if (!AlarmFilter::get_instance().alarm_filtered(alarm_def->index(), alarm_def->severity()))
       {
         send_trap(alarm_def);
       }
@@ -149,7 +159,7 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
     {
       AlarmDef* clear_def = defs.get_clear_definition(it->alarm_def()->index());
  
-      if (! AlarmFilter::get_instance().alarm_filtered(clear_def->index(), clear_def->severity()))
+      if (!AlarmFilter::get_instance().alarm_filtered(clear_def->index(), clear_def->severity()))
       {
         send_trap(clear_def);
       }
