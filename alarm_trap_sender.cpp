@@ -84,12 +84,12 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
   {
     _clean_time = now + CLEAN_FILTER_TIME;
 
-    std::map<unsigned int, unsigned long>::iterator it = _issue_times.begin();
+    std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.begin();
     while (it != _issue_times.end())
     {
       if (now > (it->second + ALARM_FILTER_TIME))
       {
-        std::map<unsigned int, unsigned long>::iterator it_tmp = it;
+        std::map<AlarmFilterKey, unsigned long>::iterator it_tmp = it;
         _issue_times.erase(it_tmp);
       }
 
@@ -97,9 +97,8 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
     }
   }
 
-  unsigned int index_severity = (index << 3) | severity;
-
-  std::map<unsigned int, unsigned long>::iterator it = _issue_times.find(index_severity);
+  AlarmFilterKey key(index, severity);
+  std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.find(key);
  
   bool filtered = false;
 
@@ -107,7 +106,7 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
   {
     if (now > (it->second + ALARM_FILTER_TIME))
     {
-      _issue_times[index_severity] = now;
+      _issue_times[key] = now;
     }
     else
     {
@@ -116,12 +115,16 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
   }
   else
   {
-    _issue_times[index_severity] = now;
+    _issue_times[key] = now;
   } 
 
   return filtered;
 }
 
+bool AlarmFilter::AlarmFilterKey::operator<(const AlarmFilter::AlarmFilterKey& rhs) const
+{
+  return (_index < rhs._index) || ((_index == rhs._index) && (_severity < rhs._severity));
+}
 
 unsigned long AlarmFilter::current_time_ms()
 {

@@ -118,11 +118,24 @@ private:
     CLEAN_FILTER_TIME = 60000
   };
 
+  class AlarmFilterKey
+  {
+  public:
+    AlarmFilterKey(unsigned int index, AlarmDef::Severity severity) :
+      _index(index), _severity(severity) {}
+
+    bool operator<(const AlarmFilterKey& rhs) const;
+
+  private:
+    unsigned int _index;
+    unsigned int _severity;    
+  };
+
   AlarmFilter() : _clean_time(0) {}
 
   unsigned long current_time_ms();
 
-  std::map<unsigned int, unsigned long> _issue_times;
+  std::map<AlarmFilterKey, unsigned long> _issue_times;
 
   unsigned long _clean_time;
 
