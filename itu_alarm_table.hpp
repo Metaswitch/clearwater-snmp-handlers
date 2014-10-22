@@ -42,7 +42,7 @@
 #ifndef ITU_ALARM_TABLE_HPP
 #define ITU_ALARM_TABLE_HPP
 
-#include <alarm_defs.hpp>
+#include <alarm_table_defs.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,7 +61,7 @@ extern "C" {
 typedef struct ituAlarmTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */
 
-    AlarmDef* _alarm_def;
+    AlarmTableDef* _alarm_table_def;
 
 } ituAlarmTable_context;
 

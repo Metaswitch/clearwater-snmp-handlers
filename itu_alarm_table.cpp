@@ -55,18 +55,18 @@ static oid alarm_model_table_row_oid[] = { ALARM_MODEL_TABLE_ROW_OID };
  */
 void init_ituAlarmTable(void)
 {
-  AlarmDefs& defs = AlarmDefs::get_instance();
+  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
 
   if (initialize_table_ituAlarmTable() == SNMP_ERR_NOERROR)
   {
-    for (AlarmDefsIterator iter = defs.begin(); iter != defs.end(); iter++)
+    for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
     {
       ituAlarmTable_context* ctx = ituAlarmTable_create_row_context((char*) "", 
-                                                                    (*iter).index(), 
-                                                                    (*iter).severity());
+                                                                    it->index(), 
+                                                                    it->severity());
       if (ctx)
       {
-        ctx->_alarm_def = &(*iter);
+        ctx->_alarm_table_def = &(*it);
 
         CONTAINER_INSERT(cb.container, ctx);
       }
@@ -142,8 +142,8 @@ int initialize_table_ituAlarmTable(void)
  *  from the context to the varbind for the request.
  */
 int ituAlarmTable_get_value(netsnmp_request_info* request,
-                              netsnmp_index* item,
-                              netsnmp_table_request_info* table_info)
+                            netsnmp_index* item,
+                            netsnmp_table_request_info* table_info)
 {
   netsnmp_variable_list* var = request->requestvb;
   ituAlarmTable_context* context = (ituAlarmTable_context*) item;
@@ -161,7 +161,7 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
     
     case COLUMN_ITUALARMPROBABLECAUSE:
     {
-      long cause = context->_alarm_def->cause();
+      long cause = context->_alarm_table_def->cause();
       snmp_set_var_typed_value(var, ASN_INTEGER,
                                (u_char*) &cause,
                                sizeof(cause));
@@ -171,8 +171,8 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
     case COLUMN_ITUALARMADDITIONALTEXT:
     {
       snmp_set_var_typed_value(var, ASN_OCTET_STR,
-                               (u_char*) context->_alarm_def->details().c_str(),
-                               context->_alarm_def->details().length());
+                               (u_char*) context->_alarm_table_def->details().c_str(),
+                               context->_alarm_table_def->details().length());
     }
     break;
 
@@ -182,8 +182,8 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
                                (u_char*) alarm_model_table_row_oid,
                                sizeof(alarm_model_table_row_oid));
 
-      var->val.objid[ALARMMODELTABLEROW_INDEX] = context->_alarm_def->index();
-      var->val.objid[ALARMMODELTABLEROW_STATE] = context->_alarm_def->state();
+      var->val.objid[ALARMMODELTABLEROW_INDEX] = context->_alarm_table_def->index();
+      var->val.objid[ALARMMODELTABLEROW_STATE] = context->_alarm_table_def->state();
     }
     break;
     
@@ -231,9 +231,9 @@ ituAlarmTable_context* ituAlarmTable_create_row_context(char* name,
  *  Convert table index components to an oid.
  */
 int ituAlarmTable_index_to_oid(char* name,
-                                 unsigned long index,
-                                 long severity,
-                                 netsnmp_index *oid_idx)
+                               unsigned long index,
+                               long severity,
+                               netsnmp_index *oid_idx)
 {
   int err = SNMP_ERR_NOERROR;
 

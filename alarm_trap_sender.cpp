@@ -45,25 +45,25 @@ AlarmFilter AlarmFilter::_instance;
 
 AlarmTrapSender AlarmTrapSender::_instance;
 
-bool ActiveAlarmList::update(AlarmDef* alarm_def, const std::string& issuer)
+bool ActiveAlarmList::update(AlarmTableDef& alarm_table_def, const std::string& issuer)
 {
   bool updated = false;
 
-  std::map<unsigned int, AlarmListEntry>::iterator it = _idx_to_entry.find(alarm_def->index());
+  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.index());
 
-  if (alarm_def->is_not_clear())
+  if (alarm_table_def.is_not_clear())
   {
-    if ((it == _idx_to_entry.end()) || (alarm_def->severity() != it->second.alarm_def()->severity()))
+    if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
     {
-      _idx_to_entry[alarm_def->index()] = AlarmListEntry(alarm_def, issuer);
+      _index_to_entry[alarm_table_def.index()] = AlarmListEntry(alarm_table_def, issuer);
       updated = true;
     }
   }
   else
   {
-    if (it != _idx_to_entry.end())
+    if (it != _index_to_entry.end())
     {
-      _idx_to_entry.erase(it);
+      _index_to_entry.erase(it);
       updated = true;
     }
   }
@@ -73,10 +73,10 @@ bool ActiveAlarmList::update(AlarmDef* alarm_def, const std::string& issuer)
 
 void ActiveAlarmList::remove(ActiveAlarmIterator& it)
 {
-  _idx_to_entry.erase(it);
+  _index_to_entry.erase(it);
 }
 
-bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity)
+bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
 {
   unsigned long now = current_time_ms();
 
@@ -123,7 +123,8 @@ bool AlarmFilter::alarm_filtered(unsigned int index, AlarmDef::Severity severity
 
 bool AlarmFilter::AlarmFilterKey::operator<(const AlarmFilter::AlarmFilterKey& rhs) const
 {
-  return (_index < rhs._index) || ((_index == rhs._index) && (_severity < rhs._severity));
+  return  (_index  < rhs._index) || 
+         ((_index == rhs._index) && (_severity < rhs._severity));
 }
 
 unsigned long AlarmFilter::current_time_ms()
@@ -137,15 +138,24 @@ unsigned long AlarmFilter::current_time_ms()
 
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
-  AlarmDef* alarm_def = AlarmDefs::get_instance().get_definition(identifier);
+  unsigned int index;
+  unsigned int severity;
 
-  if (alarm_def->is_valid()) 
+  if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2) 
   {
-    if (_active_alarms.update(alarm_def, issuer))
+    // TODO: syslog 
+    return;
+  } 
+
+  AlarmTableDef& alarm_table_def = AlarmTableDefs::get_instance().get_definition(index, severity);
+
+  if (alarm_table_def.is_valid()) 
+  {
+    if (_active_alarms.update(alarm_table_def, issuer))
     {
-      if (!AlarmFilter::get_instance().alarm_filtered(alarm_def->index(), alarm_def->severity()))
+      if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
       {
-        send_trap(alarm_def);
+        send_trap(alarm_table_def);
       }
     }
   }
@@ -153,16 +163,16 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 
 void AlarmTrapSender::clear_alarms(const std::string& issuer)
 {
-  AlarmDefs& defs = AlarmDefs::get_instance();
+  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
 
   ActiveAlarmIterator it = _active_alarms.begin();
   while (it != _active_alarms.end())
   {
     if (it->issuer() == issuer)
     {
-      AlarmDef* clear_def = defs.get_clear_definition(it->alarm_def()->index());
+      AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().index(), AlarmDef::CLEARED);
  
-      if (!AlarmFilter::get_instance().alarm_filtered(clear_def->index(), clear_def->severity()))
+      if (!AlarmFilter::get_instance().alarm_filtered(clear_def.index(), clear_def.severity()))
       {
         send_trap(clear_def);
       }
@@ -175,18 +185,24 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
   }
 }
 
-void AlarmTrapSender::sync_alarms()
+void AlarmTrapSender::sync_alarms(bool do_clear)
 {
-  AlarmDefs& defs = AlarmDefs::get_instance();
+  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
 
-  for (AlarmClearIterator it = defs.begin_clear(); it != defs.end_clear(); it++)
+  if (do_clear)
   {
-    send_trap(&(*it));
+    for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
+    {
+      if (it->severity() == AlarmDef::CLEARED)
+      {
+        send_trap(*it);
+      }
+    }
   }
 
   for (ActiveAlarmIterator it = _active_alarms.begin(); it != _active_alarms.end(); it++)
   {
-    send_trap(it->alarm_def());
+    send_trap(it->alarm_table_def());
   }
 }
 
@@ -194,7 +210,7 @@ void AlarmTrapSender::sync_alarms()
 // upon the specified alarm definition. net-snmp will handle the required
 // retires if needed.
 
-void AlarmTrapSender::send_trap(AlarmDef* alarm)
+void AlarmTrapSender::send_trap(AlarmTableDef& alarm_table_def)
 {
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
@@ -219,7 +235,7 @@ void AlarmTrapSender::send_trap(AlarmDef* alarm)
   var_resource_id.next_variable = NULL;
 
   snmp_set_var_objid(&var_trap, snmp_trap_oid, OID_LENGTH(snmp_trap_oid));
-  if (alarm->severity() == AlarmDef::SEVERITY_CLEARED)
+  if (alarm_table_def.severity() == AlarmDef::CLEARED)
   {
     snmp_set_var_typed_value(&var_trap, ASN_OBJECT_ID, (u_char*) clear_oid, sizeof(clear_oid));
   }
@@ -231,8 +247,8 @@ void AlarmTrapSender::send_trap(AlarmDef* alarm)
   snmp_set_var_objid(&var_model_row, model_ptr_oid, OID_LENGTH(model_ptr_oid));
   snmp_set_var_typed_value(&var_model_row, ASN_OBJECT_ID, (u_char*) model_row_oid, sizeof(model_row_oid));
 
-  var_model_row.val.objid[ALARMMODELTABLEROW_INDEX] = alarm->index();
-  var_model_row.val.objid[ALARMMODELTABLEROW_STATE] = alarm->state();
+  var_model_row.val.objid[ALARMMODELTABLEROW_INDEX] = alarm_table_def.index();
+  var_model_row.val.objid[ALARMMODELTABLEROW_STATE] = alarm_table_def.state();
 
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));

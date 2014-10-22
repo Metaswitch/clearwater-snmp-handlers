@@ -34,9 +34,9 @@
 
 //#include <pthread.h>
 
-#include "alarm_defs.hpp"
-#include "alarm_model_table.hpp"
+#include "alarm_table_defs.hpp"
 #include "alarm_req_listener.hpp"
+#include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
 
 static bool loaded = false;
@@ -47,10 +47,10 @@ extern "C" {
 
   void init_alarm_handler()
   {
-    // Start alarm request listener thread and initialize supported tables if alarm
-    // definitions have been loaded successfully.
+    // Start alarm request listener thread and initialize supported tables if shared 
+    // library not previously loaded and static alarm data is sane.
 
-    if (!loaded && AlarmDefs::get_instance().load())
+    if (!loaded && AlarmTableDefs::get_instance().initialize())
     {
       AlarmReqListener::get_instance().start();
 

@@ -58,18 +58,18 @@ static oid itu_alarm_table_row_oid[] = { ITU_ALARM_TABLE_ROW_OID };
  */
 void init_alarmModelTable(void)
 {
-  AlarmDefs& defs = AlarmDefs::get_instance();
+  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
 
   if (initialize_table_alarmModelTable() == SNMP_ERR_NOERROR)
   {
-    for (AlarmDefsIterator iter = defs.begin(); iter != defs.end(); iter++)
+    for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
     {
       alarmModelTable_context* ctx = alarmModelTable_create_row_context((char*) "", 
-                                                                        (*iter).index(), 
-                                                                        (*iter).state());
+                                                                        it->index(), 
+                                                                        it->state());
       if (ctx)
       {
-        ctx->_alarm_def = &(*iter);
+        ctx->_alarm_table_def = &(*it);
 
         CONTAINER_INSERT(cb.container, ctx);
       }
@@ -155,7 +155,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
   {
     case COLUMN_ALARMMODELNOTIFICATIONID:
     {
-      if (context->_alarm_def->severity() == AlarmDef::SEVERITY_CLEARED)
+      if (context->_alarm_table_def->severity() == AlarmDef::CLEARED)
       {
         snmp_set_var_typed_value(var, ASN_OBJECT_ID,
                                  (u_char*) alarm_clear_state_oid,
@@ -191,8 +191,8 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
     case COLUMN_ALARMMODELDESCRIPTION:
     {
       snmp_set_var_typed_value(var, ASN_OCTET_STR,
-                               (u_char*) context->_alarm_def->description().c_str(),
-                               context->_alarm_def->description().length());
+                               (u_char*) context->_alarm_table_def->description().c_str(),
+                               context->_alarm_table_def->description().length());
     }
     break;
     
@@ -202,8 +202,8 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
                                (u_char*) itu_alarm_table_row_oid,
                                sizeof(itu_alarm_table_row_oid));
 
-      var->val.objid[ITUALARMTABLEROW_INDEX] = context->_alarm_def->index();
-      var->val.objid[ITUALARMTABLEROW_SEVERITY] = context->_alarm_def->severity();
+      var->val.objid[ITUALARMTABLEROW_INDEX] = context->_alarm_table_def->index();
+      var->val.objid[ITUALARMTABLEROW_SEVERITY] = context->_alarm_table_def->severity();
     }
     break;
     

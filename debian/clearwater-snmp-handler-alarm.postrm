@@ -2,4 +2,5 @@
 # End automatically added section
 
 # Trigger an snmpd restart to unload the sub-agent
-initctl emit --no-wait snmpd-config-change
+service snmpd restart || true
+

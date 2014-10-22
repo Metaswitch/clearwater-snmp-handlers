@@ -53,13 +53,32 @@ bool AlarmReqListener::start()
     return false;
   }
 
+  pthread_mutex_init(&_start_mutex, NULL);
+  pthread_cond_init(&_start_cond, NULL);
+
+  pthread_mutex_lock(&_start_mutex);
+
   int rc = pthread_create(&_thread, NULL, &listener_thread, (void*) &_instance);
+  if (rc == 0)
+  {
+    pthread_cond_wait(&_start_cond, &_start_mutex);
+  }
+
+  pthread_mutex_unlock(&_start_mutex);
+
+  pthread_cond_destroy(&_start_cond);
+  pthread_mutex_destroy(&_start_mutex);
+
   if (rc != 0)
   {
+    // LCOV_EXCL_START - No mock for pthread_create
+
     snmp_log(LOG_ERR, "error creating listener thread: %s", strerror(rc));
 
     zmq_clean_ctx();
     return false;
+
+    // LCOV_EXCL_STOP
   }
 
   return true;
@@ -150,7 +169,13 @@ void AlarmReqListener::zmq_clean_sck()
 
 void AlarmReqListener::listener()
 {
-  if (!zmq_init_sck())
+  bool sckOk = zmq_init_sck();
+
+  pthread_mutex_lock(&_start_mutex);
+  pthread_cond_signal(&_start_cond);
+  pthread_mutex_unlock(&_start_mutex);
+
+  if (!sckOk)
   {
     return;
   }
@@ -175,11 +200,15 @@ void AlarmReqListener::listener()
     }
     else if ((msg[0].compare("sync-alarms") == 0) && (msg.size() == 1))
     {
-      AlarmTrapSender::get_instance().sync_alarms();
+      AlarmTrapSender::get_instance().sync_alarms(true);
+    }
+    else if ((msg[0].compare("sync-alarms-no-clear") == 0) && (msg.size() == 1))
+    {
+      AlarmTrapSender::get_instance().sync_alarms(false);
     }
     else
     {
-      snmp_log(LOG_ERR, "unexpected alarm request: %s", msg[0].c_str());
+      snmp_log(LOG_ERR, "unexpected alarm request: %s, %lu", msg[0].c_str(), msg.size());
     }
 
     reply("ok");

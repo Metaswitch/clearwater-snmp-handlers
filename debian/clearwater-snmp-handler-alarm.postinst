@@ -54,7 +54,7 @@ set -e
 case "$1" in
     configure)
         # Trigger an snmpd restart to load the sub-agent
-        initctl emit --no-wait snmpd-config-change || true
+        service snmpd restart || true
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

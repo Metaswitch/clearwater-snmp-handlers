@@ -76,6 +76,9 @@ private:
 
   pthread_t _thread;
 
+  pthread_mutex_t _start_mutex;
+  pthread_cond_t  _start_cond;
+
   void* _ctx;
   void* _sck;
 };

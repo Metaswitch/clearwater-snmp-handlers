@@ -40,22 +40,23 @@
 #include <string>
 #include <map>
 
-#include "alarm_defs.hpp"
+#include "alarm_table_defs.hpp"
 
 // Definition of an entry in the active alarm list. 
 
 class AlarmListEntry
 {
 public:
-  AlarmListEntry() : _alarm_def(NULL) {}
-  AlarmListEntry(AlarmDef* alarm_def, const std::string& issuer) :
-    _alarm_def(alarm_def), _issuer(issuer) {}
+  AlarmListEntry() : _alarm_table_def(NULL) {}
 
-  AlarmDef* alarm_def() {return _alarm_def;}
+  AlarmListEntry(AlarmTableDef& alarm_table_def, const std::string& issuer) :
+    _alarm_table_def(&alarm_table_def), _issuer(issuer) {}
+
+  AlarmTableDef& alarm_table_def() {return *_alarm_table_def;}
   std::string& issuer() {return _issuer;}
 
 private:
-  AlarmDef* _alarm_def;
+  AlarmTableDef* _alarm_table_def;
   std::string _issuer;
 };
 
@@ -85,16 +86,16 @@ public:
   // exist. For a CLEARED severity update, removes an associated alarm of
   // the same alarm model index if one exists. Returns true if a change
   // was made to the list.
-  bool update(AlarmDef* alarm_def, const std::string& issuer);
+  bool update(AlarmTableDef& alarm_table_def, const std::string& issuer);
 
   // Removes an entry from the list obtained via iteration over the list.
   void remove(ActiveAlarmIterator& it);
 
-  ActiveAlarmIterator begin() {return _idx_to_entry.begin();}
-  ActiveAlarmIterator end() {return _idx_to_entry.end();}
+  ActiveAlarmIterator begin() {return _index_to_entry.begin();}
+  ActiveAlarmIterator end() {return _index_to_entry.end();}
 
 private:
-  std::map<unsigned int, AlarmListEntry> _idx_to_entry;
+  std::map<unsigned int, AlarmListEntry> _index_to_entry;
 };
 
 // Singleton helper used to filter inform notifications (as per their
@@ -107,7 +108,7 @@ public:
   // determine if the inform should be filtered (i.e. dropped because
   // it has already been issued within the filter period). This must
   // be tracked based on a <alarm model index, severity> basis.
-  bool alarm_filtered(unsigned int index, AlarmDef::Severity severity);
+  bool alarm_filtered(unsigned int index, unsigned int severity);
 
   static AlarmFilter& get_instance() {return _instance;}
 
@@ -121,8 +122,10 @@ private:
   class AlarmFilterKey
   {
   public:
-    AlarmFilterKey(unsigned int index, AlarmDef::Severity severity) :
-      _index(index), _severity(severity) {}
+    AlarmFilterKey(unsigned int index,
+                   unsigned int severity) :
+      _index(index), 
+      _severity(severity) {}
 
     bool operator<(const AlarmFilterKey& rhs) const;
 
@@ -160,17 +163,17 @@ public:
   // alarms previously initiated by issuer. 
   void clear_alarms(const std::string& issuer);
 
-  // Generates alarmClearState informs corresponding to each of the alarms
-  // defined for this node; followed by alarmActiveState informs for each
-  // currently active alarm.
-  void sync_alarms();
+  // Optionally generates alarmClearState informs corresponding to each of
+  // the alarms defined for this node; followed by alarmActiveState informs
+  // for each currently active alarm.
+  void sync_alarms(bool do_clear);
 
   static AlarmTrapSender& get_instance() {return _instance;}
 
 private:
   AlarmTrapSender() {}
 
-  void send_trap(AlarmDef* alarm);
+  void send_trap(AlarmTableDef& alarm_table_def);
 
   ActiveAlarmList _active_alarms;
 
