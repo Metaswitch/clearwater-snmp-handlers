@@ -23,3 +23,8 @@ Package: clearwater-snmp-handler-homestead
 Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Homestead
+
+Package: clearwater-snmp-handler-alarm
+Architecture: any
+Depends: clearwater-snmpd
+Description: The SNMP handler library for Clearwater alarm reporting
