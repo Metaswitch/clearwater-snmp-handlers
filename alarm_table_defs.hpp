@@ -115,7 +115,7 @@ class AlarmTableDefs
 public:
   // Generate alarm table definitions based on statically initialized
   // alarm data. Should only be called once at sub-agent start-up.
-  bool initialize();
+  bool initialize(const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions = AlarmDef::alarm_definitions);
 
   // Retrieve alarm definition for specified index/severity
   AlarmTableDef& get_definition(unsigned int index,

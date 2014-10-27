@@ -104,6 +104,12 @@ private:
 class AlarmFilter
 {
 public:
+  enum 
+  { 
+    ALARM_FILTER_TIME = 5000,
+    CLEAN_FILTER_TIME = 60000
+  };
+
   // Intened to be called before generating an inform notification to
   // determine if the inform should be filtered (i.e. dropped because
   // it has already been issued within the filter period). This must
@@ -113,12 +119,6 @@ public:
   static AlarmFilter& get_instance() {return _instance;}
 
 private:
-  enum 
-  { 
-    ALARM_FILTER_TIME = 5000,
-    CLEAN_FILTER_TIME = 60000
-  };
-
   class AlarmFilterKey
   {
   public:

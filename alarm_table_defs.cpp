@@ -48,7 +48,7 @@ unsigned int AlarmTableDef::state()
 
   unsigned int idx = severity();
 
-  if ((idx < 1) || (idx > 6))
+  if ((idx < AlarmDef::CLEARED) || (idx > AlarmDef::WARNING))
   {
     idx = 0;
   }
@@ -62,13 +62,15 @@ bool AlarmTableDefKey::operator<(const AlarmTableDefKey& rhs) const
          ((_index == rhs._index) && (_severity < rhs._severity));
 }
 
-bool AlarmTableDefs::initialize()
+bool AlarmTableDefs::initialize(const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions)
 {
   std::map<unsigned int, unsigned int> dup_check;
   bool init_ok = true;
 
+  _key_to_def.clear();
+
   std::vector<AlarmDef::AlarmDefinition>::const_iterator a_it;
-  for (a_it = AlarmDef::alarm_definitions.begin(); a_it != AlarmDef::alarm_definitions.end(); a_it++)
+  for (a_it = alarm_definitions.begin(); a_it != alarm_definitions.end(); a_it++)
   {
     bool has_non_cleared = false;
     bool has_cleared = false;
@@ -136,5 +138,4 @@ AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index,
 
   return (it != _key_to_def.end()) ? it->second : _invalid_def;
 }
-
 

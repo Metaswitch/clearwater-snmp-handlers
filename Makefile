@@ -36,7 +36,72 @@
 all: deb
 
 ROOT ?= ${PWD}
+MK_DIR := ${ROOT}/mk
+
 ALARM_INCLUDES := -I${ROOT}/modules/cpp-common/include
+
+GTEST_DIR := $(ROOT)/modules/gmock/gtest
+GMOCK_DIR := $(ROOT)/modules/gmock
+
+TARGET := handler
+
+TARGET_TEST := handler_test
+
+TARGET_SOURCES := alarmdefinition.cpp \
+                  alarm_handler.cpp \
+                  alarm_table_defs.cpp \
+                  alarm_req_listener.cpp \
+                  alarm_trap_sender.cpp \
+                  alarm_model_table.cpp \
+                  itu_alarm_table.cpp 
+
+TARGET_SOURCES_TEST := test_main.cpp \
+                       alarm.cpp \
+                       log.cpp \
+                       logger.cpp \
+                       alarm_table_defs_test.cpp \
+                       alarm_req_listener_test.cpp \
+                       test_interposer.cpp \
+                       fakenetsnmp.cpp
+
+TARGET_EXTRA_OBJS_TEST := gmock-all.o \
+                          gtest-all.o
+
+CPPFLAGS += -std=c++0x -ggdb3 
+CPPFLAGS += -I$(ROOT) \
+            -I$(ROOT)/modules/cpp-common/include
+
+CPPFLAGS_TEST += -DUNIT_TEST \
+                 -fprofile-arcs -ftest-coverage \
+                 -O0 \
+                 -fno-access-control \
+                 -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include
+CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
+
+LDFLAGS += -lzmq \
+           -lpthread \
+           `net-snmp-config --libs` 
+
+#LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib
+
+# Add modules/cpp-common/src as a VPATH to pull in required common modules
+VPATH := ${ROOT}/modules/cpp-common/src:${ROOT}/modules/cpp-common/test_utils
+
+TEST_XML = $(TEST_OUT_DIR)/test_detail_$(TARGET_TEST).xml
+
+# Now the GMock / GTest boilerplate.
+GTEST_HEADERS := $(GTEST_DIR)/include/gtest/*.h \
+                 $(GTEST_DIR)/include/gtest/internal/*.h
+GMOCK_HEADERS := $(GMOCK_DIR)/include/gmock/*.h \
+                 $(GMOCK_DIR)/include/gmock/internal/*.h \
+                 $(GTEST_HEADERS)
+
+GTEST_SRCS_ := $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+GMOCK_SRCS_ := $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
+# End of boilerplate
+
+
+include ${MK_DIR}/platform.mk
 
 sprout_handler.so: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o sprout_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp sproutdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
@@ -50,6 +115,7 @@ homestead_handler.so: *.cpp *.hpp
 alarm_handler.so: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared ${ALARM_INCLUDES} -o alarm_handler.so alarm_handler.cpp modules/cpp-common/src/alarmdefinition.cpp alarm_table_defs.cpp alarm_model_table.cpp alarm_req_listener.cpp alarm_trap_sender.cpp itu_alarm_table.cpp `net-snmp-config --libs` -lzmq -lpthread
 
+
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
@@ -62,4 +128,29 @@ include build-infra/cw-deb.mk
 deb: sprout_handler.so bono_handler.so homestead_handler.so alarm_handler.so deb-only
 
 .PHONY: all deb-only deb
+
+
+# Run the test.  You can set EXTRA_TEST_ARGS to pass extra arguments
+# to the test, e.g.,
+#
+#   make EXTRA_TEST_ARGS=--gtest_filter=StatefulProxyTest* run_test
+#
+# runs just the StatefulProxyTest tests.
+#
+# Ignore failure here; it will be detected by Jenkins.
+.PHONY: run_test
+run_test: build_test | $(TEST_OUT_DIR)
+	rm -f $(TEST_XML)
+	rm -f $(OBJ_DIR_TEST)/*.gcda
+	$(TARGET_BIN_TEST) $(EXTRA_TEST_ARGS) --gtest_output=xml:$(TEST_XML)
+
+
+# Build rules for GMock/GTest library.
+$(OBJ_DIR_TEST)/gtest-all.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GTEST_DIR)/include -I$(GMOCK_DIR) -I$(GMOCK_DIR)/include \
+            -c $(GTEST_DIR)/src/gtest-all.cc -o $@
+
+$(OBJ_DIR_TEST)/gmock-all.o : $(GMOCK_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GTEST_DIR)/include -I$(GMOCK_DIR) -I$(GMOCK_DIR)/include \
+            -c $(GMOCK_DIR)/src/gmock-all.cc -o $@
 
