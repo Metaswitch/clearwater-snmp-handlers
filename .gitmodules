@@ -1,3 +1,12 @@
 [submodule "build-infra"]
 	path = build-infra
 	url = git@github.com:Metaswitch/clearwater-build-infra.git
+[submodule "modules/cpp-common"]
+	path = modules/cpp-common
+	url = git@github.com:Metaswitch/cpp-common.git
+[submodule "modules/gmock"]
+	path = modules/gmock
+	url = git@github.com:Metaswitch/gmock-upstream.git
+[submodule "modules/gcovr"]
+	path = modules/gcovr
+	url = git@github.com:gcovr/gcovr.git
