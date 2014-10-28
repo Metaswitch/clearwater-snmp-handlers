@@ -89,6 +89,7 @@ public:
   bool update(AlarmTableDef& alarm_table_def, const std::string& issuer);
 
   // Removes an entry from the list obtained via iteration over the list.
+  // The iterator is advanced to the next valid element.
   void remove(ActiveAlarmIterator& it);
 
   ActiveAlarmIterator begin() {return _index_to_entry.begin();}

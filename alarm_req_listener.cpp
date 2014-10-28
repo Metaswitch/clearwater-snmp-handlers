@@ -219,7 +219,7 @@ bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
 {
   int rc;
 
-  int more;
+  int more = 0;
   size_t more_sz = sizeof(more);
 
   do

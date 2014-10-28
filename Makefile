@@ -62,7 +62,8 @@ TARGET_SOURCES_TEST := test_main.cpp \
                        alarm_table_defs_test.cpp \
                        alarm_req_listener_test.cpp \
                        test_interposer.cpp \
-                       fakenetsnmp.cpp
+                       fakenetsnmp.cpp \
+                       fakezmq.cpp
 
 TARGET_EXTRA_OBJS_TEST := gmock-all.o \
                           gtest-all.o
@@ -88,6 +89,25 @@ LDFLAGS += -lzmq \
 VPATH := ${ROOT}/modules/cpp-common/src:${ROOT}/modules/cpp-common/test_utils
 
 TEST_XML = $(TEST_OUT_DIR)/test_detail_$(TARGET_TEST).xml
+COVERAGE_XML = $(TEST_OUT_DIR)/coverage_$(TARGET_TEST).xml
+COVERAGE_LIST_TMP = $(TEST_OUT_DIR)/coverage_list_tmp
+COVERAGE_LIST = $(TEST_OUT_DIR)/coverage_list
+COVERAGE_MASTER_LIST = ut/coverage-not-yet
+VG_XML = $(TEST_OUT_DIR)/vg_$(TARGET_TEST).memcheck
+VG_OUT = $(TEST_OUT_DIR)/vg_$(TARGET_TEST).txt
+VG_LIST = $(TEST_OUT_DIR)/vg_$(TARGET_TEST)_list
+VG_SUPPRESS = $(TARGET_TEST).supp
+
+COVERAGEFLAGS = $(OBJ_DIR_TEST) --object-directory=$(shell pwd) --root=${ROOT} \
+                --exclude='(^include/|^modules/gmock/|^modules/rapidjson/|^modules/cpp-common/include/|^ut/|^usr/|^modules/gemini/src/ut/|^modules/gemini/include/)' \
+                --sort-percentage
+
+EXTRA_CLEANS += $(TEST_XML) \
+                $(COVERAGE_XML) \
+                $(VG_XML) $(VG_OUT) \
+                $(OBJ_DIR_TEST)/*.gcno \
+                $(OBJ_DIR_TEST)/*.gcda \
+                *.gcov
 
 # Now the GMock / GTest boilerplate.
 GTEST_HEADERS := $(GTEST_DIR)/include/gtest/*.h \
@@ -130,6 +150,9 @@ deb: sprout_handler.so bono_handler.so homestead_handler.so alarm_handler.so deb
 .PHONY: all deb-only deb
 
 
+.PHONY: test
+test: run_test coverage vg coverage-check vg-check
+
 # Run the test.  You can set EXTRA_TEST_ARGS to pass extra arguments
 # to the test, e.g.,
 #
@@ -143,6 +166,73 @@ run_test: build_test | $(TEST_OUT_DIR)
 	rm -f $(TEST_XML)
 	rm -f $(OBJ_DIR_TEST)/*.gcda
 	$(TARGET_BIN_TEST) $(EXTRA_TEST_ARGS) --gtest_output=xml:$(TEST_XML)
+
+.PHONY: coverage
+coverage: | run_test
+	$(GCOVR) $(COVERAGEFLAGS) --xml > $(COVERAGE_XML)
+
+# Check that we have 100% coverage of all files except those that we
+# have declared we're being relaxed on.  In particular, all new files
+# must have 100% coverage or be added to $(COVERAGE_MASTER_LIST).
+# The string "Marking build unstable" is recognised by the CI scripts
+# and if it is found the build is marked unstable.
+.PHONY: coverage-check
+coverage-check: | coverage
+	@xmllint --xpath '//class[@line-rate!="1.0"]/@filename' $(COVERAGE_XML) \
+                | tr ' ' '\n' \
+                | grep filename= \
+                | cut -d\" -f2 \
+                | sort > $(COVERAGE_LIST_TMP)
+	@sort $(COVERAGE_MASTER_LIST) | comm -23 $(COVERAGE_LIST_TMP) - > $(COVERAGE_LIST)
+	@if grep -q ^ $(COVERAGE_LIST) ; then \
+                echo "Error: some files unexpectedly have less than 100% code coverage:" ; \
+                cat $(COVERAGE_LIST) ; \
+                /bin/false ; \
+                echo "Marking build unstable." ; \
+        fi
+
+# Get quick coverage data at the command line. Add --branches to get branch info
+# instead of line info in report.  *.gcov files generated in current directory
+# if you need to see full detail.
+.PHONY: coverage_raw
+coverage_raw: | run_test
+	$(GCOVR) $(COVERAGEFLAGS) --keep
+
+.PHONY: debug
+debug: | build_test
+	gdb --args $(TARGET_BIN_TEST) $(EXTRA_TEST_ARGS)
+
+# Don't run VG against death tests; they don't play nicely.
+# Be aware that running this will count towards coverage.
+# Don't send output to console, or it might be confused with the full
+# unit-test run earlier.
+# Test failure should not lead to build failure - instead we observe
+# test failure from Jenkins.
+.PHONY: vg
+vg: | build_test
+	-valgrind --xml=yes --xml-file=$(VG_XML) $(VGFLAGS) \
+          $(TARGET_BIN_TEST) --gtest_filter='-*DeathTest*' $(EXTRA_TEST_ARGS) > $(VG_OUT) 2>&1
+
+# Check whether there were any errors from valgrind. Output to screen any errors found,
+# and details of where to find the full logs.
+# The output file will contain <error><kind>ERROR</kind></error>, or 'XPath set is empty'
+# if there are no errors.
+.PHONY: vg-check
+vg-check: | vg
+	@xmllint --xpath '//error/kind' $(VG_XML) 2>&1 | \
+                sed -e 's#<kind>##g' | \
+                sed -e 's#</kind>#\n#g' | \
+                sort > $(VG_LIST)
+	@if grep -q -v "XPath set is empty" $(VG_LIST) ; then \
+                echo "Error: some memory errors have been detected" ; \
+                cat $(VG_LIST) ; \
+                echo "See $(VG_XML) for further details." ; \
+        fi
+
+.PHONY: vg_raw
+vg_raw: | build_test
+	-valgrind --gen-suppressions=all --show-reachable=yes $(VGFLAGS) \
+          $(TARGET_BIN_TEST) --gtest_filter='-*DeathTest*' $(EXTRA_TEST_ARGS)
 
 
 # Build rules for GMock/GTest library.

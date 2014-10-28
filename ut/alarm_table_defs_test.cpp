@@ -41,8 +41,11 @@
 
 #include "alarm_model_table.hpp"
 
-using ::testing::StrEq;
+#include "fakenetsnmp.h"
+
 using ::testing::Eq;
+using ::testing::StrEq;
+using ::testing::StartsWith;
 
 const std::vector<AlarmDef::AlarmDefinition> alarm_definitions_multi_def =
 {
@@ -155,14 +158,17 @@ public:
   AlarmTableDefsTest() :
     _defs(AlarmTableDefs::get_instance())
   {
+    cwtest_intercept_netsnmp(&_ms);
   }
 
   virtual ~AlarmTableDefsTest()
   {
+    cwtest_restore_netsnmp();
   }
 
 private:
   AlarmTableDefs& _defs;
+  MockNetSnmpInterface _ms;
 };
 
 TEST_F(AlarmTableDefsTest, InitializationOk)
@@ -173,26 +179,31 @@ TEST_F(AlarmTableDefsTest, InitializationOk)
 TEST_F(AlarmTableDefsTest, InitializationMultiDef)
 {
   EXPECT_FALSE(_defs.initialize(alarm_definitions_multi_def));  
+  EXPECT_TRUE(_ms.log_contains("multiply defined"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationClearMissing)
 {
   EXPECT_FALSE(_defs.initialize(alarm_definitions_clear_missing));  
+  EXPECT_TRUE(_ms.log_contains("define a CLEARED"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationNonClearMissing)
 {
   EXPECT_FALSE(_defs.initialize(alarm_definitions_non_clear_missing));  
+  EXPECT_TRUE(_ms.log_contains("define at least one non-CLEARED"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationDescTooLong)
 {
   EXPECT_FALSE(_defs.initialize(alarm_definitions_desc_too_long));  
+  EXPECT_TRUE(_ms.log_contains("'description' exceeds"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationDetailsTooLong)
 {
   EXPECT_FALSE(_defs.initialize(alarm_definitions_details_too_long));  
+  EXPECT_TRUE(_ms.log_contains("'details' exceeds"));
 }
 
 TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
@@ -204,7 +215,9 @@ TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
 
   EXPECT_TRUE(_def.is_valid());
   EXPECT_THAT((int)_def.state(), Eq(6));
+  EXPECT_THAT((int)_def.cause(), Eq(AlarmDef::SOFTWARE_ERROR));
   EXPECT_THAT(_def.description(), StrEq("Sprout: Process failure"));
+  EXPECT_THAT(_def.details(), StartsWith("Monit has detected that the Sprout process has failed."));
 }
 
 TEST_F(AlarmTableDefsTest, InvalidTableDefLookup)

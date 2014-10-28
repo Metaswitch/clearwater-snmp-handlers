@@ -74,7 +74,7 @@ ifeq (${PLATFORM},Linux)
 #endif
 endif
 
-#GCOVR=${ROOT}/modules/gcovr/scripts/gcovr
+GCOVR=${ROOT}/modules/gcovr/scripts/gcovr
 
 # The production executable is TARGET_BIN; the test executable is TARGET_BIN_TEST
 #TARGET_BIN := ${BIN_DIR}/${TARGET}

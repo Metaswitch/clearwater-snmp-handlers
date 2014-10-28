@@ -54,11 +54,16 @@ public:
   bool trap_complete(int count, int timeout);
   void trap_signal();
 
+  void log_insert(const char* data);
+  bool log_contains(const char* fragment);
+
 private:
   pthread_mutex_t _mutex;
   pthread_cond_t  _cond;
 
   int _trap_count;
+
+  std::string _logged;
 };
 
 class MockNetSnmpInterface : public NetSnmpInterface

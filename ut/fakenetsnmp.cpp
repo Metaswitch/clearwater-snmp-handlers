@@ -34,6 +34,8 @@
  * as those licenses appear in the file LICENSE-OPENSSL.
  */
 
+#include <string>
+
 #include "fakenetsnmp.h"
 
 static NetSnmpInterface* netsnmp_intf_p = NULL;
@@ -61,11 +63,11 @@ bool NetSnmpInterface::trap_complete(int count, int timeout)
   wake_time.tv_sec += timeout;
 
   pthread_mutex_lock(&_mutex);
-  _trap_count = count;
-  while ((rc == 0) && (_trap_count > 0))
+  while ((rc == 0) && (_trap_count != count))
   {
     rc = pthread_cond_timedwait(&_cond, &_mutex, &wake_time);
   }
+  _trap_count = 0;
   pthread_mutex_unlock(&_mutex);
 
   return (rc == 0);
@@ -74,9 +76,28 @@ bool NetSnmpInterface::trap_complete(int count, int timeout)
 void NetSnmpInterface::trap_signal()
 {
   pthread_mutex_lock(&_mutex);
-  _trap_count--;
+  _trap_count++;
   pthread_cond_signal(&_cond);
   pthread_mutex_unlock(&_mutex);
+}
+
+void NetSnmpInterface::log_insert(const char* data)
+{
+  std::string line(data);
+  line.append("\n");
+
+  pthread_mutex_lock(&_mutex);
+  _logged.append(line);
+  pthread_mutex_unlock(&_mutex);
+}
+
+bool NetSnmpInterface::log_contains(const char* fragment)
+{
+  bool result;
+  pthread_mutex_lock(&_mutex);
+  result = _logged.find(fragment) != std::string::npos;
+  pthread_mutex_unlock(&_mutex);
+  return result;
 }
 
 void cwtest_intercept_netsnmp(NetSnmpInterface* intf)
@@ -132,6 +153,21 @@ void send_v2trap(netsnmp_variable_list *variable_list)
 
 int snmp_log(int priority, const char *format, ...)
 {
+  if (netsnmp_intf_p)
+  {
+    va_list args;
+    va_start(args, format);
+
+    char buf[1024];
+    const int bufSize = sizeof(buf)/sizeof(buf[0]);
+
+    vsnprintf(buf, bufSize, format, args);
+
+    va_end(args);
+
+    netsnmp_intf_p->log_insert(buf);
+  }
+
   return 0;
 }
 

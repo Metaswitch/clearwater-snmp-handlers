@@ -73,7 +73,7 @@ bool ActiveAlarmList::update(AlarmTableDef& alarm_table_def, const std::string& 
 
 void ActiveAlarmList::remove(ActiveAlarmIterator& it)
 {
-  _index_to_entry.erase(it);
+  _index_to_entry.erase(it++);
 }
 
 bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
@@ -89,11 +89,12 @@ bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
     {
       if (now > (it->second + ALARM_FILTER_TIME))
       {
-        std::map<AlarmFilterKey, unsigned long>::iterator it_tmp = it;
-        _issue_times.erase(it_tmp);
+        _issue_times.erase(it++);
       }
-
-      it++;
+      else
+      {
+        ++it;
+      }
     }
   }
 
@@ -177,11 +178,12 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
         send_trap(clear_def);
       }
 
-      ActiveAlarmIterator it_tmp = it;
-      _active_alarms.remove(it_tmp);
+      _active_alarms.remove(it);
     }
-
-    it++;
+    else
+    {
+      ++it;
+    }
   }
 }
 
