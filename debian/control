@@ -23,3 +23,8 @@ Package: clearwater-snmp-handler-homestead
 Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Homestead
+
+Package: clearwater-snmp-handler-mmtel
+Architecture: any
+Depends: clearwater-snmpd
+Description: The SNMP handler library for statistics about the MMTEL or Call Diversion AS

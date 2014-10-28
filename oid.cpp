@@ -34,6 +34,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include "oid.hpp"
 
@@ -104,12 +105,19 @@ void OID::append(OIDInetAddr oid_addr)
   _oids.insert(_oids.end(), oid_bytes.begin(), oid_bytes.end());
 }
 
+std::string OID::to_string() const
+{
+  std::stringstream ss;
+  for (std::vector<oid>::const_iterator it = _oids.begin() ; it != _oids.end(); ++it)
+  {
+    ss << "." << *it;
+  }
+  return ss.str();
+}
+
 // Debugging tool - prints this OID to stderr
 void OID::dump() const
 {
-  for (std::vector<oid>::const_iterator it = _oids.begin() ; it != _oids.end(); ++it)
-  {
-    std::cerr << "." << *it;
-  }
+  std::cerr << to_string();
 }
 

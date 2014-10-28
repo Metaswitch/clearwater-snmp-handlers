@@ -55,6 +55,7 @@ sprout           OBJECT IDENTIFIER ::= { projectClearwater 3 }
 homer            OBJECT IDENTIFIER ::= { projectClearwater 4 }
 homestead        OBJECT IDENTIFIER ::= { projectClearwater 5 }
 sipp             OBJECT IDENTIFIER ::= { projectClearwater 6 }
+mmtel            OBJECT IDENTIFIER ::= { projectClearwater 1001 }
 
 -- Bono entries
 
@@ -1632,5 +1633,64 @@ homesteadGroup OBJECT-GROUP
     STATUS      current
     DESCRIPTION "Statistics exposed by Homestead"
     ::= { projectClearwaterObjectGroups 4 }
+
+mmtelCdivTotal OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of requests that were diverted."
+    ::= { mmtel 1 }
+
+mmtelCdivUnconditional OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were unconditionally diverted."
+    ::= { mmtel 2 }
+
+mmtelCdivBusy OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a busy
+                 condition."
+    ::= { mmtel 3 }
+
+mmtelCdivNotRegistered OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a not
+                 registered condition."
+    ::= { mmtel 4 }
+
+mmtelCdivNoAnswer OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a no answer
+                 condition."
+    ::= { mmtel 5 }
+
+mmtelCdivNotReachable OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a not
+                 reachable condition."
+    ::= { mmtel 6 }
+
+mmtelGroup OBJECT-GROUP
+    OBJECTS {
+      mmtelCdivTotal,
+      mmtelCdivUnconditional
+      mmtelCdivBusy,
+      mmtelCdivNotRegistered,
+      mmtelCdivNoAnswer,
+      mmtelCdivNotReachable
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by MMTEL or Call Diversion AS"
+    ::= { projectClearwaterObjectGroups 1000 }
 
 END

@@ -96,6 +96,7 @@ int clearwater_handler(netsnmp_mib_handler* handler,
     bool failed = ((long)time(NULL) - last_seen_time) > TIMEOUT_THRESHOLD;
     if (failed)
     {
+      snmp_log(LOG_INFO, "Rejecting request because data out-of-date (%ld ? %ld)", (long)time(NULL), (long)last_seen_time);
       return SNMP_ERR_GENERR;
     }
     OID this_oid(requests->requestvb->name, requests->requestvb->name_length);
