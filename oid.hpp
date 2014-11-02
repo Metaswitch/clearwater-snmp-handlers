@@ -62,6 +62,7 @@ public:
   int get_len() const;
   void append(std::string);
   void append(OIDInetAddr);
+  std::string to_string() const;
   void dump() const;
 private:
   std::vector<oid> _oids;

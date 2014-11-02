@@ -122,7 +122,6 @@ static void dump_oidmap(OIDMap m) {
       it != m.end();
       ++it)
   {
-    it->first.dump();
-    std::cerr << " " << it->second << "\n";
+    std::cerr << it->first.to_string() << " " << it->second << "\n";
   }
 }

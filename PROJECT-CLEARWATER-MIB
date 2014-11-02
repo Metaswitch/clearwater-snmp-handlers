@@ -8,7 +8,7 @@ IMPORTS
 -- Module definition
 
   projectClearwater MODULE-IDENTITY
-        LAST-UPDATED "201310102120Z"
+        LAST-UPDATED "201410310000Z"
         ORGANIZATION "Metaswitch"
         CONTACT-INFO
           "Metaswitch
@@ -55,6 +55,7 @@ sprout           OBJECT IDENTIFIER ::= { projectClearwater 3 }
 homer            OBJECT IDENTIFIER ::= { projectClearwater 4 }
 homestead        OBJECT IDENTIFIER ::= { projectClearwater 5 }
 sipp             OBJECT IDENTIFIER ::= { projectClearwater 6 }
+callDiversionAs  OBJECT IDENTIFIER ::= { projectClearwater 7 }
 
 -- Bono entries
 
@@ -1632,5 +1633,100 @@ homesteadGroup OBJECT-GROUP
     STATUS      current
     DESCRIPTION "Statistics exposed by Homestead"
     ::= { projectClearwaterObjectGroups 4 }
+
+cdivAsDiversionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsDiversionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts of diversion reasons by the Call Diversion AS over
+                 the given period."
+    ::= { callDiversionAs 1 }
+
+cdivAsDiversionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsDiversionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of diversion reasons by the Call Diversion AS"
+    INDEX       { cdivAsDiversionsScope }
+    ::= { cdivAsDiversionTable 1 }
+
+CdivAsDiversionsEntry ::= SEQUENCE
+{
+  cdivAsDiversionsScope          INTEGER,
+  cdivAsTotal                    Unsigned32,
+  cdivAsUnconditional            Unsigned32,
+  cdivAsBusy                     Unsigned32,
+  cdivAsNotRegistered            Unsigned32,
+  cdivAsNoAnswer                 Unsigned32,
+  cdivAsNotReachable             Unsigned32
+}
+
+cdivAsDiversionsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { cdivAsDiversionsEntry 1 }
+
+cdivAsTotal OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of requests that were diverted."
+    ::= { cdivAsDiversionsEntry 2 }
+
+cdivAsUnconditional OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were unconditionally diverted."
+    ::= { cdivAsDiversionsEntry 3 }
+
+cdivAsBusy OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a busy
+                 condition."
+    ::= { cdivAsDiversionsEntry 4 }
+
+cdivAsNotRegistered OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a not
+                 registered condition."
+    ::= { cdivAsDiversionsEntry 5 }
+
+cdivAsNoAnswer OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a no answer
+                 condition."
+    ::= { cdivAsDiversionsEntry 6 }
+
+cdivAsNotReachable OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a not
+                 reachable condition."
+    ::= { cdivAsDiversionsEntry 7 }
+
+cdivGroup OBJECT-GROUP
+    OBJECTS {
+      cdivAsTotal,
+      cdivAsUnconditional
+      cdivAsBusy,
+      cdivAsNotRegistered,
+      cdivAsNoAnswer,
+      cdivAsNotReachable
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by Call Diversion AS"
+    ::= { projectClearwaterObjectGroups 6 }
 
 END

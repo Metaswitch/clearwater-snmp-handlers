@@ -32,57 +32,52 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
-#ifndef ZMQ_MESSAGE_HANDLER_HPP
-#define ZMQ_MESSAGE_HANDLER_HPP
+#include "globals.hpp"
+#include "nodedata.hpp"
+#include "custom_handler.hpp"
+#include "zmq_message_handler.hpp"
 
-#include "oid.hpp"
-#include <string>
-#include <vector>
-#include "oidtree.hpp"
+OID cdiv_total_oid = OID("1.2.826.0.1.1578918.9.7.1.2");
+OID cdiv_unconditional_oid = OID("1.2.826.0.1.1578918.9.7.1.3");
+OID cdiv_busy_oid = OID("1.2.826.0.1.1578918.9.7.1.4");
+OID cdiv_not_registered_oid = OID("1.2.826.0.1.1578918.9.7.1.5");
+OID cdiv_no_answer_oid = OID("1.2.826.0.1.1578918.9.7.1.6");
+OID cdiv_not_reachable_oid = OID("1.2.826.0.1.1578918.9.7.1.7");
 
-class ZMQMessageHandler
+BareStatHandler cdiv_total_handler(cdiv_total_oid, &tree);
+BareStatHandler cdiv_unconditional_handler(cdiv_unconditional_oid, &tree);
+BareStatHandler cdiv_busy_handler(cdiv_busy_oid, &tree);
+BareStatHandler cdiv_not_registered_handler(cdiv_not_registered_oid, &tree);
+BareStatHandler cdiv_no_answer_handler(cdiv_no_answer_oid, &tree);
+BareStatHandler cdiv_not_reachable_handler(cdiv_not_reachable_oid, &tree);
+
+NodeData::NodeData()
 {
-public:
-  ZMQMessageHandler(OID oid, OIDTree* tree) : _root_oid(oid), _tree(tree) {};
-  virtual void handle(std::vector<std::string>) = 0;
-protected:
-  OID _root_oid;
-  OIDTree* _tree;
+  name = "cdiv_handler";
+  port = "6666";
+  root_oid = OID("1.2.826.0.1.1578918.9.7");
+  stats = {"cdiv_total",
+           "cdiv_unconditional",
+           "cdiv_busy", 
+           "cdiv_not_registered",
+           "cdiv_no_answer", 
+           "cdiv_not_reachable"};
+  stat_to_handler = {{"cdiv_total", &cdiv_total_handler},
+                     {"cdiv_unconditional", &cdiv_unconditional_handler},
+                     {"cdiv_busy", &cdiv_busy_handler},
+                     {"cdiv_not_registered", &cdiv_not_registered_handler},
+                     {"cdiv_no_answer", &cdiv_no_answer_handler},
+                     {"cdiv_not_reachable", &cdiv_not_reachable_handler}
+                    };
 };
 
-class IPCountStatHandler: public ZMQMessageHandler
-{
-public:
-  IPCountStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
-  void handle(std::vector<std::string>);
-};
+NodeData node_data;
 
-class BareStatHandler: public ZMQMessageHandler
+extern "C"
 {
-public:
-  BareStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
-  void handle(std::vector<std::string>);
-};
-
-class SingleNumberStatHandler: public ZMQMessageHandler
-{
-public:
-  SingleNumberStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
-  void handle(std::vector<std::string>);
-};
-
-class SingleNumberWithScopeStatHandler: public ZMQMessageHandler
-{
-public:
-  SingleNumberWithScopeStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
-  void handle(std::vector<std::string>);
-};
-
-class AccumulatedWithCountStatHandler: public ZMQMessageHandler
-{
-public:
-  AccumulatedWithCountStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
-  void handle(std::vector<std::string>);
-};
-
-#endif
+  // SNMPd looks for an init_<module_name> function in this library
+  void init_cdiv_handler()
+  {
+    initialize_handler();
+  }
+}

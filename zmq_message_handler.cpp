@@ -61,6 +61,14 @@ void IPCountStatHandler::handle(std::vector<std::string> msgs)
   _tree->replace_subtree(_root_oid, new_subtree);
 }
 
+void BareStatHandler::handle(std::vector<std::string> msgs)
+{
+  // First two entries are the statistic name and the string "OK", so
+  // skip them
+
+  _tree->set(_root_oid, atoi(msgs[2].c_str()));
+}
+
 void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
 {
   OIDMap new_subtree;
