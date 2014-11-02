@@ -16,5 +16,5 @@ It contains the following packages:
 * clearwater-snmp-handler-bono: stats for Bono nodes
 * clearwater-snmp-handler-sprout: stats for Sprout nodes
 * clearwater-snmp-handler-homestead: stats for Homestead nodes
-* clearwater-snmp-handler-mmtel: stats for MMTEL or Call Diversion AS nodes
+* clearwater-snmp-handler-cdiv: stats for Call Diversion AS nodes
 

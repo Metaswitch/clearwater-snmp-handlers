@@ -57,6 +57,13 @@ public:
   void handle(std::vector<std::string>);
 };
 
+class BareStatHandler: public ZMQMessageHandler
+{
+public:
+  BareStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
+  void handle(std::vector<std::string>);
+};
+
 class SingleNumberStatHandler: public ZMQMessageHandler
 {
 public:

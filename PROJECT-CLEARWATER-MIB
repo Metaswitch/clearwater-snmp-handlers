@@ -8,7 +8,7 @@ IMPORTS
 -- Module definition
 
   projectClearwater MODULE-IDENTITY
-        LAST-UPDATED "201310102120Z"
+        LAST-UPDATED "201410310000Z"
         ORGANIZATION "Metaswitch"
         CONTACT-INFO
           "Metaswitch
@@ -55,7 +55,7 @@ sprout           OBJECT IDENTIFIER ::= { projectClearwater 3 }
 homer            OBJECT IDENTIFIER ::= { projectClearwater 4 }
 homestead        OBJECT IDENTIFIER ::= { projectClearwater 5 }
 sipp             OBJECT IDENTIFIER ::= { projectClearwater 6 }
-mmtel            OBJECT IDENTIFIER ::= { projectClearwater 1001 }
+callDiversionAs  OBJECT IDENTIFIER ::= { projectClearwater 7 }
 
 -- Bono entries
 
@@ -1634,63 +1634,99 @@ homesteadGroup OBJECT-GROUP
     DESCRIPTION "Statistics exposed by Homestead"
     ::= { projectClearwaterObjectGroups 4 }
 
-mmtelCdivTotal OBJECT-TYPE
+cdivAsDiversionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsDiversionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts of diversion reasons by the Call Diversion AS over
+                 the given period."
+    ::= { callDiversionAs 1 }
+
+cdivAsDiversionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsDiversionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of diversion reasons by the Call Diversion AS"
+    INDEX       { cdivAsDiversionsScope }
+    ::= { cdivAsDiversionTable 1 }
+
+CdivAsDiversionsEntry ::= SEQUENCE
+{
+  cdivAsDiversionsScope          INTEGER,
+  cdivAsTotal                    Unsigned32,
+  cdivAsUnconditional            Unsigned32,
+  cdivAsBusy                     Unsigned32,
+  cdivAsNotRegistered            Unsigned32,
+  cdivAsNoAnswer                 Unsigned32,
+  cdivAsNotReachable             Unsigned32
+}
+
+cdivAsDiversionsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { cdivAsDiversionsEntry 1 }
+
+cdivAsTotal OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of requests that were diverted."
-    ::= { mmtel 1 }
+    ::= { cdivAsDiversionsEntry 2 }
 
-mmtelCdivUnconditional OBJECT-TYPE
+cdivAsUnconditional OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of requests that were unconditionally diverted."
-    ::= { mmtel 2 }
+    ::= { cdivAsDiversionsEntry 3 }
 
-mmtelCdivBusy OBJECT-TYPE
+cdivAsBusy OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of requests that were diverted due to a busy
                  condition."
-    ::= { mmtel 3 }
+    ::= { cdivAsDiversionsEntry 4 }
 
-mmtelCdivNotRegistered OBJECT-TYPE
+cdivAsNotRegistered OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of requests that were diverted due to a not
                  registered condition."
-    ::= { mmtel 4 }
+    ::= { cdivAsDiversionsEntry 5 }
 
-mmtelCdivNoAnswer OBJECT-TYPE
+cdivAsNoAnswer OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of requests that were diverted due to a no answer
                  condition."
-    ::= { mmtel 5 }
+    ::= { cdivAsDiversionsEntry 6 }
 
-mmtelCdivNotReachable OBJECT-TYPE
+cdivAsNotReachable OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of requests that were diverted due to a not
                  reachable condition."
-    ::= { mmtel 6 }
+    ::= { cdivAsDiversionsEntry 7 }
 
-mmtelGroup OBJECT-GROUP
+cdivGroup OBJECT-GROUP
     OBJECTS {
-      mmtelCdivTotal,
-      mmtelCdivUnconditional
-      mmtelCdivBusy,
-      mmtelCdivNotRegistered,
-      mmtelCdivNoAnswer,
-      mmtelCdivNotReachable
+      cdivAsTotal,
+      cdivAsUnconditional
+      cdivAsBusy,
+      cdivAsNotRegistered,
+      cdivAsNoAnswer,
+      cdivAsNotReachable
     }
     STATUS      current
-    DESCRIPTION "Statistics exposed by MMTEL or Call Diversion AS"
-    ::= { projectClearwaterObjectGroups 1000 }
+    DESCRIPTION "Statistics exposed by Call Diversion AS"
+    ::= { projectClearwaterObjectGroups 6 }
 
 END

@@ -24,7 +24,7 @@ Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Homestead
 
-Package: clearwater-snmp-handler-mmtel
+Package: clearwater-snmp-handler-cdiv
 Architecture: any
 Depends: clearwater-snmpd
-Description: The SNMP handler library for statistics about the MMTEL or Call Diversion AS
+Description: The SNMP handler library for statistics about the Call Diversion AS

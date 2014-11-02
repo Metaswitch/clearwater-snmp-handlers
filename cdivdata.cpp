@@ -37,25 +37,25 @@
 #include "custom_handler.hpp"
 #include "zmq_message_handler.hpp"
 
-OID cdiv_total_oid = OID("1.2.826.0.1.1578918.9.1001.1");
-OID cdiv_unconditional_oid = OID("1.2.826.0.1.1578918.9.1001.2");
-OID cdiv_busy_oid = OID("1.2.826.0.1.1578918.9.1001.3");
-OID cdiv_not_registered_oid = OID("1.2.826.0.1.1578918.9.1001.4");
-OID cdiv_no_answer_oid = OID("1.2.826.0.1.1578918.9.1001.5");
-OID cdiv_not_reachable_oid = OID("1.2.826.0.1.1578918.9.1001.6");
+OID cdiv_total_oid = OID("1.2.826.0.1.1578918.9.7.1.2");
+OID cdiv_unconditional_oid = OID("1.2.826.0.1.1578918.9.7.1.3");
+OID cdiv_busy_oid = OID("1.2.826.0.1.1578918.9.7.1.4");
+OID cdiv_not_registered_oid = OID("1.2.826.0.1.1578918.9.7.1.5");
+OID cdiv_no_answer_oid = OID("1.2.826.0.1.1578918.9.7.1.6");
+OID cdiv_not_reachable_oid = OID("1.2.826.0.1.1578918.9.7.1.7");
 
-SingleNumberStatHandler cdiv_total_handler(cdiv_total_oid, &tree);
-SingleNumberStatHandler cdiv_unconditional_handler(cdiv_unconditional_oid, &tree);
-SingleNumberStatHandler cdiv_busy_handler(cdiv_busy_oid, &tree);
-SingleNumberStatHandler cdiv_not_registered_handler(cdiv_not_registered_oid, &tree);
-SingleNumberStatHandler cdiv_no_answer_handler(cdiv_no_answer_oid, &tree);
-SingleNumberStatHandler cdiv_not_reachable_handler(cdiv_not_reachable_oid, &tree);
+BareStatHandler cdiv_total_handler(cdiv_total_oid, &tree);
+BareStatHandler cdiv_unconditional_handler(cdiv_unconditional_oid, &tree);
+BareStatHandler cdiv_busy_handler(cdiv_busy_oid, &tree);
+BareStatHandler cdiv_not_registered_handler(cdiv_not_registered_oid, &tree);
+BareStatHandler cdiv_no_answer_handler(cdiv_no_answer_oid, &tree);
+BareStatHandler cdiv_not_reachable_handler(cdiv_not_reachable_oid, &tree);
 
 NodeData::NodeData()
 {
-  name = "mmtel_handler";
+  name = "cdiv_handler";
   port = "6666";
-  root_oid = OID("1.2.826.0.1.1578918.9.1001");
+  root_oid = OID("1.2.826.0.1.1578918.9.7");
   stats = {"cdiv_total",
            "cdiv_unconditional",
            "cdiv_busy", 
@@ -76,7 +76,7 @@ NodeData node_data;
 extern "C"
 {
   // SNMPd looks for an init_<module_name> function in this library
-  void init_mmtel_handler()
+  void init_cdiv_handler()
   {
     initialize_handler();
   }
