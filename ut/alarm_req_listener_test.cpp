@@ -67,9 +67,9 @@ class AlarmReqListenerTest : public ::testing::Test
 {
 public:
   AlarmReqListenerTest() :
-    _alarm_pair_1(issuer1, AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR, AlarmDef::CRITICAL),
-    _alarm_pair_2(issuer1, AlarmDef::SPROUT_MEMCACHED_COMM_ERROR, AlarmDef::CRITICAL),
-    _alarm_pair_3(issuer2, AlarmDef::HOMESTEAD_CASSANDRA_COMM_ERROR, AlarmDef::CRITICAL)
+    _alarm_1(issuer1, AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR, AlarmDef::CRITICAL),
+    _alarm_2(issuer1, AlarmDef::SPROUT_MEMCACHED_COMM_ERROR, AlarmDef::CRITICAL),
+    _alarm_3(issuer2, AlarmDef::HOMESTEAD_CASSANDRA_COMM_ERROR, AlarmDef::CRITICAL)
   {
     cwtest_completely_control_time();
     cwtest_advance_time_ms(_delta_ms);
@@ -130,9 +130,9 @@ public:
 
 private:
   MockNetSnmpInterface _ms;
-  AlarmPair _alarm_pair_1;
-  AlarmPair _alarm_pair_2;
-  AlarmPair _alarm_pair_3;
+  Alarm _alarm_1;
+  Alarm _alarm_2;
+  Alarm _alarm_3;
   static long _delta_ms;
 };
 
@@ -142,7 +142,6 @@ class AlarmReqListenerZmqErrorTest : public ::testing::Test
 {
 public:
   AlarmReqListenerZmqErrorTest() :
-    _alarm(issuer1, AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR, AlarmDef::CRITICAL),
     _c(1),
     _s(2)
   {
@@ -159,7 +158,6 @@ public:
 private:
   MockNetSnmpInterface _ms;
   MockZmqInterface _mz;
-  Alarm _alarm;
   int _c;
   int _s;
 };
@@ -230,7 +228,7 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                         AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
 
-  _alarm_pair_1.set();
+  _alarm_1.set();
   _ms.trap_complete(1, 5);
 }
 
@@ -239,9 +237,9 @@ TEST_F(AlarmReqListenerTest, ClearAlarm)
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                         AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
 
-  _alarm_pair_1.set();
+  _alarm_1.set();
 
-  _alarm_pair_1.clear();
+  _alarm_1.clear();
   _ms.trap_complete(1, 5);
 }
 
@@ -265,12 +263,12 @@ TEST_F(AlarmReqListenerTest, ClearAlarms)
                                           AlarmDef::HOMESTEAD_CASSANDRA_COMM_ERROR)));
   }
 
-  _alarm_pair_1.set();
-  _alarm_pair_2.set();
-  _alarm_pair_3.set();
+  _alarm_1.set();
+  _alarm_2.set();
+  _alarm_3.set();
 
-  Alarm::clear_all(issuer1);
-  Alarm::clear_all(issuer2);
+  AlarmState::clear_all(issuer1);
+  AlarmState::clear_all(issuer2);
 
   _ms.trap_complete(6, 5);
 }
@@ -294,7 +292,7 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
                                           AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
   }
 
-  _alarm_pair_1.set();
+  _alarm_1.set();
 
   sync_alarms();
 
@@ -317,8 +315,8 @@ TEST_F(AlarmReqListenerTest, SyncAlarmsNoClear)
 
   sync_alarms_no_clear();
 
-  _alarm_pair_1.set();
-  _alarm_pair_1.clear();
+  _alarm_1.set();
+  _alarm_1.clear();
 
   _ms.trap_complete(2, 5);
 }
@@ -345,12 +343,12 @@ TEST_F(AlarmReqListenerTest, AlarmFilter)
 
   for (int idx = 0; idx < 10; idx++)
   {
-    _alarm_pair_1.set();
-    _alarm_pair_1.clear();
+    _alarm_1.set();
+    _alarm_1.clear();
   }
 
-  _alarm_pair_2.set();
-  _alarm_pair_2.clear();
+  _alarm_2.set();
+  _alarm_2.clear();
 
   _ms.trap_complete(4, 5);
 }
@@ -375,18 +373,18 @@ TEST_F(AlarmReqListenerTest, AlarmFilterClean)
                                           AlarmDef::SPROUT_MEMCACHED_COMM_ERROR)));
   }
 
-  _alarm_pair_1.set();
+  _alarm_1.set();
   _ms.trap_complete(1, 5);
 
   advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME - 2000);
 
-  _alarm_pair_2.set();
+  _alarm_2.set();
   _ms.trap_complete(1, 5);
 
   advance_time_ms(3000);
 
-  _alarm_pair_1.clear();
-  _alarm_pair_2.clear();
+  _alarm_1.clear();
+  _alarm_2.clear();
   _ms.trap_complete(2, 5);
 }
 
