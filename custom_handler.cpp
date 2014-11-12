@@ -57,7 +57,7 @@ void* start_stats (void* arg)
 void initialize_handler(void)
 {
   netsnmp_handler_registration* my_handler;
-  last_seen_time.store(time(NULL));
+  last_seen_time.store(0);
   static oid* root;
   snmp_clone_mem((void**)&root,
                  (void*)(node_data.root_oid.get_ptr()),
@@ -91,54 +91,54 @@ int clearwater_handler(netsnmp_mib_handler* handler,
   netsnmp_request_info* request;
   netsnmp_variable_list* var;
 
-  for(request = requests; request; request = request->next)
+  bool up_to_date = ((long)time(NULL) - last_seen_time) > TIMEOUT_THRESHOLD;
+  if (up_to_date)
   {
-    bool failed = ((long)time(NULL) - last_seen_time) > TIMEOUT_THRESHOLD;
-    if (failed)
+    for(request = requests; request; request = request->next)
     {
-      snmp_log(LOG_INFO, "Rejecting request because data out-of-date (%ld ? %ld)", (long)time(NULL), (long)last_seen_time);
-      return SNMP_ERR_GENERR;
-    }
-    OID this_oid(requests->requestvb->name, requests->requestvb->name_length);
-    int outval;
-    unsigned int retval;
-    OID outoid;
+      OID this_oid(requests->requestvb->name, requests->requestvb->name_length);
+      int outval;
+      unsigned int retval;
+      OID outoid;
 
-    var = request->requestvb;
-    if (request->processed != 0)
-    {
-      continue;
-    }
-
-    switch (reqinfo->mode)
-    {
-    case MODE_GET:
-      if (tree.get(this_oid, outval))
+      var = request->requestvb;
+      if (request->processed != 0)
       {
-        retval = outval;
-        snmp_set_var_typed_value(var, ASN_UNSIGNED,
-                                 (u_char*)&retval,
-                                 sizeof(retval));
-
+        continue;
       }
-      break;
-    case MODE_GETNEXT:
-      if (tree.get_next(this_oid, outoid, outval))
+
+      switch (reqinfo->mode)
       {
-        retval = outval;
-        snmp_set_var_objid(var,
-                           outoid.get_ptr(),
-                           outoid.get_len());
-        snmp_set_var_typed_value(var, ASN_UNSIGNED,
-                                 (u_char*)&retval,
-                                 sizeof(retval));
+      case MODE_GET:
+        if (tree.get(this_oid, outval))
+        {
+          retval = outval;
+          snmp_set_var_typed_value(var, ASN_UNSIGNED,
+                                   (u_char*)&retval,
+                                   sizeof(retval));
+        }
+        break;
+      case MODE_GETNEXT:
+        if (tree.get_next(this_oid, outoid, outval))
+        {
+          retval = outval;
+          snmp_set_var_objid(var,
+                             outoid.get_ptr(),
+                             outoid.get_len());
+          snmp_set_var_typed_value(var, ASN_UNSIGNED,
+                                   (u_char*)&retval,
+                                   sizeof(retval));
+        }
+        break;
 
+      default:
+        snmp_log(LOG_ERR, "problem encountered in Clearwater handler: unsupported mode\n");
       }
-      break;
-
-    default:
-      snmp_log(LOG_ERR, "problem encountered in Clearwater handler: unsupported mode\n");
     }
+  }
+  else
+  {
+    snmp_log(LOG_INFO, "Ignoring request because data out of date (%ld ? %ld)", (long)time(NULL), (long)last_seen_time);
   }
 
   return SNMP_ERR_NOERROR;
