@@ -1648,7 +1648,7 @@ cdivAsDiversionsEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Counts of diversion reasons by the Call Diversion AS"
     INDEX       { cdivAsDiversionsScope }
-    ::= { cdivAsDiversionTable 1 }
+    ::= { cdivAsDiversionsTable 1 }
 
 CdivAsDiversionsEntry ::= SEQUENCE
 {
@@ -1719,7 +1719,7 @@ cdivAsNotReachable OBJECT-TYPE
 cdivGroup OBJECT-GROUP
     OBJECTS {
       cdivAsTotal,
-      cdivAsUnconditional
+      cdivAsUnconditional,
       cdivAsBusy,
       cdivAsNotRegistered,
       cdivAsNoAnswer,
