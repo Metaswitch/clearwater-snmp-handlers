@@ -132,7 +132,7 @@ int clearwater_handler(netsnmp_mib_handler* handler,
         break;
 
       default:
-        snmp_log(LOG_ERR, "problem encountered in Clearwater handler: unsupported mode\n");
+        snmp_log(LOG_ERR, "problem encountered in Clearwater handler: unsupported mode %d", reqinfo->mode);
       }
     }
   }
