@@ -43,13 +43,13 @@ projectClearwaterCompliance MODULE-COMPLIANCE
     DESCRIPTION "Compilance statement for PROJECT-CLEARWATER-MIB"
     MODULE
     GROUP bonoGroup
-    DESCRIPTION "The bonoGroup must be exposed by bono nodes"
+    DESCRIPTION "The bonoGroup must be exposed by Bono nodes"
     GROUP sproutGroup
-    DESCRIPTION "The sproutGroup must be exposed by sprout nodes"
+    DESCRIPTION "The sproutGroup must be exposed by Sprout nodes"
     GROUP homesteadGroup
-    DESCRIPTION "The homesteadGroup must be exposed by homestead nodes"
-    GROUP cdivGroup
-    DESCRIPTION "The cdivGroup must be exposed by CDiv nodes"
+    DESCRIPTION "The homesteadGroup must be exposed by Homestead nodes"
+    GROUP callDiversionASGroup
+    DESCRIPTION "The callDiversionASGroup must be exposed by Call Diversion AS nodes"
     GROUP mementoGroup
     DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
     ::= { projectClearwaterConformance 1 }
@@ -1643,7 +1643,7 @@ homesteadGroup OBJECT-GROUP
     DESCRIPTION "Statistics exposed by Homestead"
     ::= { projectClearwaterObjectGroups 4 }
 
--- CDiv Entries
+-- Call Diversion AS Entries
 
 cdivAsDiversionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF CdivAsDiversionsEntry
@@ -1727,7 +1727,7 @@ cdivAsNotReachable OBJECT-TYPE
                  reachable condition."
     ::= { cdivAsDiversionsEntry 7 }
 
-cdivGroup OBJECT-GROUP
+callDiversionASGroup OBJECT-GROUP
     OBJECTS {
       cdivAsTotal,
       cdivAsUnconditional,
@@ -1845,7 +1845,7 @@ mementoHTTPRequestLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoHTTPRequestLatencyTableEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Latency of call record retrieval requests over the given
+    DESCRIPTION "Latency of HTTP call record retrieval requests over the given
                  period.  Latency measured in microseconds"
     ::= { memento 3 }
 
@@ -1853,7 +1853,7 @@ mementoHTTPRequestLatencyEntry OBJECT-TYPE
     SYNTAX      MementoHTTPRequestLatencyTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The average, variance, LWM and HWM of call retrieval latency"
+    DESCRIPTION "The average, variance, LWM and HWM of HTTP call retrieval latency"
     INDEX       { mementoHTTPRequestLatencyScope }
     ::= { mementoHTTPRequestLatencyTable 1 }
 
@@ -2221,14 +2221,14 @@ mementoRetrievedCallRecordLengthLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoRetrievedCallRecordLengthEntry 5 }
 
-auth OBJECT IDENTIFIER ::= { memento 9 }
+mementoAuthProxy OBJECT IDENTIFIER ::= { memento 9 }
 
 mementoConnectedHomesteadsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoConnectedHomesteadsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Statistics for each connected upstream Homestead node"
-    ::= { auth 1 }
+    ::= { mementoAuthProxy 1 }
 
 mementoConnectedHomesteadsEntry OBJECT-TYPE
     SYNTAX MementoConnectedHomesteadsEntry
@@ -2274,7 +2274,7 @@ mementoAuthAttemptTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts of authentication attempts over the given period."
-    ::= { auth 2 }
+    ::= { mementoAuthProxy 2 }
 
 mementoAuthAttemptEntry OBJECT-TYPE
     SYNTAX      MementoAuthAttemptTableEntry
@@ -2314,21 +2314,21 @@ mementoAuthFailureCount OBJECT-TYPE
     DESCRIPTION "The count of authentication failures."
     ::= { mementoAuthAttemptEntry 3 }
 
-disk OBJECT IDENTIFIER::= { memento 10 }
+mementoDiskUsage OBJECT IDENTIFIER::= { memento 10 }
 
 mementoDatabaseDiskUsage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Current Memento database disk usage."
-    ::= { disk 1 }
+    ::= { mementoDiskUsage 1 }
 
 mementoBackupsDiskUsage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Current Memento backup disk usage."
-    ::= { disk 2 }
+    ::= { mementoDiskUsage 2 }
 
 mementoGroup OBJECT-GROUP
     OBJECTS {
