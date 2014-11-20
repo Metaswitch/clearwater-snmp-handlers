@@ -1746,8 +1746,7 @@ mementoCallsRecordedTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoCallsRecordedTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Counts of call record creation outcomes for
-                 the given period."
+    DESCRIPTION "Counts of call record creation outcomes for the given period."
     ::= { memento 1 }
 
 mementoCallsRecordedTableEntry OBJECT-TYPE
@@ -1854,8 +1853,7 @@ mementoHTTPRequestLatencyEntry OBJECT-TYPE
     SYNTAX      MementoHTTPRequestLatencyTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The average, variance, LWM and HWM of HTTPRequest database access
-                 latency"
+    DESCRIPTION "The average, variance, LWM and HWM of call retrieval latency"
     INDEX       { mementoHTTPRequestLatencyScope }
     ::= { mementoHTTPRequestLatencyTable 1 }
 
