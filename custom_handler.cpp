@@ -91,7 +91,7 @@ int clearwater_handler(netsnmp_mib_handler* handler,
   netsnmp_request_info* request;
   netsnmp_variable_list* var;
 
-  bool up_to_date = ((long)time(NULL) - last_seen_time) > TIMEOUT_THRESHOLD;
+  bool up_to_date = ((long)time(NULL) - last_seen_time) < TIMEOUT_THRESHOLD;
   if (up_to_date)
   {
     for(request = requests; request; request = request->next)
