@@ -37,12 +37,12 @@
 #include "custom_handler.hpp"
 #include "zmq_message_handler.hpp"
 
-OID cdiv_total_oid = OID("1.2.826.0.1.1578918.9.7.1.2");
-OID cdiv_unconditional_oid = OID("1.2.826.0.1.1578918.9.7.1.3");
-OID cdiv_busy_oid = OID("1.2.826.0.1.1578918.9.7.1.4");
-OID cdiv_not_registered_oid = OID("1.2.826.0.1.1578918.9.7.1.5");
-OID cdiv_no_answer_oid = OID("1.2.826.0.1.1578918.9.7.1.6");
-OID cdiv_not_reachable_oid = OID("1.2.826.0.1.1578918.9.7.1.7");
+OID cdiv_total_oid = OID("1.2.826.0.1.1578918.9.7.1.1.2");
+OID cdiv_unconditional_oid = OID("1.2.826.0.1.1578918.9.7.1.1.3");
+OID cdiv_busy_oid = OID("1.2.826.0.1.1578918.9.7.1.1.4");
+OID cdiv_not_registered_oid = OID("1.2.826.0.1.1578918.9.7.1.1.5");
+OID cdiv_no_answer_oid = OID("1.2.826.0.1.1578918.9.7.1.1.6");
+OID cdiv_not_reachable_oid = OID("1.2.826.0.1.1578918.9.7.1.1.7");
 
 BareStatHandler cdiv_total_handler(cdiv_total_oid, &tree);
 BareStatHandler cdiv_unconditional_handler(cdiv_unconditional_oid, &tree);
