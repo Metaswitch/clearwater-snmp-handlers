@@ -1821,7 +1821,8 @@ MementoSIPCassandraReadLatencyEntry ::= SEQUENCE
   mementoSIPCassandraReadLatencyAverage        Unsigned32,
   mementoSIPCassandraReadLatencyVariance       Unsigned32,
   mementoSIPCassandraReadLatencyHWM            Unsigned32,
-  mementoSIPCassandraReadLatencyLWM            Unsigned32
+  mementoSIPCassandraReadLatencyLWM            Unsigned32,
+  mementoSIPCassandraReadLatencyCount          Unsigned32
 }
 
 mementoSIPCassandraReadLatencyScope OBJECT-TYPE
@@ -1861,6 +1862,13 @@ mementoSIPCassandraReadLatencyLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoSIPCassandraReadLatencyEntry 5 }
 
+mementoSIPCassandraReadLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of reads over the period."
+    ::= { mementoSIPCassandraReadLatencyEntry 6 }
+
 mementoSIPCassandraWriteLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoSIPCassandraWriteLatencyTableEntry
     MAX-ACCESS not-accessible
@@ -1885,7 +1893,8 @@ MementoSIPCassandraWriteLatencyTableEntry ::= SEQUENCE
   mementoSIPCassandraWriteLatencyAverage        Unsigned32,
   mementoSIPCassandraWriteLatencyVariance       Unsigned32,
   mementoSIPCassandraWriteLatencyHWM            Unsigned32,
-  mementoSIPCassandraWriteLatencyLWM            Unsigned32
+  mementoSIPCassandraWriteLatencyLWM            Unsigned32,
+  mementoSIPCassandraWriteLatencyCount          Unsigned32
 }
 
 mementoSIPCassandraWriteLatencyScope OBJECT-TYPE
@@ -1924,6 +1933,13 @@ mementoSIPCassandraWriteLatencyLWM OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoSIPCassandraWriteLatencyEntry 5 }
+
+mementoSIPCassandraWriteLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of writes over the period."
+    ::= { mementoSIPCassandraWriteLatencyEntry 6 }
 
 mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
 
@@ -1995,7 +2011,8 @@ MementoHTTPRequestLatencyTableEntry ::= SEQUENCE
   mementoHTTPRequestLatencyAverage        Unsigned32,
   mementoHTTPRequestLatencyVariance       Unsigned32,
   mementoHTTPRequestLatencyHWM            Unsigned32,
-  mementoHTTPRequestLatencyLWM            Unsigned32
+  mementoHTTPRequestLatencyLWM            Unsigned32,
+  mementoHTTPRequestLatencyCount          Unsigned32
 }
 
 mementoHTTPRequestLatencyScope OBJECT-TYPE
@@ -2035,6 +2052,13 @@ mementoHTTPRequestLatencyLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoHTTPRequestLatencyEntry 5 }
 
+mementoHTTPRequestLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
+    ::= { mementoHTTPRequestLatencyCount 6 }
+
 mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoHTTPCassandraReadLatencyTableEntry
     MAX-ACCESS not-accessible
@@ -2059,7 +2083,8 @@ MementoHTTPCassandraReadLatencyTableEntry ::= SEQUENCE
   mementoHTTPCassandraReadLatencyAverage        Unsigned32,
   mementoHTTPCassandraReadLatencyVariance       Unsigned32,
   mementoHTTPCassandraReadLatencyHWM            Unsigned32,
-  mementoHTTPCassandraReadLatencyLWM            Unsigned32
+  mementoHTTPCassandraReadLatencyLWM            Unsigned32,
+  mementoHTTPCassandraReadLatencyCount          Unsigned32
 }
 
 mementoHTTPCassandraReadLatencyScope OBJECT-TYPE
@@ -2099,6 +2124,13 @@ mementoHTTPCassandraReadLatencyLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoHTTPCassandraReadLatencyEntry 5 }
 
+mementoHTTPCassandraReadLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of reads over the period."
+    ::= { mementoHTTPCassandraReadLatencyEntry 6 }
+
 mementoRetrievedCallRecordSizeTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoRetrievedCallRecordSizeTableEntry
     MAX-ACCESS not-accessible
@@ -2122,7 +2154,8 @@ MementoRetrievedCallRecordSizeTableEntry ::= SEQUENCE
   mementoRetrievedCallRecordSizeAverage        Unsigned32,
   mementoRetrievedCallRecordSizeVariance       Unsigned32,
   mementoRetrievedCallRecordSizeHWM            Unsigned32,
-  mementoRetrievedCallRecordSizeLWM            Unsigned32
+  mementoRetrievedCallRecordSizeLWM            Unsigned32,
+  mementoRetrievedCallRecordSizeCount          Unsigned32
 }
 
 mementoRetrievedCallRecordSizeScope OBJECT-TYPE
@@ -2162,6 +2195,13 @@ mementoRetrievedCallRecordSizeLWM OBJECT-TYPE
     DESCRIPTION "The lowest size over the period."
     ::= { mementoRetrievedCallRecordSizeEntry 5 }
 
+mementoRetrievedCallRecordSizeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of call lists retrieved over the period."
+    ::= { mementoRetrievedCallRecordSizeEntry 6 }
+
 mementoRetrievedCallRecordLengthTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoRetrievedCallRecordLengthTableEntry
     MAX-ACCESS not-accessible
@@ -2185,7 +2225,8 @@ MementoRetrievedCallRecordLengthTableEntry ::= SEQUENCE
   mementoRetrievedCallRecordLengthAverage        Unsigned32,
   mementoRetrievedCallRecordLengthVariance       Unsigned32,
   mementoRetrievedCallRecordLengthHWM            Unsigned32,
-  mementoRetrievedCallRecordLengthLWM            Unsigned32
+  mementoRetrievedCallRecordLengthLWM            Unsigned32,
+  mementoRetrievedCallRecordLengthCount          Unsigned32
 }
 
 mementoRetrievedCallRecordLengthScope OBJECT-TYPE
@@ -2224,6 +2265,13 @@ mementoRetrievedCallRecordLengthLWM OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoRetrievedCallRecordLengthEntry 5 }
+
+mementoRetrievedCallRecordLengthCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of call lists retrieved over the period."
+    ::= { mementoRetrievedCallRecordLengthEntry 6 }
 
 mementoAuthProxy OBJECT IDENTIFIER ::= { memento 3 }
 
@@ -2291,8 +2339,11 @@ mementoAuthAttemptEntry OBJECT-TYPE
 MementoAuthAttemptTableEntry ::= SEQUENCE
 {
   mementoAuthAttemptScope          INTEGER,
+  mementoAuthChallengeCount        Unsigned32,
   mementoAuthAttemptCount          Unsigned32,
-  mementoAuthFailureCount          Unsigned32
+  mementoAuthSuccessCount          Unsigned32,
+  mementoAuthFailureCount          Unsigned32,
+  mementoAuthStaleCount            Unsigned32
 }
 
 mementoAuthAttemptScope OBJECT-TYPE
@@ -2304,19 +2355,40 @@ mementoAuthAttemptScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { mementoAuthAttemptEntry 1 }
 
+mementoAuthChallengeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of authentication challenges requested."
+    ::= { mementoAuthAttemptEntry 2 }
+
 mementoAuthAttemptCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The count of authentication attempts."
-    ::= { mementoAuthAttemptEntry 2 }
+    ::= { mementoAuthAttemptEntry 3 }
+
+mementoAuthSuccessCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of successful authentications."
+    ::= { mementoAuthAttemptEntry 4 }
 
 mementoAuthFailureCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The count of authentication failures."
-    ::= { mementoAuthAttemptEntry 3 }
+    DESCRIPTION "The count of authentication failures due to incorrect credentials."
+    ::= { mementoAuthAttemptEntry 5 }
+
+mementoAuthStaleCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of authentication failures due to stale challenges."
+    ::= { mementoAuthAttemptEntry 6 }
 
 mementoDiskUsage OBJECT IDENTIFIER::= { memento 4 }
 
@@ -2345,29 +2417,38 @@ mementoGroup OBJECT-GROUP
         mementoHTTPRequestLatencyVariance,
         mementoHTTPRequestLatencyHWM,
         mementoHTTPRequestLatencyLWM,
+        mementoHTTPRequestLatencyCount,
         mementoSIPCassandraReadLatencyAverage,
         mementoSIPCassandraReadLatencyVariance,
         mementoSIPCassandraReadLatencyHWM,
         mementoSIPCassandraReadLatencyLWM,
+        mementoSIPCassandraReadLatencyCount,
         mementoSIPCassandraWriteLatencyAverage,
         mementoSIPCassandraWriteLatencyVariance,
         mementoSIPCassandraWriteLatencyHWM,
         mementoSIPCassandraWriteLatencyLWM,
+        mementoSIPCassandraWriteLatencyCount,
         mementoHTTPCassandraReadLatencyAverage,
         mementoHTTPCassandraReadLatencyVariance,
         mementoHTTPCassandraReadLatencyHWM,
         mementoHTTPCassandraReadLatencyLWM,
+        mementoHTTPCassandraReadLatencyCount,
         mementoRetrievedCallRecordSizeAverage,
         mementoRetrievedCallRecordSizeVariance,
         mementoRetrievedCallRecordSizeHWM,
         mementoRetrievedCallRecordSizeLWM,
+        mementoRetrievedCallRecordSizeCount,
         mementoRetrievedCallRecordLengthAverage,
         mementoRetrievedCallRecordLengthVariance,
         mementoRetrievedCallRecordLengthHWM,
         mementoRetrievedCallRecordLengthLWM,
+        mementoRetrievedCallRecordLengthCount,
         mementoHomesteadConnectionCount,
+        mementoAuthChallengeCount,
         mementoAuthAttemptCount,
+        mementoAuthSuccessCount,
         mementoAuthFailureCount,
+        mementoAuthStaleCount,
         mementoDatabaseDiskUsage,
         mementoBackupsDiskUsage
     }
