@@ -1742,12 +1742,14 @@ callDiversionASGroup OBJECT-GROUP
 
 -- Memento Entries
 
+mementoSIP OBJECT IDENTIFIER ::= { memento 1 }
+
 mementoCallsRecordedTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoCallsRecordedTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Counts of call record creation outcomes for the given period."
-    ::= { memento 1 }
+    ::= { mementoSIP 1 }
 
 mementoCallsRecordedTableEntry OBJECT-TYPE
     SYNTAX      MementoCallsRecordedTableEntry
@@ -1795,114 +1797,6 @@ mementoCallsNotRecordedDueToOverload OBJECT-TYPE
     DESCRIPTION "The total number of call records dropped due to overload."
     ::= { mementoCallsRecordedTableEntry 4 }
 
-mementoHTTPRequestTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoHTTPRequestTableEntry
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Counts of HTTP requests and their outcomes for the given
-                 period"
-    ::= { memento 2 }
-
-mementoHTTPRequestTableEntry OBJECT-TYPE
-    SYNTAX      MementoHTTPRequestTableEntry
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Counts of HTTP requests and their outcomes"
-    INDEX       { mementoHTTPRequestScope }
-    ::= { mementoHTTPRequestTable 1 }
-
-MementoHTTPRequestTableEntry ::= SEQUENCE
-{
-    mementoHTTPRequestScope            INTEGER,
-    mementoHTTPRequestCount            Unsigned32,
-    mementoHTTPRejectedDueToOverload   Unsigned32
-}
-
-mementoHTTPRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeCurrent5SecondPeriod(1)
-                }
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "The period over which the statistics were collected."
-    ::= { mementoHTTPRequestTableEntry 1 }
-
-mementoHTTPRequestCount OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total number of HTTP requests received."
-    ::= { mementoHTTPRequestTableEntry 2 }
-
-mementoHTTPRejectedDueToOverload OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The total number of HTTP requests rejected due to overload."
-    ::= { mementoHTTPRequestTableEntry 3 }
-
-mementoHTTPRequestLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoHTTPRequestLatencyTableEntry
-    MAX-ACCESS not-accessible
-    STATUS current
-    DESCRIPTION "Latency of HTTP call record retrieval requests over the given
-                 period.  Latency measured in microseconds"
-    ::= { memento 3 }
-
-mementoHTTPRequestLatencyEntry OBJECT-TYPE
-    SYNTAX      MementoHTTPRequestLatencyTableEntry
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "The average, variance, LWM and HWM of HTTP call retrieval latency"
-    INDEX       { mementoHTTPRequestLatencyScope }
-    ::= { mementoHTTPRequestLatencyTable 1 }
-
-MementoHTTPRequestLatencyTableEntry ::= SEQUENCE
-{
-  mementoHTTPRequestLatencyScope          INTEGER,
-  mementoHTTPRequestLatencyAverage        Unsigned32,
-  mementoHTTPRequestLatencyVariance       Unsigned32,
-  mementoHTTPRequestLatencyHWM            Unsigned32,
-  mementoHTTPRequestLatencyLWM            Unsigned32
-}
-
-mementoHTTPRequestLatencyScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeCurrent5SecondPeriod(1)
-                }
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "The period over which the statistics were collected."
-    ::= { mementoHTTPRequestLatencyEntry 1 }
-
-mementoHTTPRequestLatencyAverage OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The average latency over the period."
-    ::= { mementoHTTPRequestLatencyEntry 2 }
-
-mementoHTTPRequestLatencyVariance OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The variance of the latency over the period."
-    ::= { mementoHTTPRequestLatencyEntry 3 }
-
-mementoHTTPRequestLatencyHWM OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The highest latency over the period."
-    ::= { mementoHTTPRequestLatencyEntry 4 }
-
-mementoHTTPRequestLatencyLWM OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "The lowest latency over the period."
-    ::= { mementoHTTPRequestLatencyEntry 5 }
-
 mementoSIPCassandraReadLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoSIPCassandraReadLatencyEntry
     MAX-ACCESS not-accessible
@@ -1910,7 +1804,7 @@ mementoSIPCassandraReadLatencyTable OBJECT-TYPE
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
                  latency reported by the SIP AS component  Latency measured in
                  microseconds"
-    ::= { memento 4 }
+    ::= { mementoSIP 2 }
 
 mementoSIPCassandraReadLatencyEntry OBJECT-TYPE
     SYNTAX      MementoSIPCassandraReadLatencyEntry
@@ -1974,7 +1868,7 @@ mementoSIPCassandraWriteLatencyTable OBJECT-TYPE
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database write
                  latency reported by the SIP AS component.  Latency measured in
                  microseconds"
-    ::= { memento 5 }
+    ::= { mementoSIP 3 }
 
 mementoSIPCassandraWriteLatencyEntry OBJECT-TYPE
     SYNTAX      MementoSIPCassandraWriteLatencyTableEntry
@@ -2031,6 +1925,116 @@ mementoSIPCassandraWriteLatencyLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoSIPCassandraWriteLatencyEntry 5 }
 
+mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
+
+mementoHTTPRequestTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoHTTPRequestTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of HTTP requests and their outcomes for the given
+                 period"
+    ::= { mementoHTTP 1 }
+
+mementoHTTPRequestTableEntry OBJECT-TYPE
+    SYNTAX      MementoHTTPRequestTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of HTTP requests and their outcomes"
+    INDEX       { mementoHTTPRequestScope }
+    ::= { mementoHTTPRequestTable 1 }
+
+MementoHTTPRequestTableEntry ::= SEQUENCE
+{
+    mementoHTTPRequestScope            INTEGER,
+    mementoHTTPRequestCount            Unsigned32,
+    mementoHTTPRejectedDueToOverload   Unsigned32
+}
+
+mementoHTTPRequestScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoHTTPRequestTableEntry 1 }
+
+mementoHTTPRequestCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of HTTP requests received."
+    ::= { mementoHTTPRequestTableEntry 2 }
+
+mementoHTTPRejectedDueToOverload OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of HTTP requests rejected due to overload."
+    ::= { mementoHTTPRequestTableEntry 3 }
+
+mementoHTTPRequestLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoHTTPRequestLatencyTableEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Latency of HTTP call record retrieval requests over the given
+                 period.  Latency measured in microseconds"
+    ::= { mementoHTTP 2 }
+
+mementoHTTPRequestLatencyEntry OBJECT-TYPE
+    SYNTAX      MementoHTTPRequestLatencyTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of HTTP call retrieval latency"
+    INDEX       { mementoHTTPRequestLatencyScope }
+    ::= { mementoHTTPRequestLatencyTable 1 }
+
+MementoHTTPRequestLatencyTableEntry ::= SEQUENCE
+{
+  mementoHTTPRequestLatencyScope          INTEGER,
+  mementoHTTPRequestLatencyAverage        Unsigned32,
+  mementoHTTPRequestLatencyVariance       Unsigned32,
+  mementoHTTPRequestLatencyHWM            Unsigned32,
+  mementoHTTPRequestLatencyLWM            Unsigned32
+}
+
+mementoHTTPRequestLatencyScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoHTTPRequestLatencyEntry 1 }
+
+mementoHTTPRequestLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 2 }
+
+mementoHTTPRequestLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 3 }
+
+mementoHTTPRequestLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 4 }
+
+mementoHTTPRequestLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 5 }
+
 mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoHTTPCassandraReadLatencyTableEntry
     MAX-ACCESS not-accessible
@@ -2038,7 +2042,7 @@ mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
                  latency reported by the HTTP component.  Latency measured in
                  microseconds"
-    ::= { memento 6 }
+    ::= { mementoHTTP 3 }
 
 mementoHTTPCassandraReadLatencyEntry OBJECT-TYPE
     SYNTAX      MementoHTTPCassandraReadLatencyTableEntry
@@ -2101,7 +2105,7 @@ mementoRetrievedCallRecordSizeTable OBJECT-TYPE
     STATUS current
     DESCRIPTION "Average, variance, HWM and LWM of the size (in kB) of call records
                  retrieved from the store."
-    ::= { memento 7 }
+    ::= { mementoHTTP 4 }
 
 mementoRetrievedCallRecordSizeEntry OBJECT-TYPE
     SYNTAX      MementoRetrievedCallRecordSizeTableEntry
@@ -2164,7 +2168,7 @@ mementoRetrievedCallRecordLengthTable OBJECT-TYPE
     STATUS current
     DESCRIPTION "Average, variance, HWM and LWM of the length (# of records) of call
                  records retrieved from the store."
-    ::= { memento 8 }
+    ::= { mementoHTTP 5 }
 
 mementoRetrievedCallRecordLengthEntry OBJECT-TYPE
     SYNTAX      MementoRetrievedCallRecordLengthTableEntry
@@ -2221,7 +2225,7 @@ mementoRetrievedCallRecordLengthLWM OBJECT-TYPE
     DESCRIPTION "The lowest latency over the period."
     ::= { mementoRetrievedCallRecordLengthEntry 5 }
 
-mementoAuthProxy OBJECT IDENTIFIER ::= { memento 9 }
+mementoAuthProxy OBJECT IDENTIFIER ::= { memento 3 }
 
 mementoConnectedHomesteadsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoConnectedHomesteadsEntry
@@ -2314,7 +2318,7 @@ mementoAuthFailureCount OBJECT-TYPE
     DESCRIPTION "The count of authentication failures."
     ::= { mementoAuthAttemptEntry 3 }
 
-mementoDiskUsage OBJECT IDENTIFIER::= { memento 10 }
+mementoDiskUsage OBJECT IDENTIFIER::= { memento 4 }
 
 mementoDatabaseDiskUsage OBJECT-TYPE
     SYNTAX      Unsigned32
