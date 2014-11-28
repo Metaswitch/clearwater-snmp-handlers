@@ -29,6 +29,11 @@ Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about the Call Diversion AS
 
+Package: clearwater-snmp-handler-alarm
+Architecture: any
+Depends: clearwater-snmpd
+Description: The SNMP handler library for Clearwater alarm reporting
+
 Package: clearwater-snmp-handler-memento-as
 Architecture: any
 Depends: clearwater-snmpd
