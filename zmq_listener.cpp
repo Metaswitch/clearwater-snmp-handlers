@@ -57,15 +57,15 @@ bool ZMQListener::connect_and_subscribe()
     perror("zmq_socket");
     return false;
   }
-  std::string ep = std::string("tcp://localhost:") + node_data.port;
+  std::string ep = std::string("tcp://localhost:") + _node_data->port;
   if (zmq_connect(_sck, ep.c_str()) != 0)
   {
     perror("zmq_connect");
     return false;
   }
 
-  for (std::vector<std::string>::iterator it = node_data.stats.begin();
-       it != node_data.stats.end();
+  for (std::vector<std::string>::iterator it = _node_data->stats.begin();
+       it != _node_data->stats.end();
        it++)
   {
     // Subscribe to the specified statistic.
@@ -79,13 +79,14 @@ bool ZMQListener::connect_and_subscribe()
   return true;
 }
 
-// Thread to listen for ZMQ publishes for a given host/port/statistic
-// name, then update the statistics structs with that information.
-void* ZMQListener::listen_thread(void* args)
+// Listen for ZMQ publishes for a given host/port/statistic name, then
+// update the statistics structs with that information.  This loops forever,
+// so should be run in its own thread.
+void ZMQListener::handle_requests_forever()
 {
   if (!connect_and_subscribe())
   {
-    return NULL;
+    return;
   };
   // Main loop of the thread - listen for ZMQ publish messages. Once a
   // whole block of data has been read, call the appropriate handler
@@ -104,7 +105,7 @@ void* ZMQListener::listen_thread(void* args)
       if (zmq_msg_init(&msg) != 0)
       {
         perror("zmq_msg_init");
-        return NULL;
+        return;
       }
       while (((rc = zmq_msg_recv(&msg, _sck, 0)) == -1) && (errno == EINTR))
       {
@@ -114,7 +115,7 @@ void* ZMQListener::listen_thread(void* args)
       if (rc == -1)
       {
         perror("zmq_msg_recv");
-        return NULL;
+        return;
       }
       msgs.push_back(std::string((char*)zmq_msg_data(&msg), zmq_msg_size(&msg)));
       while (((rc = zmq_getsockopt(_sck, ZMQ_RCVMORE, &more, &more_sz)) == -1) && (errno == EINTR))
@@ -125,7 +126,7 @@ void* ZMQListener::listen_thread(void* args)
       if (rc == -1)
       {
         perror("zmq_getsockopt");
-        return NULL;
+        return;
       }
       zmq_msg_close(&msg);
     }
@@ -134,7 +135,7 @@ void* ZMQListener::listen_thread(void* args)
     if ((msgs.size() > 2) && (msgs[1].compare("OK") == 0))
     {
       std::string message_type = msgs[0];
-      ZMQMessageHandler* handler = node_data.stat_to_handler.at(message_type);
+      ZMQMessageHandler* handler = _node_data->stat_to_handler.at(message_type);
       handler->handle(msgs);
     }
   }

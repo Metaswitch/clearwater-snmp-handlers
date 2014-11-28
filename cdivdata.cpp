@@ -51,33 +51,28 @@ BareStatHandler cdiv_not_registered_handler(cdiv_not_registered_oid, &tree);
 BareStatHandler cdiv_no_answer_handler(cdiv_no_answer_oid, &tree);
 BareStatHandler cdiv_not_reachable_handler(cdiv_not_reachable_oid, &tree);
 
-NodeData::NodeData()
-{
-  name = "cdiv_handler";
-  port = "6666";
-  root_oid = OID("1.2.826.0.1.1578918.9.7");
-  stats = {"cdiv_total",
-           "cdiv_unconditional",
-           "cdiv_busy", 
-           "cdiv_not_registered",
-           "cdiv_no_answer", 
-           "cdiv_not_reachable"};
-  stat_to_handler = {{"cdiv_total", &cdiv_total_handler},
-                     {"cdiv_unconditional", &cdiv_unconditional_handler},
-                     {"cdiv_busy", &cdiv_busy_handler},
-                     {"cdiv_not_registered", &cdiv_not_registered_handler},
-                     {"cdiv_no_answer", &cdiv_no_answer_handler},
-                     {"cdiv_not_reachable", &cdiv_not_reachable_handler}
-                    };
-};
-
-NodeData node_data;
+NodeData cdiv_node_data("cdiv_handler",
+                        "6666",
+                        OID("1.2.826.0.1.1578918.9.7"),
+                        {"cdiv_total",
+                         "cdiv_unconditional",
+                         "cdiv_busy", 
+                         "cdiv_not_registered",
+                         "cdiv_no_answer", 
+                         "cdiv_not_reachable"},
+                        {{"cdiv_total", &cdiv_total_handler},
+                         {"cdiv_unconditional", &cdiv_unconditional_handler},
+                         {"cdiv_busy", &cdiv_busy_handler},
+                         {"cdiv_not_registered", &cdiv_not_registered_handler},
+                         {"cdiv_no_answer", &cdiv_no_answer_handler},
+                         {"cdiv_not_reachable", &cdiv_not_reachable_handler}
+                        });
 
 extern "C"
 {
   // SNMPd looks for an init_<module_name> function in this library
   void init_cdiv_handler()
   {
-    initialize_handler();
+    initialize_handler(&cdiv_node_data);
   }
 }

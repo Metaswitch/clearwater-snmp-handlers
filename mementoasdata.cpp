@@ -49,31 +49,26 @@ BareStatHandler memento_not_recorded_overload_handler(memento_not_recorded_overl
 AccumulatedWithCountStatHandler memento_cassandra_read_latency_handler(memento_cassandra_read_latency_oid, &tree);
 AccumulatedWithCountStatHandler memento_cassandra_write_latency_handler(memento_cassandra_write_latency_oid, &tree);
 
-NodeData::NodeData()
-{
-  name = "memento_as_handler";
-  port = "6666";
-  root_oid = OID("1.2.826.0.1.1578918.9.8.1");
-  stats = {"memento_completed_calls",
-           "memento_failed_calls",
-           "memento_not_recorded_overload",
-           "memento_cassandra_read_latency",
-           "memento_cassandra_write_latency"};
-  stat_to_handler = {{"memento_completed_calls", &memento_completed_calls_handler},
-                     {"memento_failed_calls", &memento_failed_calls_handler},
-                     {"memento_not_recorded_overload", &memento_not_recorded_overload_handler},
-                     {"memento_cassandra_read_latency", &memento_cassandra_read_latency_handler},
-                     {"memento_cassandra_write_latency", &memento_cassandra_write_latency_handler}
-                    };
-};
-
-NodeData node_data;
+NodeData memento_as_node_data("memento_as_handler",
+                              "6666",
+                              OID("1.2.826.0.1.1578918.9.8.1"),
+                              {"memento_completed_calls",
+                               "memento_failed_calls",
+                               "memento_not_recorded_overload",
+                               "memento_cassandra_read_latency",
+                               "memento_cassandra_write_latency"},
+                              {{"memento_completed_calls", &memento_completed_calls_handler},
+                               {"memento_failed_calls", &memento_failed_calls_handler},
+                               {"memento_not_recorded_overload", &memento_not_recorded_overload_handler},
+                               {"memento_cassandra_read_latency", &memento_cassandra_read_latency_handler},
+                               {"memento_cassandra_write_latency", &memento_cassandra_write_latency_handler}
+                              });
 
 extern "C"
 {
   // SNMPd looks for an init_<module_name> function in this library
   void init_memento_as_handler()
   {
-    initialize_handler();
+    initialize_handler(&memento_as_node_data);
   }
 }

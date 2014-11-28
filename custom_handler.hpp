@@ -38,9 +38,10 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/agent/net-snmp-agent-includes.h>
+#include "nodedata.hpp"
 
 /* function declarations */
-void initialize_handler(void);
+void initialize_handler(NodeData* node_data);
 Netsnmp_Node_Handler clearwater_handler;
 
 #endif /** BONOLATENCYTABLE_H */

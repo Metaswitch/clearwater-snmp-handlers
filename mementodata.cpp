@@ -41,15 +41,26 @@ OID memento_cassandra_read_latency_oid = OID("1.2.826.0.1.1578918.9.8.2.3");
 OID memento_record_size_oid = OID("1.2.826.0.1.1578918.9.8.2.4");
 OID memento_record_length_oid = OID("1.2.826.0.1.1578918.9.8.2.5");
 
-OID memento_auth_challenges_oid = OID("1.2.826.0.1.1578918.9.8.3.2.2");
-OID memento_auth_attempts_oid = OID("1.2.826.0.1.1578918.9.8.3.2.3");
-OID memento_auth_successes_oid = OID("1.2.826.0.1.1578918.9.8.3.2.4");
-OID memento_auth_failures_oid = OID("1.2.826.0.1.1578918.9.8.3.2.5");
-OID memento_auth_stales_oid = OID("1.2.826.0.1.1578918.9.8.3.2.6");
-
 AccumulatedWithCountStatHandler memento_cassandra_read_latency_handler(memento_cassandra_read_latency_oid, &tree);
 AccumulatedWithCountStatHandler memento_record_size_handler(memento_record_size_oid, &tree);
 AccumulatedWithCountStatHandler memento_record_length_handler(memento_record_length_oid, &tree);
+
+NodeData memento_http_node_data("memento_handler",
+                                "6671",
+                                OID("1.2.826.0.1.1578918.9.8.2"),
+                                {"cassandra_read_latency",
+                                 "record_size",
+                                 "record_length"},
+                                {{"cassandra_read_latency", &memento_cassandra_read_latency_handler},
+                                 {"record_size", &memento_record_size_handler},
+                                 {"record_length", &memento_record_length_handler}
+                                });
+
+OID memento_auth_challenges_oid = OID("1.2.826.0.1.1578918.9.8.3.2.1.2");
+OID memento_auth_attempts_oid = OID("1.2.826.0.1.1578918.9.8.3.2.1.3");
+OID memento_auth_successes_oid = OID("1.2.826.0.1.1578918.9.8.3.2.1.4");
+OID memento_auth_failures_oid = OID("1.2.826.0.1.1578918.9.8.3.2.1.5");
+OID memento_auth_stales_oid = OID("1.2.826.0.1.1578918.9.8.3.2.1.6");
 
 BareStatHandler memento_auth_challenges_handler(memento_auth_challenges_oid, &tree);
 BareStatHandler memento_auth_attempts_handler(memento_auth_attempts_oid, &tree);
@@ -57,37 +68,27 @@ BareStatHandler memento_auth_successes_handler(memento_auth_successes_oid, &tree
 BareStatHandler memento_auth_failures_handler(memento_auth_failures_oid, &tree);
 BareStatHandler memento_auth_stales_handler(memento_auth_stales_oid, &tree);
 
-NodeData::NodeData()
-{
-  name = "memento_handler";
-  port = "6671";
-  root_oid = OID("1.2.826.0.1.1578918.9.8.2");
-  stats = {"auth_challenges",
-           "auth_attempts",
-           "auth_successes",
-           "auth_failures",
-           "auth_stales",
-           "cassandra_read_latency",
-           "record_size",
-           "record_length"};
-  stat_to_handler = {{"auth_challenges", &memento_auth_challenges_handler},
-                     {"auth_attempts", &memento_auth_attempts_handler},
-                     {"auth_successes", &memento_auth_successes_handler},
-                     {"auth_failures", &memento_auth_failures_handler},
-                     {"auth_stales", &memento_auth_stales_handler},
-                     {"cassandra_read_latency", &memento_cassandra_read_latency_handler},
-                     {"record_size", &memento_record_size_handler},
-                     {"record_length", &memento_record_length_handler}
-                    };
-};
-
-NodeData node_data;
+NodeData memento_auth_node_data("memento_handler",
+                                "6671",
+                                OID("1.2.826.0.1.1578918.9.8.3"),
+                                {"auth_challenges",
+                                 "auth_attempts",
+                                 "auth_successes",
+                                 "auth_failures",
+                                 "auth_stales"},
+                                {{"auth_challenges", &memento_auth_challenges_handler},
+                                 {"auth_attempts", &memento_auth_attempts_handler},
+                                 {"auth_successes", &memento_auth_successes_handler},
+                                 {"auth_failures", &memento_auth_failures_handler},
+                                 {"auth_stales", &memento_auth_stales_handler}
+                                });
 
 extern "C"
 {
   // SNMPd looks for an init_<module_name> function in this library
   void init_memento_handler()
   {
-    initialize_handler();
+    initialize_handler(&memento_http_node_data);
+    initialize_handler(&memento_auth_node_data);
   }
 }
