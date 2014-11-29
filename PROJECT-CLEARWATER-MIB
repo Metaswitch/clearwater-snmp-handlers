@@ -2057,7 +2057,7 @@ mementoHTTPRequestLatencyCount OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total requests over the period."
-    ::= { mementoHTTPRequestLatencyCount 6 }
+    ::= { mementoHTTPRequestLatencyEntry 6 }
 
 mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoHTTPCassandraReadLatencyTableEntry
