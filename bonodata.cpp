@@ -51,33 +51,28 @@ SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
 AccumulatedWithCountStatHandler queue_size_handler(queue_size_oid, &tree);
 
-NodeData::NodeData()
-{
-  name = "bono_handler";
-  port = "6669";
-  root_oid = OID("1.2.826.0.1.1578918.9.2");
-  stats = {"latency_us", 
-           "client_count", 
-           "connected_sprouts", 
-           "incoming_requests", 
-           "rejected_overload", 
-           "queue_size"};
-  stat_to_handler = {{"latency_us", &latency_handler},
-                     {"client_count", &client_count_handler},
-                     {"connected_sprouts", &connected_sprouts_handler},
-                     {"incoming_requests", &incoming_requests_handler},
-                     {"rejected_overload", &rejected_overload_handler},
-                     {"queue_size", &queue_size_handler}
-                    };
-};
-
-NodeData node_data;
+NodeData bono_node_data("bono_handler",
+                        "6669",
+                        OID("1.2.826.0.1.1578918.9.2"),
+                        {"latency_us", 
+                         "client_count", 
+                         "connected_sprouts", 
+                         "incoming_requests", 
+                         "rejected_overload", 
+                         "queue_size"},
+                        {{"latency_us", &latency_handler},
+                         {"client_count", &client_count_handler},
+                         {"connected_sprouts", &connected_sprouts_handler},
+                         {"incoming_requests", &incoming_requests_handler},
+                         {"rejected_overload", &rejected_overload_handler},
+                         {"queue_size", &queue_size_handler}
+                        });
 
 extern "C"
 {
   // SNMPd looks for an init_<module_name> function in this library
   void init_bono_handler()
   {
-    initialize_handler();
+    initialize_handler(&bono_node_data);
   }
 }

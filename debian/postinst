@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# @file clearwater-handler-cdiv.postinst
+# @file postinst
 #
 # Project Clearwater - IMS in the Cloud
 # Copyright (C) 2013  Metaswitch Networks Ltd
@@ -53,6 +53,7 @@ set -e
 
 case "$1" in
     configure)
+        # Trigger an snmpd restart to load the sub-agent
         service snmpd restart || true
     ;;
 
@@ -71,3 +72,4 @@ esac
 #DEBHELPER#
 
 exit 0
+

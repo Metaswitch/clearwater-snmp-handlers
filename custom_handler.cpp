@@ -45,28 +45,29 @@
 OIDTree tree;
 std::atomic_long last_seen_time;
 const int TIMEOUT_THRESHOLD = 15;
-static pthread_t zmq_thread;
 
-void* start_stats (void* arg)
+void* start_stats (void* node_data_ptr)
 {
-  ZMQListener listener;
-  return listener.listen_thread(arg);
+  NodeData* node_data = (NodeData*)node_data_ptr;
+  ZMQListener listener(node_data);
+  listener.handle_requests_forever();
+  return NULL; // Never hit
 }
 
 /** Initialize the Clearwater stats handler and register it */
-void initialize_handler(void)
+void initialize_handler(NodeData* node_data)
 {
   netsnmp_handler_registration* my_handler;
   last_seen_time.store(0);
   static oid* root;
   snmp_clone_mem((void**)&root,
-                 (void*)(node_data.root_oid.get_ptr()),
-                 (sizeof(oid) * node_data.root_oid.get_len()));
+                 (void*)(node_data->root_oid.get_ptr()),
+                 (sizeof(oid) * node_data->root_oid.get_len()));
 
-  my_handler = netsnmp_create_handler_registration(node_data.name.c_str(),
+  my_handler = netsnmp_create_handler_registration(node_data->name.c_str(),
                                                    clearwater_handler,
                                                    root,
-                                                   node_data.root_oid.get_len(),
+                                                   node_data->root_oid.get_len(),
                                                    HANDLER_CAN_RONLY);
 
 
@@ -78,7 +79,8 @@ void initialize_handler(void)
 
   DEBUGMSGTL(("initialize_handler", "Registering handler for Clearwater stats\n"));
   netsnmp_register_handler(my_handler);
-  pthread_create(&zmq_thread, NULL, start_stats, NULL);
+  pthread_t zmq_thread;
+  pthread_create(&zmq_thread, NULL, start_stats, node_data);
 }
 
 /** handles requests for Clearwater stats, passing them off to an OIDTree */
