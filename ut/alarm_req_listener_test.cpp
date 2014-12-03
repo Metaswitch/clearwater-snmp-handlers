@@ -112,6 +112,17 @@ public:
     AlarmReqAgent::get_instance().alarm_request(req);
   }
 
+  void issue_malformed_alarm()
+  {
+    std::vector<std::string> req;
+
+    req.push_back("issue-alarm");
+    req.push_back("sprout");
+    req.push_back("one.two");
+
+    AlarmReqAgent::get_instance().alarm_request(req);
+  }
+
   void invalid_zmq_request()
   {
     std::vector<std::string> req;
@@ -398,6 +409,18 @@ TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 
   EXPECT_TRUE(_ms.log_contains("unexpected alarm request"));
 }
+
+TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
+{
+  EXPECT_CALL(_ms, send_v2trap(_)).
+    Times(0);
+
+  issue_malformed_alarm();
+  usleep(100000);
+
+  EXPECT_TRUE(_ms.log_contains("malformed alarm identifier"));
+}
+
 TEST_F(AlarmReqListenerZmqErrorTest, CreateContext)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(ReturnNull());
