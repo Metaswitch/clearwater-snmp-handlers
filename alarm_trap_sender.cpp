@@ -144,7 +144,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 
   if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2) 
   {
-    // TODO: syslog 
+    snmp_log(LOG_ERR, "malformed alarm identifier: %s", identifier.c_str());
     return;
   } 
 
