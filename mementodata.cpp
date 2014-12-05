@@ -51,8 +51,7 @@ AccumulatedWithCountStatHandler memento_cassandra_read_latency_handler(memento_c
 AccumulatedWithCountStatHandler memento_record_size_handler(memento_record_size_oid, &tree);
 AccumulatedWithCountStatHandler memento_record_length_handler(memento_record_length_oid, &tree);
 
-NodeData memento_http_node_data("memento_handler",
-                                "6671",
+NodeData memento_http_node_data("memento",
                                 OID("1.2.826.0.1.1578918.9.8.2"),
                                 {"http_incoming_requests",
                                  "http_rejected_overload",
@@ -80,8 +79,7 @@ BareStatHandler memento_auth_successes_handler(memento_auth_successes_oid, &tree
 BareStatHandler memento_auth_failures_handler(memento_auth_failures_oid, &tree);
 BareStatHandler memento_auth_stales_handler(memento_auth_stales_oid, &tree);
 
-NodeData memento_auth_node_data("memento_handler",
-                                "6671",
+NodeData memento_auth_node_data("memento",
                                 OID("1.2.826.0.1.1578918.9.8.3"),
                                 {"auth_challenges",
                                  "auth_attempts",

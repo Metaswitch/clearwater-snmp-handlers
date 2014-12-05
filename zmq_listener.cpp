@@ -57,7 +57,7 @@ bool ZMQListener::connect_and_subscribe()
     perror("zmq_socket");
     return false;
   }
-  std::string ep = std::string("tcp://localhost:") + _node_data->port;
+  std::string ep = std::string("ipc:///var/run/clearwater/stats/") + _node_data->name;
   if (zmq_connect(_sck, ep.c_str()) != 0)
   {
     perror("zmq_connect");

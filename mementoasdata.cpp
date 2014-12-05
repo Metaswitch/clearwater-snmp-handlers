@@ -49,8 +49,7 @@ BareStatHandler memento_not_recorded_overload_handler(memento_not_recorded_overl
 AccumulatedWithCountStatHandler memento_cassandra_read_latency_handler(memento_cassandra_read_latency_oid, &tree);
 AccumulatedWithCountStatHandler memento_cassandra_write_latency_handler(memento_cassandra_write_latency_oid, &tree);
 
-NodeData memento_as_node_data("memento_as_handler",
-                              "6666",
+NodeData memento_as_node_data("sprout",
                               OID("1.2.826.0.1.1578918.9.8.1"),
                               {"memento_completed_calls",
                                "memento_failed_calls",

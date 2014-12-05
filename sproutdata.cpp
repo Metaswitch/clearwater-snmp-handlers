@@ -62,8 +62,7 @@ SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
 AccumulatedWithCountStatHandler queue_size_handler(queue_size_oid, &tree);
 
-NodeData sprout_node_data("sprout_handler",
-                          "6666",
+NodeData sprout_node_data("sprout",
                           OID("1.2.826.0.1.1578918.9.3"),
                           {"latency_us",
                            "hss_latency_us",
