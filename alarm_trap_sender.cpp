@@ -100,7 +100,7 @@ bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
 
   AlarmFilterKey key(index, severity);
   std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.find(key);
- 
+
   bool filtered = false;
 
   if (it != _issue_times.end())
@@ -117,14 +117,14 @@ bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
   else
   {
     _issue_times[key] = now;
-  } 
+  }
 
   return filtered;
 }
 
 bool AlarmFilter::AlarmFilterKey::operator<(const AlarmFilter::AlarmFilterKey& rhs) const
 {
-  return  (_index  < rhs._index) || 
+  return  (_index  < rhs._index) ||
          ((_index == rhs._index) && (_severity < rhs._severity));
 }
 
@@ -142,15 +142,15 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
   unsigned int index;
   unsigned int severity;
 
-  if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2) 
+  if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2)
   {
     snmp_log(LOG_ERR, "malformed alarm identifier: %s", identifier.c_str());
     return;
-  } 
+  }
 
   AlarmTableDef& alarm_table_def = AlarmTableDefs::get_instance().get_definition(index, severity);
 
-  if (alarm_table_def.is_valid()) 
+  if (alarm_table_def.is_valid())
   {
     if (_active_alarms.update(alarm_table_def, issuer))
     {
@@ -159,6 +159,10 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
         send_trap(alarm_table_def);
       }
     }
+  }
+  else
+  {
+    snmp_log(LOG_ERR, "unknown alarm definition: %s", identifier.c_str());
   }
 }
 
@@ -172,7 +176,7 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
     if (it->issuer() == issuer)
     {
       AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().index(), AlarmDef::CLEARED);
- 
+
       if (!AlarmFilter::get_instance().alarm_filtered(clear_def.index(), clear_def.severity()))
       {
         send_trap(clear_def);
