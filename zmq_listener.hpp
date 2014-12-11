@@ -37,15 +37,18 @@
 
 #include <zmq.h>
 #include "zmq_message_handler.hpp"
+#include "nodedata.hpp"
 
 class ZMQListener
 {
 public:
+  ZMQListener(NodeData* node_data) : _node_data(node_data) {}
   ~ZMQListener();
   bool connect_and_subscribe();
-  void* listen_thread(void* args);
+  void handle_requests_forever();
 
 private:
+  NodeData* _node_data;
   void* _ctx;
   void* _sck;
 };

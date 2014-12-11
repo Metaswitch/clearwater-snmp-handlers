@@ -44,14 +44,23 @@
 class NodeData
 {
 public:
-  NodeData();
+  NodeData(std::string _name,
+           std::string _port,
+           OID _root_oid,
+           std::vector<std::string> _stats,
+           std::map<std::string, ZMQMessageHandler*> _stat_to_handler) :
+    name(_name),
+    port(_port),
+    root_oid(_root_oid),
+    stats(_stats),
+    stat_to_handler(_stat_to_handler)
+  {}
+
   std::string name;
   std::string port;
   OID root_oid;
   std::vector<std::string> stats;
   std::map<std::string, ZMQMessageHandler*> stat_to_handler;
 };
-
-extern NodeData node_data;
 
 #endif

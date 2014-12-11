@@ -138,17 +138,22 @@ cdiv_handler.so: *.cpp *.hpp
 alarm_handler.so: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared ${ALARM_INCLUDES} -o alarm_handler.so alarm_handler.cpp modules/cpp-common/src/alarmdefinition.cpp alarm_table_defs.cpp alarm_model_table.cpp alarm_req_listener.cpp alarm_trap_sender.cpp itu_alarm_table.cpp `net-snmp-config --libs` -lzmq -lpthread
 
+memento_as_handler.so: *.cpp *.hpp
+	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o memento_as_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp mementoasdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+
+memento_handler.so: *.cpp *.hpp
+	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o memento_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp mementodata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
 
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-handler-alarm
+DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-handler-alarm clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento
 
 include build-infra/cw-deb.mk
 
 .PHONY: deb
-deb: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so alarm_handler.so deb-only
+deb: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so alarm_handler.so memento_as_handler.so memento_handler.so deb-only
 
 .PHONY: all deb-only deb
 
