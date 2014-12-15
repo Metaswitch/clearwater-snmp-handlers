@@ -52,8 +52,7 @@ AccumulatedWithCountStatHandler hss_subscription_latency_handler(hss_subscriptio
 SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
 
-NodeData homestead_node_data("homestead_handler",
-                             "6668",
+NodeData homestead_node_data("homestead",
                              OID("1.2.826.0.1.1578918.9.5"),
                              {"H_latency_us",
                               "H_hss_latency_us",

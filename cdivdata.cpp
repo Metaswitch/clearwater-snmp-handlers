@@ -51,8 +51,7 @@ BareStatHandler cdiv_not_registered_handler(cdiv_not_registered_oid, &tree);
 BareStatHandler cdiv_no_answer_handler(cdiv_no_answer_oid, &tree);
 BareStatHandler cdiv_not_reachable_handler(cdiv_not_reachable_oid, &tree);
 
-NodeData cdiv_node_data("cdiv_handler",
-                        "6666",
+NodeData cdiv_node_data("sprout",
                         OID("1.2.826.0.1.1578918.9.7"),
                         {"cdiv_total",
                          "cdiv_unconditional",
