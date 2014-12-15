@@ -53,10 +53,6 @@ set -e
 
 case "$1" in
     configure)
-        # Create the folder to store the named sockets used to communicate
-        # with the statistic-producing services.
-        mkdir -p /var/run/clearwater/stats/
-
         # Trigger an snmpd restart to load the sub-agent
         service snmpd restart || true
     ;;
