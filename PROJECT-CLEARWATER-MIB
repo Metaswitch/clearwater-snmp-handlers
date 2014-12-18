@@ -246,7 +246,7 @@ bonoRejectedOverloadTable OBJECT-TYPE
     SYNTAX SEQUENCE OF BonoRejectedOverloadEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Total number of requests rejected due to overload handled by
+    DESCRIPTION "Total number of requests rejected due to overload by
                  this Bono over the given period."
     ::= { bono 5 }
 
@@ -488,7 +488,7 @@ sproutHomerConnectionCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Current count of TCP connections from Bono to the
+    DESCRIPTION "Current count of TCP connections from Sprout to the
                  Homer node, may include connections in setting-
                  up state"
     ::= { sproutConnectedHomersEntry 3 }
@@ -1015,7 +1015,7 @@ sproutRejectedOverloadTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutRejectedOverloadEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Total number of requests rejected due to overload handled by
+    DESCRIPTION "Total number of requests rejected due to overload by
                  this Sprout over the given period."
     ::= { sprout 7 }
 
@@ -1574,7 +1574,7 @@ homesteadRejectedOverloadTable OBJECT-TYPE
     SYNTAX SEQUENCE OF HomesteadRejectedOverloadEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Total number of requests rejected due to overload handled by
+    DESCRIPTION "Total number of requests rejected due to overload by
                  this Homestead over the given period."
     ::= { homestead 7 }
 
