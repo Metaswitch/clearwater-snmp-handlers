@@ -53,6 +53,14 @@ set -e
 
 case "$1" in
     configure)
+        sed -ie '/mkdir -p \/var\/run\/clearwater\/stats/d' /etc/init.d/snmpd
+	sed -ie '/chmod -fR 0777 \/var\/run\/clearwater/d' /etc/init.d/snmpd
+	sed -ie '/^case/i \
+mkdir -p /var/run/clearwater/stats || true\
+chmod -fR 0777 /var/run/clearwater || true\
+'  /etc/init.d/snmpd
+	rm -f /etc/init.d/snmpde
+
         # Trigger an snmpd restart to load the sub-agent
         service snmpd restart || true
     ;;
