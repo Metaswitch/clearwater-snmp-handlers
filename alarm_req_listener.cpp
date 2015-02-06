@@ -134,15 +134,15 @@ bool AlarmReqListener::zmq_init_sck()
   rc=remove(sf.c_str());
   if (rc == -1)
   {
-      if (errno != ENOENT)
-      {
-          snmp_log(LOG_ERR, "remove(%s) failed: %s - killing myself", sf.c_str(), strerror(errno));
-          kill(getpid(), SIGKILL);
-      }
-      else
-      {
-          snmp_log(LOG_ERR, "remove(%s) failed: %s", sf.c_str(), strerror(errno));
-      }
+    if (errno != ENOENT)
+    {
+      snmp_log(LOG_ERR, "remove(%s) failed: %s - killing myself", sf.c_str(), strerror(errno));
+      kill(getpid(), SIGKILL);
+    }
+    else
+    {
+      snmp_log(LOG_ERR, "remove(%s) failed: %s", sf.c_str(), strerror(errno));
+    }
   }
   while (((rc = zmq_bind(_sck, ss.c_str())) == -1) && (errno == EINTR))
   {
