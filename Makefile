@@ -171,6 +171,7 @@ test: run_test coverage vg coverage-check vg-check
 # Ignore failure here; it will be detected by Jenkins.
 .PHONY: run_test
 run_test: build_test | $(TEST_OUT_DIR)
+	mkdir -p /var/run/clearwater
 	rm -f $(TEST_XML)
 	rm -f $(OBJ_DIR_TEST)/*.gcda
 	$(TARGET_BIN_TEST) $(EXTRA_TEST_ARGS) --gtest_output=xml:$(TEST_XML)
