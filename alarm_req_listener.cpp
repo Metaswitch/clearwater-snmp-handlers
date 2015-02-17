@@ -126,25 +126,26 @@ bool AlarmReqListener::zmq_init_sck()
     return false;
   }
 
-  std::string sf = std::string("/var/run/clearwater/alarms");
-  std::string ss = std::string("ipc://" + sf);
-  snmp_log(LOG_INFO, "AlarmReqListener: ss='%s'", ss.c_str());
+  std::string sck_file = std::string("/var/run/clearwater/alarms");
+  std::string sck_url = std::string("ipc://" + sck_file);
+  snmp_log(LOG_INFO, "AlarmReqListener: ss='%s'", sck_url.c_str());
 
   int rc;
-  rc=remove(sf.c_str());
+  rc=remove(sck_url.c_str());
   if (rc == -1)
   {
     if (errno != ENOENT)
     {
-      snmp_log(LOG_ERR, "remove(%s) failed: %s - killing myself", sf.c_str(), strerror(errno));
+      snmp_log(LOG_ERR, "remove(%s) failed: %s - killing myself", sck_file.c_str(), strerror(errno));
       kill(getpid(), SIGKILL);
     }
     else
     {
-      snmp_log(LOG_ERR, "remove(%s) failed: %s", sf.c_str(), strerror(errno));
+      snmp_log(LOG_ERR, "remove(%s) failed: %s", sck_file.c_str(), strerror(errno));
     }
   }
-  while (((rc = zmq_bind(_sck, ss.c_str())) == -1) && (errno == EINTR))
+
+  while (((rc = zmq_bind(_sck, sck_url.c_str())) == -1) && (errno == EINTR))
   {
     // Ignore possible errors due to a syscall being interrupted by a signal.
   }
@@ -155,10 +156,10 @@ bool AlarmReqListener::zmq_init_sck()
     return false;
   }
 
-  rc=chmod(sf.c_str(), 0777);
+  rc=chmod(sck_file.c_str(), 0777);
   if (rc == -1)
   {
-      snmp_log(LOG_ERR, "chmod(%s, 0777) failed: %s", sf.c_str(), strerror(errno));
+    snmp_log(LOG_ERR, "chmod(%s, 0777) failed: %s", sck_file.c_str(), strerror(errno));
   }
 
   return true;
