@@ -131,7 +131,7 @@ bool AlarmReqListener::zmq_init_sck()
   snmp_log(LOG_INFO, "AlarmReqListener: ss='%s'", sck_url.c_str());
 
   int rc;
-  rc=remove(sck_url.c_str());
+  rc=remove(sck_file.c_str());
   if (rc == -1)
   {
     if (errno != ENOENT)
