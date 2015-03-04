@@ -52,6 +52,8 @@ projectClearwaterCompliance MODULE-COMPLIANCE
     DESCRIPTION "The callDiversionASGroup must be exposed by Call Diversion AS nodes"
     GROUP mementoGroup
     DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
+    GROUP astaireGroup
+    DESCRIPTION "The astaireGroup must be exposed by nodes running Astaire"
     ::= { projectClearwaterConformance 1 }
 projectClearwaterObjectGroups OBJECT IDENTIFIER ::= { projectClearwater 1 }
 
@@ -65,6 +67,7 @@ homestead        OBJECT IDENTIFIER ::= { projectClearwater 5 }
 sipp             OBJECT IDENTIFIER ::= { projectClearwater 6 }
 callDiversionAs  OBJECT IDENTIFIER ::= { projectClearwater 7 }
 memento          OBJECT IDENTIFIER ::= { projectClearwater 8 }
+astaire          OBJECT IDENTIFIER ::= { projectClearwater 9 }
 
 -- Bono entries
 
@@ -2447,4 +2450,237 @@ mementoGroup OBJECT-GROUP
     STATUS      current
     DESCRIPTION "Statistics exposed by Memento"
     ::= { projectClearwaterObjectGroups 5 }
+
+-- Astaire Entries
+
+astaireBucketsNeedingResync OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Count of buckets needing to be synchronized for the current
+                 resynchronization operation."
+    ::= { astaire 1 }
+
+astaireBucketsResynchronized OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of buckets already resynchronized during the current
+                 resynchronization operation."
+    ::= { astaire 2 }
+
+astaireEntriesResynchronized OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of entries already resynchronized during the current
+                 resynchronization operation."
+    ::= { astaire 3 }
+
+astaireDataResynchronized OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Amout of data (in bytes) already resynchronized during the current
+                 resynchronization operation."
+    ::= { astaire 4 }
+
+astaireBandwidthTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF AstaireBandwidthTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization bandwidth for the given period."
+    ::= { astaire 5 }
+
+astaireBandwidthTableEntry OBJECT-TYPE
+    SYNTAX      AstaireBandwidthTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization bandwidth."
+    INDEX       { astaireBandwidthScope }
+    ::= { astaireBandwidthTable 1 }
+
+AstaireBandwidthTableEntry ::= SEQUENCE
+{
+    astaireBandwidthScope          INTEGER,
+    astaireBandwidth               Unsigned32
+}
+
+astaireBandwidthScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { astaireBandwidthTableEntry 1 }
+
+astaireBandwidth OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Resynchronization bandwidth (bytes per second) over the period."
+    ::= { astaireBandwidthTableEntry 2 }
+
+astaireConnectionTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF AstaireConnectionTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization statistics on a per-connection basis."
+    ::= { astaire 6 }
+
+astaireConnectionTableEntry OBJECT-TYPE
+    SYNTAX      AstaireConnectionTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization statistics for a specific connection."
+    INDEX { astaireConnectionInetAddrType,
+            astaireConnectionInetAddr      }
+    ::= { astaireConnectionTable 1 }
+
+AstaireConnectionTableEntry ::= SEQUENCE
+{
+  astaireConnectionInetAddrType           InetAddressType,
+  astaireConnectionInetAddr               InetAddress,
+  astaireConnectionBucketsNeedingResync   Unsigned32,
+  astaireConnectionBucketsResynchronized  Unsigned32,
+  astaireConnectionBucketTable            SEQUENCE OF astaireConnectionBucketTableEntry
+}
+
+astaireConnectionInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address type of the connection peer"
+    ::= { astaireConnectionTableEntry 1 }
+
+astaireConnectionInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the connection peer"
+    ::= { astaireConnectionTableEntry 2 }
+
+astaireConnectionBucketsNeedingResync OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Count of buckets needing to be synchronized over this
+                 connection for the current resynchronization operation."
+    ::= { astaireConnectionTableEntry 3 }
+
+astaireConnectionBucketsResynchronized OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of buckets already resynchronized over this connection
+                 during the current resynchronization operation."
+    ::= { astaireConnectionTableEntry 4 }
+
+astaireConnectionBucketTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF AstaireConnectionBucketTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization statistics on a per-connection and
+                 per-bucket basis."
+    ::= { astaireConnectionTableEntry 5 }
+
+astaireConnectionBucketTableEntry OBJECT-TYPE
+    SYNTAX      AstaireConnectionBucketTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization statistics for a specific connection and
+                 bucket."
+    INDEX { astaireConnectionBucketId }
+    ::= { astaireConnectionBucketTable 1 }
+
+AstaireConnectionBucketTableEntry ::= SEQUENCE
+{
+  astaireConnectionBucketId                     Unsigned32,
+  astaireConnectionBucketEntriesResynchronized  Unsigned32,
+  astaireConnectionBucketDataResynchronized     Unsigned32
+}
+
+astaireConnectionBucketId OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Identifier of this bucket."
+    ::= { astaireConnectionBucketTableEntry 1 }
+
+astaireConnectionBucketEntriesResynchronized OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of entries already resynchronized during the current
+                 resynchronization operation on this connection and bucket."
+    ::= { astaireConnectionBucketTableEntry 2 }
+
+astaireConnectionBucketDataResynchronized OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Amout of data (in bytes) already resynchronized during the current
+                 resynchronization operation on this connection and bucket."
+    ::= { astaireConnectionBucketTableEntry 3 }
+
+astaireConnectionBucketBandwidthTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization bandwidth for this bucket for the given period."
+    ::= { astaireConnectionBucketTableEntry 4 }
+
+astaireConnectionBucketBandwidthTableEntry OBJECT-TYPE
+    SYNTAX      AstaireConnectionBucketBandwidthTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Resynchronization bandwidth for this bucket."
+    INDEX       { astaireConnectionBucketBandwidthScope }
+    ::= { astaireConnectionBucketBandwidthTable 1 }
+
+AstaireConnectionBucketBandwidthTableEntry ::= SEQUENCE
+{
+    astaireConnectionBucketBandwidthScope  INTEGER,
+    astaireConnectionBucketBandwidth       Unsigned32
+}
+
+astaireConnectionBucketBandwidthScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { astaireConnectionBucketBandwidthTableEntry 1 }
+
+astaireConnectionBucketBandwidth OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Resynchronization bandwidth (bytes per second) over the period."
+    ::= { astaireConnectionBucketBandwidthTableEntry 2 }
+
+astaireGroup OBJECT-GROUP
+    OBJECTS {
+        astaireBucketsNeedingResync,
+        astaireBucketsResynchronized,
+        astaireEntriesResynchronized,
+        astaireDataResynchronized,
+        astaireBandwidthScope,
+        astaireBandwidth,
+        astaireConnectionInetAddrType,
+        astaireConnectionInetAddr,
+        astaireConnectionBucketsNeedingResync,
+        astaireConnectionBucketsResynchronized,
+        astaireConnectionBucketId,
+        astaireConnectionBucketEntriesResynchronized,
+        astaireConnectionBucketDataResynchronized,
+        astaireConnectionBucketBandwidthScope,
+        astaireConnectionBucketBandwidth
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by Astaire"
+    ::= { projectClearwaterObjectGroups 6 }
+
 END
