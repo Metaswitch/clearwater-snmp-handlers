@@ -2458,7 +2458,9 @@ astaireBucketsNeedingResync OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Count of buckets needing to be synchronized for the current
-                 resynchronization operation."
+                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation - in particular, if it has already
+                 completed."
     ::= { astaire 1 }
 
 astaireBucketsResynchronized OBJECT-TYPE
@@ -2466,7 +2468,9 @@ astaireBucketsResynchronized OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Number of buckets already resynchronized during the current
-                 resynchronization operation."
+                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation - in particular, if it has already
+                 completed."
     ::= { astaire 2 }
 
 astaireEntriesResynchronized OBJECT-TYPE
@@ -2474,7 +2478,9 @@ astaireEntriesResynchronized OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Number of entries already resynchronized during the current
-                 resynchronization operation."
+                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation - in particular, if it has already
+                 completed."
     ::= { astaire 3 }
 
 astaireDataResynchronized OBJECT-TYPE
@@ -2482,7 +2488,9 @@ astaireDataResynchronized OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Amout of data (in bytes) already resynchronized during the current
-                 resynchronization operation."
+                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation - in particular, if it has already
+                 completed."
     ::= { astaire 4 }
 
 astaireBandwidthTable OBJECT-TYPE
@@ -2533,7 +2541,9 @@ astaireConnectionTableEntry OBJECT-TYPE
     SYNTAX      AstaireConnectionTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Resynchronization statistics for a specific connection."
+    DESCRIPTION "Resynchronization statistics for a specific connection.  Entries only
+                 exist while the connection is established - once it terminates, the entry
+                 is deleted."
     INDEX { astaireConnectionInetAddrType,
             astaireConnectionInetAddr      }
     ::= { astaireConnectionTable 1 }
