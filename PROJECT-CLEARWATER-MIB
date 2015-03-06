@@ -2608,7 +2608,8 @@ AstaireConnectionBucketTableEntry ::= SEQUENCE
 {
   astaireConnectionBucketId                     Unsigned32,
   astaireConnectionBucketEntriesResynchronized  Unsigned32,
-  astaireConnectionBucketDataResynchronized     Unsigned32
+  astaireConnectionBucketDataResynchronized     Unsigned32,
+  astaireConnectionBucketBandwidthTable         SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
 }
 
 astaireConnectionBucketId OBJECT-TYPE
