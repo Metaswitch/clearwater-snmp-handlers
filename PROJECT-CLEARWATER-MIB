@@ -2545,13 +2545,15 @@ astaireConnectionTableEntry OBJECT-TYPE
                  exist while the connection is established - once it terminates, the entry
                  is deleted."
     INDEX { astaireConnectionInetAddrType,
-            astaireConnectionInetAddr      }
+            astaireConnectionInetAddr,
+            astaireConnectionInetPort      }
     ::= { astaireConnectionTable 1 }
 
 AstaireConnectionTableEntry ::= SEQUENCE
 {
   astaireConnectionInetAddrType           InetAddressType,
   astaireConnectionInetAddr               InetAddress,
+  astaireConnectionInetPort               Unsigned32,
   astaireConnectionBucketsNeedingResync   Unsigned32,
   astaireConnectionBucketsResynchronized  Unsigned32,
   astaireConnectionBucketTable            SEQUENCE OF astaireConnectionBucketTableEntry
@@ -2571,13 +2573,20 @@ astaireConnectionInetAddr OBJECT-TYPE
     DESCRIPTION "Inet address of the connection peer"
     ::= { astaireConnectionTableEntry 2 }
 
+astaireConnectionInetPort OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Port of the connection peer"
+    ::= { astaireConnectionTableEntry 3 }
+
 astaireConnectionBucketsNeedingResync OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Count of buckets needing to be synchronized over this
                  connection for the current resynchronization operation."
-    ::= { astaireConnectionTableEntry 3 }
+    ::= { astaireConnectionTableEntry 4 }
 
 astaireConnectionBucketsResynchronized OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -2585,7 +2594,7 @@ astaireConnectionBucketsResynchronized OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Number of buckets already resynchronized over this connection
                  during the current resynchronization operation."
-    ::= { astaireConnectionTableEntry 4 }
+    ::= { astaireConnectionTableEntry 5 }
 
 astaireConnectionBucketTable OBJECT-TYPE
     SYNTAX SEQUENCE OF AstaireConnectionBucketTableEntry
@@ -2593,7 +2602,7 @@ astaireConnectionBucketTable OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Resynchronization statistics on a per-connection and
                  per-bucket basis."
-    ::= { astaireConnectionTableEntry 5 }
+    ::= { astaireConnectionTableEntry 6 }
 
 astaireConnectionBucketTableEntry OBJECT-TYPE
     SYNTAX      AstaireConnectionBucketTableEntry
@@ -2682,6 +2691,7 @@ astaireGroup OBJECT-GROUP
         astaireBandwidth,
         astaireConnectionInetAddrType,
         astaireConnectionInetAddr,
+        astaireConnectionInetPort,
         astaireConnectionBucketsNeedingResync,
         astaireConnectionBucketsResynchronized,
         astaireConnectionBucketId,
