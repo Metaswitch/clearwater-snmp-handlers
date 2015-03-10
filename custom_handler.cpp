@@ -98,11 +98,8 @@ int clearwater_handler(netsnmp_mib_handler* handler,
   if (thread_created.load() != true)
   {
     thread_created.store(true);
-    snmp_log(LOG_INFO, "Clearwater handler - registered handler\n");
     pthread_t zmq_thread;
-    snmp_log(LOG_INFO, "Clearwater handler - creating stats thread\n");
     pthread_create(&zmq_thread, NULL, start_stats, global_node_data);
-    snmp_log(LOG_INFO, "Clearwater handler - created stats thread\n");
   }
   
   bool up_to_date = ((long)time(NULL) - last_seen_time) < TIMEOUT_THRESHOLD;
