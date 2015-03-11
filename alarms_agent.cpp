@@ -1,6 +1,6 @@
 /**
 * Project Clearwater - IMS in the Cloud
-* Copyright (C) 2014 Metaswitch Networks Ltd
+* Copyright (C) 2015 Metaswitch Networks Ltd
 *
 * This program is free software: you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -36,11 +36,20 @@
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 #include <net-snmp/agent/agent_trap.h>
+#include <signal.h>
 
 #include "alarm_table_defs.hpp"
 #include "alarm_req_listener.hpp"
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
+
+bool done = false;
+
+// Signal handler that triggers termination.
+void terminate_handler(int sig)
+{
+  done = true;
+}
 
 int main (int argc, char **argv)
 {
@@ -84,13 +93,14 @@ int main (int argc, char **argv)
   // Run forever
   init_snmp("clearwater-alarms");
 
-  while (1)
+  signal(SIGTERM, terminate_handler);
+  
+  while (!done)
   {
     agent_check_and_process(1);
   }
 
-  /* at shutdown time */
-  snmp_shutdown("clearwater_alarms");
+  snmp_shutdown("clearwater-alarms");
 
   return 0;
 }
