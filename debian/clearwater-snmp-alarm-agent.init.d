@@ -63,9 +63,6 @@ HOME=/etc/clearwater
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0
 
-# Read configuration variable file if it is present
-#[ -r /etc/default/$NAME ] && . /etc/default/$NAME
-
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 
@@ -104,7 +101,6 @@ do_start()
         # enable gdb to dump a parent process's stack
         echo 0 > /proc/sys/kernel/yama/ptrace_scope
         get_settings
-        . /etc/clearwater/config
         DAEMON_ARGS="-i $snmp_ip -c $snmp_community"
 
         start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON --chdir $HOME -- $DAEMON_ARGS \

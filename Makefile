@@ -150,15 +150,13 @@ DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
 DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento
 
-.PHONY: build
 build: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so cw_alarm_agent memento_as_handler.so memento_handler.so
 
 include build-infra/cw-deb.mk
 
-.PHONY: deb
 deb: build deb-only
 
-.PHONY: all deb-only deb
+.PHONY: all deb-only deb build
 
 
 .PHONY: test

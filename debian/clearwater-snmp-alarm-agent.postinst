@@ -53,18 +53,8 @@ set -e
 
 case "$1" in
     configure)
-        cat > /etc/monit/conf.d/alarm_agent.monit <<EOF
-# Monitor the service's PID file.
 
-check process cw_alarm_agent pidfile /var/run/cw_alarm_agent.pid
-
-  start program   = "/etc/init.d/clearwater-snmp-alarm-agent start"
-  stop program    = "/etc/init.d/clearwater-snmp-alarm-agent stop"
-  restart program = "/etc/init.d/clearwater-snmp-alarm-agent restart"
-
-EOF
-        chmod 0644 /etc/monit/conf.d/alarm_agent.monit
-
+        install -D --mode=0644 /usr/share/clearwater/conf/alarm_agent.monit /etc/monit/conf.d/
         # Force monit to reload its configuration
         reload clearwater-monit || true
         # Trigger an snmpd restart to load the sub-agent
