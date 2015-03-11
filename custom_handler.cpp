@@ -45,6 +45,7 @@
 OIDTree tree;
 std::atomic_long last_seen_time;
 std::atomic_bool thread_created;
+pthread_mutex_t thread_creation_lock = PTHREAD_MUTEX_INITIALIZER;
 NodeData* global_node_data;
 const int TIMEOUT_THRESHOLD = 15;
 
@@ -97,9 +98,14 @@ int clearwater_handler(netsnmp_mib_handler* handler,
 
   if (thread_created.load() != true)
   {
-    thread_created.store(true);
-    pthread_t zmq_thread;
-    pthread_create(&zmq_thread, NULL, start_stats, global_node_data);
+    pthread_mutex_lock(&thread_creation_lock);
+    if (thread_created.load() != true)
+    {
+      thread_created.store(true);
+      pthread_t zmq_thread;
+      pthread_create(&zmq_thread, NULL, start_stats, global_node_data);
+    }
+    pthread_mutex_unlock(&thread_creation_lock);
   }
   
   bool up_to_date = ((long)time(NULL) - last_seen_time) < TIMEOUT_THRESHOLD;
