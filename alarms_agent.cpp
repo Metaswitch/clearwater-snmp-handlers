@@ -1,6 +1,6 @@
 /**
 * Project Clearwater - IMS in the Cloud
-* Copyright (C) 2014 Metaswitch Networks Ltd
+* Copyright (C) 2015 Metaswitch Networks Ltd
 *
 * This program is free software: you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -32,33 +32,75 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
-//#include <pthread.h>
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
+#include <net-snmp/agent/net-snmp-agent-includes.h>
+#include <net-snmp/agent/agent_trap.h>
+#include <signal.h>
 
 #include "alarm_table_defs.hpp"
 #include "alarm_req_listener.hpp"
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
 
-static bool loaded = false;
+bool done = false;
 
-extern "C" {
-  // Sub-agent entry point. SNMPd looks for an 'init_<module_name>' function in this
-  // library and calls it after loading.
-
-  void init_alarm_handler()
-  {
-    // Start alarm request listener thread and initialize supported tables if shared 
-    // library not previously loaded and static alarm data is sane.
-
-    if (!loaded && AlarmTableDefs::get_instance().initialize())
-    {
-      AlarmReqListener::get_instance().start();
-
-      init_alarmModelTable();
-      init_ituAlarmTable();
-
-      loaded = true;
-    }
-  }
+// Signal handler that triggers termination.
+void terminate_handler(int sig)
+{
+  done = true;
 }
 
+int main (int argc, char **argv)
+{
+  char* trap_ip = NULL;
+  char* community = NULL;
+  int c;
+
+  opterr = 0;
+  while ((c = getopt (argc, argv, "i:c:")) != -1)
+  {
+    switch (c)
+      {
+      case 'c':
+        community = optarg;
+        break;
+      case 'i':
+        trap_ip = optarg;
+        break;
+      default:
+        abort ();
+      }
+  }
+
+  // Log SNMP library output to syslog
+  snmp_enable_calllog();
+
+  // Set ourselves up as a subagent
+  netsnmp_ds_set_boolean(NETSNMP_DS_APPLICATION_ID, NETSNMP_DS_AGENT_ROLE, 1);
+  init_agent("clearwater-alarms");
+
+  // Connect to the informsink
+  create_trap_session(trap_ip, 161, community,
+                      SNMP_VERSION_2c, SNMP_MSG_INFORM);  
+
+  // Initialise the ZMQ listeners and alarm tables
+  AlarmTableDefs::get_instance().initialize();
+  AlarmReqListener::get_instance().start();
+  init_alarmModelTable();
+  init_ituAlarmTable();
+
+  // Run forever
+  init_snmp("clearwater-alarms");
+
+  signal(SIGTERM, terminate_handler);
+  
+  while (!done)
+  {
+    agent_check_and_process(1);
+  }
+
+  snmp_shutdown("clearwater-alarms");
+
+  return 0;
+}
