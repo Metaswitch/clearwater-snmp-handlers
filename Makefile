@@ -99,7 +99,7 @@ VG_LIST = $(TEST_OUT_DIR)/vg_$(TARGET_TEST)_list
 VG_SUPPRESS = $(TARGET_TEST).supp
 
 COVERAGEFLAGS = $(OBJ_DIR_TEST) --object-directory=$(shell pwd) --root=${ROOT} \
-                --exclude='(^include/|^modules/gmock/|^modules/rapidjson/|^modules/cpp-common/include/|^ut/|^usr/|^modules/gemini/src/ut/|^modules/gemini/include/)' \
+                --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/)' \
                 --sort-percentage
 
 EXTRA_CLEANS += $(TEST_XML) \
