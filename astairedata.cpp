@@ -172,7 +172,7 @@ AstaireGlobalStatHandler global_handler(astaire_oid, &tree);
 AstaireConnectionStatHandler connection_handler(astaire_oid, &tree);
 
 NodeData astaire_node_data("astaire",
-                           OID("1.2.826.0.1.1578918.9.9"),
+                           astaire_oid,
                            {"astaire_global",
                             "astaire_connections"
                            },
