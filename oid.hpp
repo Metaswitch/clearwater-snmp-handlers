@@ -52,14 +52,22 @@ class OID
 {
 public:
   OID() {};
+  OID(oid);
+  OID(OID, oid);
   OID(oid*, int);
+  OID(OID, oid*, int);
   OID(std::string);
+  OID(OID, std::string);
+  OID(OIDInetAddr);
+  OID(OID, OIDInetAddr);
   void print_state() const;
   bool equals(OID);
   bool subtree_contains(OID);
 
   const oid* get_ptr() const;
   int get_len() const;
+  void append(oid);
+  void append(oid*, int);
   void append(std::string);
   void append(OIDInetAddr);
   std::string to_string() const;
