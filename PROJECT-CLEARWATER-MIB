@@ -2556,7 +2556,6 @@ AstaireConnectionTableEntry ::= SEQUENCE
   astaireConnectionInetPort               Unsigned32,
   astaireConnectionBucketsNeedingResync   Unsigned32,
   astaireConnectionBucketsResynchronized  Unsigned32,
-  astaireConnectionBucketTable            SEQUENCE OF astaireConnectionBucketTableEntry
 }
 
 astaireConnectionInetAddrType OBJECT-TYPE
@@ -2602,7 +2601,7 @@ astaireConnectionBucketTable OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Resynchronization statistics on a per-connection and
                  per-bucket basis."
-    ::= { astaireConnectionTableEntry 6 }
+    ::= { astaire 7 }
 
 astaireConnectionBucketTableEntry OBJECT-TYPE
     SYNTAX      AstaireConnectionBucketTableEntry
@@ -2610,23 +2609,50 @@ astaireConnectionBucketTableEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Resynchronization statistics for a specific connection and
                  bucket."
-    INDEX { astaireConnectionBucketId }
+    INDEX { astaireConnectionBucketInetAddrType,
+            astaireConnectionBucketInetAddr,
+            astaireConnectionBucketInetPort,
+            astaireConnectionBucketId }
     ::= { astaireConnectionBucketTable 1 }
 
 AstaireConnectionBucketTableEntry ::= SEQUENCE
 {
+  astaireConnectionBucketInetAddrType           InetAddressType,
+  astaireConnectionBucketInetAddr               InetAddress (SIZE (1..16)),
+  astaireConnectionBucketInetPort               Unsigned32,
   astaireConnectionBucketId                     Unsigned32,
   astaireConnectionBucketEntriesResynchronized  Unsigned32,
   astaireConnectionBucketDataResynchronized     Unsigned32,
   astaireConnectionBucketBandwidthTable         SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
 }
 
+astaireConnectionBucketInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address type of the connection peer"
+    ::= { astaireConnectionBucketTableEntry 1 }
+
+astaireConnectionBucketInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the connection peer"
+    ::= { astaireConnectionBucketTableEntry 2 }
+
+astaireConnectionBucketInetPort OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Port of the connection peer"
+    ::= { astaireConnectionBucketTableEntry 3 }
+
 astaireConnectionBucketId OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Identifier of this bucket."
-    ::= { astaireConnectionBucketTableEntry 1 }
+    ::= { astaireConnectionBucketTableEntry 4 }
 
 astaireConnectionBucketEntriesResynchronized OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -2634,7 +2660,7 @@ astaireConnectionBucketEntriesResynchronized OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Number of entries already resynchronized during the current
                  resynchronization operation on this connection and bucket."
-    ::= { astaireConnectionBucketTableEntry 2 }
+    ::= { astaireConnectionBucketTableEntry 5 }
 
 astaireConnectionBucketDataResynchronized OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -2642,28 +2668,64 @@ astaireConnectionBucketDataResynchronized OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Amout of data (in bytes) already resynchronized during the current
                  resynchronization operation on this connection and bucket."
-    ::= { astaireConnectionBucketTableEntry 3 }
+    ::= { astaireConnectionBucketTableEntry 6 }
 
 astaireConnectionBucketBandwidthTable OBJECT-TYPE
     SYNTAX SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth for this bucket for the given period."
-    ::= { astaireConnectionBucketTableEntry 4 }
+    ::= { astaire 8 }
 
 astaireConnectionBucketBandwidthTableEntry OBJECT-TYPE
     SYNTAX      AstaireConnectionBucketBandwidthTableEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth for this bucket."
-    INDEX       { astaireConnectionBucketBandwidthScope }
+    INDEX       { astaireConnectionBucketBandwidthInetAddrType,
+                  astaireConnectionBucketBandwidthInetAddr,
+                  astaireConnectionBucketBandwidthInetPort,
+                  astaireConnectionBucketBandwidthBucketId,
+                  astaireConnectionBucketBandwidthScope }
     ::= { astaireConnectionBucketBandwidthTable 1 }
 
 AstaireConnectionBucketBandwidthTableEntry ::= SEQUENCE
 {
-    astaireConnectionBucketBandwidthScope  INTEGER,
-    astaireConnectionBucketBandwidth       Unsigned32
+    astaireConnectionBucketBandwidthInetAddrType InetAddressType,
+    astaireConnectionBucketBandwidthInetAddr     InetAddress (SIZE (1..16)),
+    astaireConnectionBucketBandwidthInetPort     Unsigned32,
+    astaireConnectionBucketBandwidthBucketId     Unsigned32,
+    astaireConnectionBucketBandwidthScope        INTEGER,
+    astaireConnectionBucketBandwidth             Unsigned32
 }
+
+astaireConnectionBucketBandwidthInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address type of the connection peer"
+    ::= { astaireConnectionBucketBandwidthTableEntry 1 }
+
+astaireConnectionBucketBandwidthInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the connection peer"
+    ::= { astaireConnectionBucketBandwidthTableEntry 2 }
+
+astaireConnectionBucketBandwidthInetPort OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Port of the connection peer"
+    ::= { astaireConnectionBucketBandwidthTableEntry 3 }
+
+astaireConnectionBucketBandwidthBucketId OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Identifier of this bucket."
+    ::= { astaireConnectionBucketBandwidthTableEntry 4 }
 
 astaireConnectionBucketBandwidthScope OBJECT-TYPE
     SYNTAX      INTEGER {
@@ -2672,14 +2734,14 @@ astaireConnectionBucketBandwidthScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { astaireConnectionBucketBandwidthTableEntry 1 }
+    ::= { astaireConnectionBucketBandwidthTableEntry 5 }
 
 astaireConnectionBucketBandwidth OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth (bytes per second) over the period."
-    ::= { astaireConnectionBucketBandwidthTableEntry 2 }
+    ::= { astaireConnectionBucketBandwidthTableEntry 6 }
 
 astaireGroup OBJECT-GROUP
     OBJECTS {
