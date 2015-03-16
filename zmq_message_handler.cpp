@@ -65,22 +65,31 @@ void BareStatHandler::handle(std::vector<std::string> msgs)
 {
   // First two entries are the statistic name and the string "OK", so
   // skip them
-
-  _tree->set(_root_oid, atoi(msgs[2].c_str()));
+  if (msgs.size() >= 3)
+  {
+    _tree->set(_root_oid, atoi(msgs[2].c_str()));
+  }
 }
 
 void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
 {
-  OIDMap new_subtree;
-
-  OID this_oid = _root_oid;
-  this_oid.append("0"); // Indicates a scalar value in SNMP
-
-  // First two entries are the statistic name and the string "OK", so
-  // skip them
-
-  new_subtree[this_oid] = atoi(msgs[2].c_str());
-  _tree->replace_subtree(_root_oid, new_subtree);
+  if (msgs.size() >= 3)
+  {
+    OIDMap new_subtree;
+  
+    OID this_oid = _root_oid;
+    this_oid.append("0"); // Indicates a scalar value in SNMP
+  
+    // First two entries are the statistic name and the string "OK", so
+    // skip them
+  
+    new_subtree[this_oid] = atoi(msgs[2].c_str());
+    _tree->replace_subtree(_root_oid, new_subtree);
+  }
+  else
+  {
+    _tree->remove_subtree(_root_oid);
+  }
 }
 
 // This handler is provided for the case where a stat only provides a single
@@ -88,45 +97,59 @@ void SingleNumberStatHandler::handle(std::vector<std::string> msgs)
 // changes.
 void SingleNumberWithScopeStatHandler::handle(std::vector<std::string> msgs)
 {
-  OIDMap new_subtree;
-
-  OID count_oid = _root_oid;
-  count_oid.append("1.2");
-
-  // First two entries are the statistic name and the string "OK", so
-  // skip them
-  new_subtree[count_oid] = atoi(msgs[2].c_str());
-  _tree->replace_subtree(_root_oid, new_subtree);
+  if (msgs.size() >= 3)
+  {
+    OIDMap new_subtree;
+  
+    OID count_oid = _root_oid;
+    count_oid.append("1.2");
+  
+    // First two entries are the statistic name and the string "OK", so
+    // skip them
+    new_subtree[count_oid] = atoi(msgs[2].c_str());
+    _tree->replace_subtree(_root_oid, new_subtree);
+  }
+  else
+  {
+    _tree->remove_subtree(_root_oid);
+  }
 }
 
 // This handler is provided for the case where average statistics are required
 // as well as a total count
 void AccumulatedWithCountStatHandler::handle(std::vector<std::string> msgs)
 {
-  OID average_oid = _root_oid;
-  average_oid.append("1.2");
-
-  OID variance_oid = _root_oid;
-  variance_oid.append("1.3");
-
-  OID hwm_oid = _root_oid;
-  hwm_oid.append("1.4");
-
-  OID lwm_oid = _root_oid;
-  lwm_oid.append("1.5");
-
-  OID count_oid = _root_oid;
-  count_oid.append("1.6");
-
-  // First two entries are the statistic name and the string "OK", so
-  // skip them
-  OIDMap new_subtree = {{average_oid, atoi(msgs[2].c_str())},
-                        {variance_oid, atoi(msgs[3].c_str())},
-// Note that HWM and LWM are in a different order in SNMP and 0MQ
-                        {hwm_oid, atoi(msgs[5].c_str())},
-                        {lwm_oid, atoi(msgs[4].c_str())},
-                        {count_oid, atoi(msgs[6].c_str())}
-  };
-
-  _tree->replace_subtree(_root_oid, new_subtree);
+  if (msgs.size() >= 7)
+  {
+    OID average_oid = _root_oid;
+    average_oid.append("1.2");
+   
+    OID variance_oid = _root_oid;
+    variance_oid.append("1.3");
+   
+    OID hwm_oid = _root_oid;
+    hwm_oid.append("1.4");
+   
+    OID lwm_oid = _root_oid;
+    lwm_oid.append("1.5");
+   
+    OID count_oid = _root_oid;
+    count_oid.append("1.6");
+   
+    // First two entries are the statistic name and the string "OK", so
+    // skip them
+    OIDMap new_subtree = {{average_oid, atoi(msgs[2].c_str())},
+                          {variance_oid, atoi(msgs[3].c_str())},
+    // Note that HWM and LWM are in a different order in SNMP and 0MQ
+                          {hwm_oid, atoi(msgs[5].c_str())},
+                          {lwm_oid, atoi(msgs[4].c_str())},
+                          {count_oid, atoi(msgs[6].c_str())}
+    };
+   
+    _tree->replace_subtree(_root_oid, new_subtree);
+  }
+  else
+  {
+    _tree->remove_subtree(_root_oid);
+  }
 }
