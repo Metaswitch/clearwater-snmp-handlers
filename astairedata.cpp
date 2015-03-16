@@ -42,10 +42,10 @@ public:
   AstaireGlobalStatHandler(OID oid, OIDTree* tree) : ZMQMessageHandler(oid, tree) {};
   void handle(std::vector<std::string> msgs)
   {
-    OID buckets_needing_resync_oid(_root_oid, 1);
-    OID buckets_resynchronized_oid(_root_oid, 2);
-    OID entries_resynchronized_oid(_root_oid, 3);
-    OID data_resynchronized_oid(_root_oid, 4);
+    OID buckets_needing_resync_oid(_root_oid, "1.0");
+    OID buckets_resynchronized_oid(_root_oid, "2.0");
+    OID entries_resynchronized_oid(_root_oid, "3.0");
+    OID data_resynchronized_oid(_root_oid, "4.0");
     OID bandwidth_oid(_root_oid, "5.1.2.1");
 
     if (msgs.size() >= 7 )
