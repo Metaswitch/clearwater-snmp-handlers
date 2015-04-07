@@ -52,6 +52,13 @@ void IPCountStatHandler::handle(std::vector<std::string> msgs)
     if (oid_addr.isValid())
     {
       OID this_oid = _root_oid;
+
+      // The root OIDs for the ConnectionCount tables (bonoConnectedSproutsTable,
+      // sproutConnectedHomersTable, sproutConnectedHomesteadsTable and
+      // mementoConnectedHomesteadsTable) don't contain the element for the
+      // table Entry (always "1") or the element for the ConnectionCount
+      // (always "3"), so insert these before adding the IP address index.
+      this_oid.append("1.3");
       this_oid.append(oid_addr);
 
       int connections_to_this_ip = atoi(it_val->c_str());
