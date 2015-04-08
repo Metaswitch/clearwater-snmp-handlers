@@ -48,3 +48,8 @@ Package: clearwater-snmp-handler-astaire
 Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Astaire
+
+Package: clearwater-snmp-handler-chronos
+Architecture: any
+Depends: clearwater-snmpd
+Description: The SNMP handler library for statistics about Chronos

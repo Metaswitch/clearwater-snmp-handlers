@@ -147,16 +147,19 @@ memento_handler.so: *.cpp *.hpp
 astaire_handler.so: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -O0 -fPIC -shared -o astaire_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp astairedata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
 
+chronos_handler.so: *.cpp *.hpp
+	g++ `net-snmp-config --cflags` -Wall -std=c++0x -O0 -fPIC -shared -o chronos_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp chronosdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-handler-alarm clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire
+DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-handler-alarm clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-handler-chronos
 
 include build-infra/cw-deb.mk
 
 .PHONY: deb
-deb: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so alarm_handler.so memento_as_handler.so memento_handler.so astaire_handler.so deb-only
+deb: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so alarm_handler.so memento_as_handler.so memento_handler.so astaire_handler.so chronos_handler.so deb-only
 
 .PHONY: all deb-only deb
 
