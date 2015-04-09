@@ -2823,6 +2823,6 @@ chronosGroup OBJECT-GROUP
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Chronos"
-    ::= { projectClearwaterObjectGroups 9 }
+    ::= { projectClearwaterObjectGroups 7 }
 
 END
