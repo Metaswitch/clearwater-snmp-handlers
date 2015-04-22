@@ -43,6 +43,8 @@ OID hss_digest_latency_oid = OID("1.2.826.0.1.1578918.9.5.4");
 OID hss_subscription_latency_oid = OID("1.2.826.0.1.1578918.9.5.5");
 OID incoming_requests_oid = OID("1.2.826.0.1.1578918.9.5.6");
 OID rejected_overload_oid = OID("1.2.826.0.1.1578918.9.5.7");
+OID diameter_invalid_realm_oid = OID("1.2.826.0.1.1578918.9.5.8");
+OID diameter_invalid_host_oid = OID("1.2.826.0.1.1578918.9.5.9");
 
 AccumulatedWithCountStatHandler latency_handler(latency_oid, &tree);
 AccumulatedWithCountStatHandler hss_latency_handler(hss_latency_oid, &tree);
@@ -51,6 +53,8 @@ AccumulatedWithCountStatHandler hss_digest_latency_handler(hss_digest_latency_oi
 AccumulatedWithCountStatHandler hss_subscription_latency_handler(hss_subscription_latency_oid, &tree);
 SingleNumberWithScopeStatHandler incoming_requests_handler(incoming_requests_oid, &tree);
 SingleNumberWithScopeStatHandler rejected_overload_handler(rejected_overload_oid, &tree);
+SingleNumberWithScopeStatHandler diameter_invalid_realm_handler(diameter_invalid_realm_oid, &tree);
+SingleNumberWithScopeStatHandler diameter_invalid_host_handler(diameter_invalid_host_oid, &tree);
 
 NodeData homestead_node_data("homestead",
                              OID("1.2.826.0.1.1578918.9.5"),
@@ -60,7 +64,9 @@ NodeData homestead_node_data("homestead",
                               "H_hss_digest_latency_us",
                               "H_hss_subscription_latency_us",
                               "H_incoming_requests",
-                              "H_rejected_overload"
+                              "H_rejected_overload",
+                              "H_diameter_invalid_dest_realm",
+                              "H_diameter_invalid_dest_host"
                              },
                              {{"H_latency_us", &latency_handler},
                               {"H_hss_latency_us", &hss_latency_handler},
@@ -68,7 +74,9 @@ NodeData homestead_node_data("homestead",
                               {"H_hss_digest_latency_us", &hss_digest_latency_handler},
                               {"H_hss_subscription_latency_us", &hss_subscription_latency_handler},
                               {"H_incoming_requests", &incoming_requests_handler},
-                              {"H_rejected_overload", &rejected_overload_handler}
+                              {"H_rejected_overload", &rejected_overload_handler},
+                              {"H_diameter_invalid_dest_realm", &diameter_invalid_realm_handler},
+                              {"H_diameter_invalid_dest_host", &diameter_invalid_host_handler}
                              });
 
 extern "C" {
