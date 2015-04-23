@@ -1615,6 +1615,82 @@ homesteadRejectedOverloadCount OBJECT-TYPE
                  period."
     ::= { homesteadRejectedOverloadEntry 2 }
 
+homesteadDiameterInvalidRealmTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadDiameterInvalidRealmEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Realm handled by the Homestead"
+                 over the given period."
+    ::= { homestead 8 }
+
+homesteadDiameterInvalidRealmEntry OBJECT-TYPE
+    SYNTAX      HomesteadDiameterInvalidRealmEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Realm."
+    INDEX       { homesteadDiameterInvalidRealmScope }
+    ::= { homesteadDiameterInvalidRealmTable 1 }
+
+HomesteadDiameterInvalidRealmEntry ::= SEQUENCE
+{
+  homesteadDiameterInvalidRealmScope          INTEGER,
+  homesteadDiameterInvalidRealmCount          Unsigned32
+}
+
+homesteadDiameterInvalidRealmScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { homesteadDiameterInvalidRealmEntry 1 }
+
+homesteadDiameterInvalidRealmCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Realm over the period."
+    ::= { homesteadDiameterInvalidRealmEntry 2 }
+
+homesteadDiameterInvalidHostTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadDiameterInvalidHostEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Host handled by the Homestead"
+                 over the given period."
+    ::= { homestead 9 }
+
+homesteadDiameterInvalidHostEntry OBJECT-TYPE
+    SYNTAX      HomesteadDiameterInvalidHostEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Host."
+    INDEX       { homesteadDiameterInvalidHostScope }
+    ::= { homesteadDiameterInvalidHostTable 1 }
+
+HomesteadDiameterInvalidHostEntry ::= SEQUENCE
+{
+  homesteadDiameterInvalidHostScope          INTEGER,
+  homesteadDiameterInvalidHostCount          Unsigned32
+}
+
+homesteadDiameterInvalidHostScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { homesteadDiameterInvalidHostEntry 1 }
+
+homesteadDiameterInvalidHostCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Host over the period."
+    ::= { homesteadDiameterInvalidHostEntry 2 }
+
 homesteadGroup OBJECT-GROUP
     OBJECTS {
       homesteadLatencyAverage,
@@ -1643,7 +1719,9 @@ homesteadGroup OBJECT-GROUP
       homesteadSubscriptionLatencyLWM,
       homesteadSubscriptionLatencyCount,
       homesteadIncomingRequestsCount,
-      homesteadRejectedOverloadCount
+      homesteadRejectedOverloadCount,
+      homesteadDiameterInvalidRealm,
+      homesteadDiameterInvalidHost
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Homestead"
