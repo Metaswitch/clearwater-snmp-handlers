@@ -2894,10 +2894,49 @@ chronosTimersProcessedCount OBJECT-TYPE
     DESCRIPTION "The total number of timers processed over the period."
     ::= { chronosTimersProcessedEntry 2 }
 
+chronosInvalidTimersProcessedTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosInvalidTimersProcessedEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of invalid timers processed by this Chronos over
+                 the given period."
+    ::= { chronos 3 }
+
+chronosInvalidTimersProcessedEntry OBJECT-TYPE
+    SYNTAX      ChronosInvalidTimersProcessedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of invalid timers processed"
+    INDEX       { chronosInvalidTimersProcessedScope }
+    ::= { chronosInvalidTimersProcessedTable 1 }
+
+ChronosInvalidTimersProcessedEntry ::= SEQUENCE
+{
+  chronosInvalidTimersProcessedScope          INTEGER,
+  chronosInvalidTimersProcessedCount          Unsigned32
+}
+
+chronosInvalidTimersProcessedScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosInvalidTimersProcessedEntry 1 }
+
+chronosInvalidTimersProcessedCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of invalid timers processed over the period."
+    ::= { chronosInvalidTimersProcessedEntry 2 }
+
 chronosGroup OBJECT-GROUP
     OBJECTS {
         chronosRemainingNodesQuery,
-        chronosTimersProcessedCount
+        chronosTimersProcessedCount,
+        chronosInvalidTimersProcessedCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Chronos"

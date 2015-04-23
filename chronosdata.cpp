@@ -39,17 +39,21 @@
 
 OID nodes_query_oid = OID("1.2.826.0.1.1578918.9.10.1");
 OID timers_processed_oid = OID("1.2.826.0.1.1578918.9.10.2");
+OID invalid_timers_processed_oid = OID("1.2.826.0.1.1578918.9.10.3");
 
 SingleNumberStatHandler nodes_query_handler(nodes_query_oid, &tree);
 SingleNumberWithScopeStatHandler timers_processed_handler(timers_processed_oid, &tree);
+SingleNumberWithScopeStatHandler invalid_timers_processed_handler(invalid_timers_processed_oid, &tree);
 
 NodeData chronos_node_data("chronos",
                            OID("1.2.826.0.1.1578918.9.10"),
                            {"chronos_scale_nodes_to_query",
-                            "chronos_scale_timers_processed"
+                            "chronos_scale_timers_processed",
+                            "chronos_scale_invalid_timers_processed"
                            },
                            {{"chronos_scale_nodes_to_query", &nodes_query_handler},
-                            {"chronos_scale_timers_processed", &timers_processed_handler}
+                            {"chronos_scale_timers_processed", &timers_processed_handler},
+                            {"chronos_scale_invalid_timers_processed", &invalid_timers_processed_handler}
                            });
 
 extern "C"
