@@ -54,6 +54,8 @@ projectClearwaterCompliance MODULE-COMPLIANCE
     DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
     GROUP astaireGroup
     DESCRIPTION "The astaireGroup must be exposed by nodes running Astaire"
+    GROUP chronosGroup
+    DESCRIPTION "The chronosGroup must be exposed by nodes running Chronos"
     ::= { projectClearwaterConformance 1 }
 projectClearwaterObjectGroups OBJECT IDENTIFIER ::= { projectClearwater 1 }
 
@@ -68,6 +70,7 @@ sipp             OBJECT IDENTIFIER ::= { projectClearwater 6 }
 callDiversionAs  OBJECT IDENTIFIER ::= { projectClearwater 7 }
 memento          OBJECT IDENTIFIER ::= { projectClearwater 8 }
 astaire          OBJECT IDENTIFIER ::= { projectClearwater 9 }
+chronos          OBJECT IDENTIFIER ::= { projectClearwater 10 }
 
 -- Bono entries
 
@@ -2843,5 +2846,100 @@ astaireGroup OBJECT-GROUP
     STATUS      current
     DESCRIPTION "Statistics exposed by Astaire"
     ::= { projectClearwaterObjectGroups 6 }
+
+-- Chronos Entries
+
+chronosRemainingNodesQuery OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current count of the remaining Chronos nodes to query during a scaling operation."
+    ::= { chronos 1 }
+
+chronosTimersProcessedTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosTimersProcessedEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of timers processed handled by this Chronos over
+                 the given period."
+    ::= { chronos 2 }
+
+chronosTimersProcessedEntry OBJECT-TYPE
+    SYNTAX      ChronosTimersProcessedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of timers processed"
+    INDEX       { chronosTimersProcessedScope }
+    ::= { chronosTimersProcessedTable 1 }
+
+ChronosTimersProcessedEntry ::= SEQUENCE
+{
+  chronosTimersProcessedScope          INTEGER,
+  chronosTimersProcessedCount          Unsigned32
+}
+
+chronosTimersProcessedScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosTimersProcessedEntry 1 }
+
+chronosTimersProcessedCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of timers processed over the period."
+    ::= { chronosTimersProcessedEntry 2 }
+
+chronosInvalidTimersProcessedTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosInvalidTimersProcessedEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of invalid timers processed by this Chronos over
+                 the given period."
+    ::= { chronos 3 }
+
+chronosInvalidTimersProcessedEntry OBJECT-TYPE
+    SYNTAX      ChronosInvalidTimersProcessedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of invalid timers processed"
+    INDEX       { chronosInvalidTimersProcessedScope }
+    ::= { chronosInvalidTimersProcessedTable 1 }
+
+ChronosInvalidTimersProcessedEntry ::= SEQUENCE
+{
+  chronosInvalidTimersProcessedScope          INTEGER,
+  chronosInvalidTimersProcessedCount          Unsigned32
+}
+
+chronosInvalidTimersProcessedScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeCurrent5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosInvalidTimersProcessedEntry 1 }
+
+chronosInvalidTimersProcessedCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of invalid timers processed over the period."
+    ::= { chronosInvalidTimersProcessedEntry 2 }
+
+chronosGroup OBJECT-GROUP
+    OBJECTS {
+        chronosRemainingNodesQuery,
+        chronosTimersProcessedCount,
+        chronosInvalidTimersProcessedCount
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by Chronos"
+    ::= { projectClearwaterObjectGroups 7 }
 
 END
