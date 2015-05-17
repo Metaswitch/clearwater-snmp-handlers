@@ -38,8 +38,6 @@ all: deb
 ROOT ?= ${PWD}
 MK_DIR := ${ROOT}/mk
 
-ALARM_INCLUDES := -I${ROOT}/modules/cpp-common/include
-
 GTEST_DIR := $(ROOT)/modules/gmock/gtest
 GMOCK_DIR := $(ROOT)/modules/gmock
 
@@ -77,11 +75,14 @@ CPPFLAGS_TEST += -DUNIT_TEST \
                  -O0 \
                  -fno-access-control \
                  -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include
+
 CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
 
 LDFLAGS += -lzmq \
            -lpthread \
-           `net-snmp-config --libs` 
+           `net-snmp-config --libs` \
+					 -fPIC \
+           -shared
 
 #LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib
 
@@ -102,7 +103,8 @@ COVERAGEFLAGS = $(OBJ_DIR_TEST) --object-directory=$(shell pwd) --root=${ROOT} \
                 --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/)' \
                 --sort-percentage
 
-EXTRA_CLEANS += $(TEST_XML) \
+EXTRA_CLEANS += *.o *.so *.d \
+                $(TEST_XML) \
                 $(COVERAGE_XML) \
                 $(VG_XML) $(VG_OUT) \
                 $(OBJ_DIR_TEST)/*.gcno \
@@ -120,35 +122,41 @@ GTEST_SRCS_ := $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 GMOCK_SRCS_ := $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 # End of boilerplate
 
-
 include ${MK_DIR}/platform.mk
 
-sprout_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o sprout_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp sproutdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+-include *.d
 
-bono_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o bono_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp bonodata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+%.o : %.cpp
+	g++ `net-snmp-config --cflags` -Wall ${CPPFLAGS} -fPIC -shared -MMD -c -o $@ $<
 
-homestead_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o homestead_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp homesteaddata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+COMMON_OBJECTS := custom_handler.o oid.o oidtree.o oid_inet_addr.o zmq_listener.o zmq_message_handler.o
 
-cdiv_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o cdiv_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp cdivdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+sprout_handler.so: sproutdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
 
-alarm_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared ${ALARM_INCLUDES} -o alarm_handler.so alarm_handler.cpp modules/cpp-common/src/alarmdefinition.cpp alarm_table_defs.cpp alarm_model_table.cpp alarm_req_listener.cpp alarm_trap_sender.cpp itu_alarm_table.cpp `net-snmp-config --libs` -lzmq -lpthread
+bono_handler.so: bonodata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
 
-memento_as_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o memento_as_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp mementoasdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+homestead_handler.so: homesteaddata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
 
-memento_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o memento_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp mementodata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+cdiv_handler.so: cdivdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
 
-astaire_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -O0 -fPIC -shared -o astaire_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp astairedata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+alarm_handler.so: alarm_handler.o alarmdefinition.o alarm_table_defs.o alarm_model_table.o alarm_req_listener.o alarm_trap_sender.o itu_alarm_table.o
+	g++ -o $@ $^ ${LDFLAGS}
 
-chronos_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -O0 -fPIC -shared -o chronos_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp chronosdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+memento_as_handler.so: mementoasdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
+
+memento_handler.so: mementodata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
+
+astaire_handler.so: astairedata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
+
+chronos_handler.so: chronosdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS}
 
 # Makefile for Clearwater infrastructure packages
 
@@ -156,13 +164,13 @@ DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
 DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-handler-alarm clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-handler-chronos
 
+# Add dependencies to deb-only (target will be added by build-infra)
+deb-only: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so alarm_handler.so memento_handler.so memento_as_handler.so astaire_handler.so chronos_handler.so
+
 include build-infra/cw-deb.mk
 
 .PHONY: deb
-deb: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so alarm_handler.so memento_as_handler.so memento_handler.so astaire_handler.so chronos_handler.so deb-only
-
-.PHONY: all deb-only deb
-
+deb: deb-only
 
 .PHONY: test
 test: run_test coverage vg coverage-check vg-check

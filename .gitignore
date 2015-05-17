@@ -12,5 +12,8 @@
 *.la
 *.a
 
+# Dependency files
+*.d
+
 debian/copyright
 build
