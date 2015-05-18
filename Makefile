@@ -51,7 +51,7 @@ TARGET_SOURCES := alarmdefinition.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
                   alarm_model_table.cpp \
-                  itu_alarm_table.cpp 
+                  itu_alarm_table.cpp
 
 TARGET_SOURCES_TEST := test_main.cpp \
                        alarm.cpp \
@@ -66,7 +66,7 @@ TARGET_SOURCES_TEST := test_main.cpp \
 TARGET_EXTRA_OBJS_TEST := gmock-all.o \
                           gtest-all.o
 
-CPPFLAGS += -std=c++0x -ggdb3 
+CPPFLAGS += -std=c++0x -ggdb3
 CPPFLAGS += -I$(ROOT) \
             -I$(ROOT)/modules/cpp-common/include
 
@@ -81,7 +81,7 @@ CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
 LDFLAGS += -lzmq \
            -lpthread \
            `net-snmp-config --libs` \
-					 -fPIC \
+           -fPIC \
            -shared
 
 #LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib
