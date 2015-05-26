@@ -80,9 +80,7 @@ CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
 
 LDFLAGS += -lzmq \
            -lpthread \
-           `net-snmp-config --libs` \
-           -fPIC \
-           -shared
+           `net-snmp-config --libs`
 
 #LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib
 
@@ -127,36 +125,36 @@ include ${MK_DIR}/platform.mk
 -include *.d
 
 %.o : %.cpp
-	g++ `net-snmp-config --cflags` -Wall ${CPPFLAGS} -fPIC -shared -MMD -c -o $@ $<
+	g++ `net-snmp-config --cflags` -Wall ${CPPFLAGS} -fPIC -MMD -c -o $@ $<
 
 COMMON_OBJECTS := custom_handler.o oid.o oidtree.o oid_inet_addr.o zmq_listener.o zmq_message_handler.o
 
 sprout_handler.so: sproutdata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 bono_handler.so: bonodata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 homestead_handler.so: homesteaddata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 cdiv_handler.so: cdivdata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 alarm_handler.so: alarm_handler.o alarmdefinition.o alarm_table_defs.o alarm_model_table.o alarm_req_listener.o alarm_trap_sender.o itu_alarm_table.o
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 memento_as_handler.so: mementoasdata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 memento_handler.so: mementodata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 astaire_handler.so: astairedata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 chronos_handler.so: chronosdata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 # Makefile for Clearwater infrastructure packages
 
