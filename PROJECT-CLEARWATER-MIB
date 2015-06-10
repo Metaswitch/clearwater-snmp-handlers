@@ -1619,7 +1619,7 @@ homesteadDiameterInvalidRealmTable OBJECT-TYPE
     SYNTAX SEQUENCE OF HomesteadDiameterInvalidRealmEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Realm handled by the Homestead"
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Realm handled by the Homestead
                  over the given period."
     ::= { homestead 8 }
 
@@ -1657,7 +1657,7 @@ homesteadDiameterInvalidHostTable OBJECT-TYPE
     SYNTAX SEQUENCE OF HomesteadDiameterInvalidHostEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Host handled by the Homestead"
+    DESCRIPTION "The total number of Diameter requests with an invalid Destination-Host handled by the Homestead
                  over the given period."
     ::= { homestead 9 }
 
