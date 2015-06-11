@@ -1720,8 +1720,8 @@ homesteadGroup OBJECT-GROUP
       homesteadSubscriptionLatencyCount,
       homesteadIncomingRequestsCount,
       homesteadRejectedOverloadCount,
-      homesteadDiameterInvalidRealm,
-      homesteadDiameterInvalidHost
+      homesteadDiameterInvalidRealmCount,
+      homesteadDiameterInvalidHostCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Homestead"
