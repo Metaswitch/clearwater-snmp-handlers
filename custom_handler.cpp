@@ -140,7 +140,7 @@ int clearwater_handler(netsnmp_mib_handler* handler,
   }
   else
   {
-    snmp_log(LOG_INFO, "Ignoring request because data out of date (%ld ? %ld)", (long)time(NULL), (long)last_seen_time);
+    snmp_log(TRC_INFO, "Ignoring request because data out of date (%ld ? %ld)", (long)time(NULL), (long)last_seen_time);
   }
 
   return SNMP_ERR_NOERROR;
