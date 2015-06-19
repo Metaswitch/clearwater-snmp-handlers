@@ -58,7 +58,7 @@ public:
     }
     else
     {
-      snmp_log(LOG_INFO, "AstaireGlobalStatHandler received too short globals - %d < 7", (int)msgs.size());
+      snmp_log(TRC_INFO, "AstaireGlobalStatHandler received too short globals - %d < 7", (int)msgs.size());
       _tree->remove(buckets_needing_resync_oid);
       _tree->remove(buckets_resynchronized_oid);
       _tree->remove(entries_resynchronized_oid);
@@ -142,19 +142,19 @@ public:
           }
           else
           {
-            snmp_log(LOG_INFO, "AstaireConnectionStatHandler received too short bucket list - %d < %d", (int)msgs.size(), end_buckets);
+            snmp_log(TRC_INFO, "AstaireConnectionStatHandler received too short bucket list - %d < %d", (int)msgs.size(), end_buckets);
             break;
           }
         }
         else
         {
-          snmp_log(LOG_INFO, "AstaireConnectionStatHandler received invalid IP address - %s", msgs[ii].c_str());
+          snmp_log(TRC_INFO, "AstaireConnectionStatHandler received invalid IP address - %s", msgs[ii].c_str());
           break;
         }
       }
       else
       {
-        snmp_log(LOG_INFO, "AstaireConnectionStatHandler received too short connection - %d < %d", (int)msgs.size(), ii + 4);
+        snmp_log(TRC_INFO, "AstaireConnectionStatHandler received too short connection - %d < %d", (int)msgs.size(), ii + 4);
         break;
       }
       connection++;
