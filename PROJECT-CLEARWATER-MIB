@@ -571,14 +571,14 @@ sproutHomerLatencyCount OBJECT-TYPE
     DESCRIPTION "The total requests over the period."
     ::= { sproutHomerLatencyEntry 6 }
 
-hss OBJECT IDENTIFIER ::= { sprout 3 }
+homestead OBJECT IDENTIFIER ::= { sprout 3 }
 
 sproutConnectedHomesteadsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutConnectedHomesteadsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Statistics for each connected upstream Homestead node"
-    ::= { hss 1 }
+    ::= { homestead 1 }
 
 sproutConnectedHomesteadsEntry OBJECT-TYPE
     SYNTAX SproutConnectedHomesteadsEntry
@@ -626,7 +626,7 @@ sproutHomesteadLatencyTable OBJECT-TYPE
     DESCRIPTION "Latency of Homestead requests made by this Sprout
                  over a the given period.  Latency measured in
                  microseconds"
-    ::= { hss 2 }
+    ::= { homestead 2 }
 
 sproutHomesteadLatencyEntry OBJECT-TYPE
     SYNTAX      SproutHomesteadLatencyEntry
@@ -698,7 +698,7 @@ sproutMARLatencyTable OBJECT-TYPE
     DESCRIPTION "Latency of requests for MARs made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
-    ::= { hss 3 }
+    ::= { homestead 3 }
 
 sproutMARLatencyEntry OBJECT-TYPE
     SYNTAX      SproutMARLatencyEntry
@@ -770,7 +770,7 @@ sproutSARLatencyTable OBJECT-TYPE
     DESCRIPTION "Latency of requests for SARs made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
-    ::= { hss 4 }
+    ::= { homestead 4 }
 
 sproutSARLatencyEntry OBJECT-TYPE
     SYNTAX      SproutSARLatencyEntry
@@ -842,7 +842,7 @@ sproutUARLatencyTable OBJECT-TYPE
     DESCRIPTION "Latency of requests for user authentication made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
-    ::= { hss 5 }
+    ::= { homestead 5 }
 
 sproutUARLatencyEntry OBJECT-TYPE
     SYNTAX      SproutUARLatencyEntry
@@ -914,7 +914,7 @@ sproutLIRLatencyTable OBJECT-TYPE
     DESCRIPTION "Latency of location requests made by this Sprout
                  over the given period.  Latency measured in
                  microseconds"
-    ::= { hss 6 }
+    ::= { homestead 6 }
 
 sproutLIRLatencyEntry OBJECT-TYPE
     SYNTAX      SproutLIRLatencyEntry
