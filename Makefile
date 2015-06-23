@@ -46,7 +46,6 @@ TARGET := handler
 TARGET_TEST := handler_test
 
 TARGET_SOURCES := alarmdefinition.cpp \
-                  alarms_agent.cpp \
                   alarm_table_defs.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
@@ -62,6 +61,8 @@ TARGET_SOURCES_TEST := test_main.cpp \
                        test_interposer.cpp \
                        fakenetsnmp.cpp \
                        fakezmq.cpp
+
+TARGET_SOURCES_BUILD := alarms_agent.cpp
 
 TARGET_EXTRA_OBJS_TEST := gmock-all.o \
                           gtest-all.o
