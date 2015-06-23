@@ -125,7 +125,7 @@ int netsnmp_table_array_helper_handler(netsnmp_mib_handler *handler,
 
 netsnmp_handler_registration *
 netsnmp_create_handler_registration(const char *name, Netsnmp_Node_Handler*
-                                    handler_access_method, oid *reg_oid,
+                                    handler_access_method, const oid *reg_oid,
                                     size_t reg_oid_len, int modes)
 {
   static netsnmp_handler_registration hr;
