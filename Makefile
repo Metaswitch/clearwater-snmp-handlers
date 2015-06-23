@@ -46,7 +46,7 @@ TARGET := handler
 TARGET_TEST := handler_test
 
 TARGET_SOURCES := alarmdefinition.cpp \
-                  alarm_handler.cpp \
+                  alarms_agent.cpp \
                   alarm_table_defs.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
