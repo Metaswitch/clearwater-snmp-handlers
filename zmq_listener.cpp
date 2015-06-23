@@ -132,7 +132,7 @@ void ZMQListener::handle_requests_forever()
     }
     while (more);
     last_seen_time.store(time(NULL));
-    if ((msgs.size() > 2) && (msgs[1].compare("OK") == 0))
+    if ((msgs.size() >= 2) && (msgs[1].compare("OK") == 0))
     {
       std::string message_type = msgs[0];
       ZMQMessageHandler* handler = _node_data->stat_to_handler.at(message_type);

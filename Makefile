@@ -38,8 +38,6 @@ all: deb
 ROOT ?= ${PWD}
 MK_DIR := ${ROOT}/mk
 
-ALARM_INCLUDES := -I${ROOT}/modules/cpp-common/include
-
 GTEST_DIR := $(ROOT)/modules/gmock/gtest
 GMOCK_DIR := $(ROOT)/modules/gmock
 
@@ -53,7 +51,7 @@ TARGET_SOURCES := alarmdefinition.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
                   alarm_model_table.cpp \
-                  itu_alarm_table.cpp 
+                  itu_alarm_table.cpp
 
 TARGET_SOURCES_TEST := test_main.cpp \
                        alarm.cpp \
@@ -68,7 +66,7 @@ TARGET_SOURCES_TEST := test_main.cpp \
 TARGET_EXTRA_OBJS_TEST := gmock-all.o \
                           gtest-all.o
 
-CPPFLAGS += -std=c++0x -ggdb3 
+CPPFLAGS += -std=c++0x -ggdb3
 CPPFLAGS += -I$(ROOT) \
             -I$(ROOT)/modules/cpp-common/include
 
@@ -77,11 +75,12 @@ CPPFLAGS_TEST += -DUNIT_TEST \
                  -O0 \
                  -fno-access-control \
                  -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include
+
 CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
 
 LDFLAGS += -lzmq \
            -lpthread \
-           `net-snmp-config --libs` 
+           `net-snmp-config --libs`
 
 #LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib
 
@@ -99,10 +98,11 @@ VG_LIST = $(TEST_OUT_DIR)/vg_$(TARGET_TEST)_list
 VG_SUPPRESS = $(TARGET_TEST).supp
 
 COVERAGEFLAGS = $(OBJ_DIR_TEST) --object-directory=$(shell pwd) --root=${ROOT} \
-                --exclude='(^include/|^modules/gmock/|^modules/rapidjson/|^modules/cpp-common/include/|^ut/|^usr/|^modules/gemini/src/ut/|^modules/gemini/include/)' \
+                --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/)' \
                 --sort-percentage
 
-EXTRA_CLEANS += $(TEST_XML) \
+EXTRA_CLEANS += *.o *.so *.d \
+                $(TEST_XML) \
                 $(COVERAGE_XML) \
                 $(VG_XML) $(VG_OUT) \
                 $(OBJ_DIR_TEST)/*.gcno \
@@ -120,44 +120,55 @@ GTEST_SRCS_ := $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 GMOCK_SRCS_ := $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 # End of boilerplate
 
-
 include ${MK_DIR}/platform.mk
 
-sprout_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o sprout_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp sproutdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+-include *.d
 
-bono_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o bono_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp bonodata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+%.o : %.cpp
+	g++ `net-snmp-config --cflags` -Wall ${CPPFLAGS} -fPIC -MMD -c -o $@ $<
 
-homestead_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o homestead_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp homesteaddata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+COMMON_OBJECTS := custom_handler.o oid.o oidtree.o oid_inet_addr.o zmq_listener.o zmq_message_handler.o
 
-cdiv_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o cdiv_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp cdivdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+sprout_handler.so: sproutdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
+
+bono_handler.so: bonodata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
+
+homestead_handler.so: homesteaddata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
+
+cdiv_handler.so: cdivdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 cw_alarm_agent: *.cpp *.hpp
 	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 ${ALARM_INCLUDES} -o cw_alarm_agent alarms_agent.cpp modules/cpp-common/src/alarmdefinition.cpp alarm_table_defs.cpp alarm_model_table.cpp alarm_req_listener.cpp alarm_trap_sender.cpp itu_alarm_table.cpp `net-snmp-config --libs` -lzmq -lpthread -lnetsnmpagent
 
-memento_as_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o memento_as_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp mementoasdata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+memento_as_handler.so: mementoasdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
-memento_handler.so: *.cpp *.hpp
-	g++ `net-snmp-config --cflags` -Wall -std=c++0x -g -O0 -fPIC -shared -o memento_handler.so custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp mementodata.cpp zmq_listener.cpp zmq_message_handler.cpp `net-snmp-config --libs` -lzmq -lpthread
+memento_handler.so: mementodata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
+
+astaire_handler.so: astairedata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
+
+chronos_handler.so: chronosdata.o ${COMMON_OBJECTS}
+	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento
+DEB_NAMES := clearwater-snmp-handler-bono clearwater-snmp-handler-sprout clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-handler-chronos
 
-build: sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so cw_alarm_agent memento_as_handler.so memento_handler.so
+# Add dependencies to deb-only (target will be added by build-infra)
+deb-only: cw_alarm_agent sprout_handler.so bono_handler.so homestead_handler.so cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so chronos_handler.so
 
 include build-infra/cw-deb.mk
 
-deb: build deb-only
-
-.PHONY: all deb-only deb build
-
+.PHONY: deb
+deb: deb-only
 
 .PHONY: test
 test: run_test coverage vg coverage-check vg-check

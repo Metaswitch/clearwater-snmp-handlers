@@ -75,6 +75,13 @@ bool OIDTree::get_next(OID requested_oid, OID& output_oid, int& output_result)
   return retval;
 }
 
+void OIDTree::remove(OID key)
+{
+  _map_lock.lock();
+  _oidmap.erase(key);
+  _map_lock.unlock();
+}
+
 void OIDTree::remove_subtree(OID root_oid)
 {
   _map_lock.lock();

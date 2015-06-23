@@ -40,26 +40,48 @@
 
 // Constructors - can either create from an oid[] or a string
 
+OID::OID(oid x)
+{
+  append(x);
+}
+
+OID::OID(OID parent_oid, oid x) :
+  _oids(parent_oid._oids)
+{
+  append(x);
+}
+
 OID::OID(oid* oids_ptr, int len)
 {
-  int i;
-  for (i = 0; i < len; i++)
-  {
-    _oids.push_back(*(oids_ptr+i));
-  }
+  append(oids_ptr, len);
+}
+
+OID::OID(OID parent_oid, oid* oids_ptr, int len) :
+  _oids(parent_oid._oids)
+{
+  append(oids_ptr, len);
 }
 
 OID::OID(std::string oidstr)
 {
-  std::vector<std::string> result;
-  boost::split(result, oidstr, boost::is_any_of("."));
-  for (std::vector<std::string>::iterator it = result.begin() ; it != result.end(); ++it)
-  {
-    if (!it->empty())   // Ignore an initial dot
-    {
-      _oids.push_back(atoi(it->c_str()));
-    }
-  }
+  append(oidstr);
+}
+
+OID::OID(OID parent_oid, std::string oidstr) :
+  _oids(parent_oid._oids)
+{
+  append(oidstr);
+}
+
+OID::OID(OIDInetAddr oid_addr)
+{
+  append(oid_addr);
+}
+
+OID::OID(OID parent_oid, OIDInetAddr oid_addr) :
+  _oids(parent_oid._oids)
+{
+  append(oid_addr);
 }
 
 // Functions to expose the underlying oid* for compatability with the
@@ -87,15 +109,32 @@ bool OID::subtree_contains(OID other_oid)
                                other_oid.get_ptr(), other_oid.get_len()) == 0);
 }
 
+void OID::append(oid x)
+{
+  _oids.push_back(x);
+}
+
+void OID::append(oid* oids_ptr, int len)
+{
+  int i;
+  for (i = 0; i < len; i++)
+  {
+    _oids.push_back(*(oids_ptr+i));
+  }
+}
+
 // Appends the given OID string to this OID
 // e.g. OID("1.2.3.4").append("5.6") is OID("1.2.3.4.5.6")
-void OID::append(std::string more)
+void OID::append(std::string oidstr)
 {
   std::vector<std::string> result;
-  boost::split(result, more, boost::is_any_of("."));
+  boost::split(result, oidstr, boost::is_any_of("."));
   for (std::vector<std::string>::iterator it = result.begin() ; it != result.end(); ++it)
   {
-    _oids.push_back(atoi(it->c_str()));
+    if (!it->empty())   // Ignore an initial dot
+    {
+      _oids.push_back(atoi(it->c_str()));
+    }
   }
 }
 

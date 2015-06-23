@@ -1,6 +1,6 @@
 /**
 * Project Clearwater - IMS in the Cloud
-* Copyright (C) 2013 Metaswitch Networks Ltd
+* Copyright (C) 2015 Metaswitch Networks Ltd
 *
 * This program is free software: you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -32,48 +32,35 @@
 * as those licenses appear in the file LICENSE-OPENSSL.
 */
 
+#include "globals.hpp"
+#include "nodedata.hpp"
+#include "custom_handler.hpp"
+#include "zmq_message_handler.hpp"
 
-#ifndef OID_HPP
-#define OID_HPP
+OID nodes_query_oid = OID("1.2.826.0.1.1578918.9.10.1");
+OID timers_processed_oid = OID("1.2.826.0.1.1578918.9.10.2");
+OID invalid_timers_processed_oid = OID("1.2.826.0.1.1578918.9.10.3");
+
+SingleNumberStatHandler nodes_query_handler(nodes_query_oid, &tree);
+SingleNumberWithScopeStatHandler timers_processed_handler(timers_processed_oid, &tree);
+SingleNumberWithScopeStatHandler invalid_timers_processed_handler(invalid_timers_processed_oid, &tree);
+
+NodeData chronos_node_data("chronos",
+                           OID("1.2.826.0.1.1578918.9.10"),
+                           {"chronos_scale_nodes_to_query",
+                            "chronos_scale_timers_processed",
+                            "chronos_scale_invalid_timers_processed"
+                           },
+                           {{"chronos_scale_nodes_to_query", &nodes_query_handler},
+                            {"chronos_scale_timers_processed", &timers_processed_handler},
+                            {"chronos_scale_invalid_timers_processed", &invalid_timers_processed_handler}
+                           });
 
 extern "C"
 {
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <net-snmp/agent/net-snmp-agent-includes.h>
+  // SNMPd looks for an init_<module_name> function in this library
+  void init_chronos_handler()
+  {
+    initialize_handler(&chronos_node_data);
+  }
 }
-
-#include <vector>
-#include <string>
-
-#include "oid_inet_addr.hpp"
-
-class OID
-{
-public:
-  OID() {};
-  OID(oid);
-  OID(OID, oid);
-  OID(oid*, int);
-  OID(OID, oid*, int);
-  OID(std::string);
-  OID(OID, std::string);
-  OID(OIDInetAddr);
-  OID(OID, OIDInetAddr);
-  void print_state() const;
-  bool equals(OID);
-  bool subtree_contains(OID);
-
-  const oid* get_ptr() const;
-  int get_len() const;
-  void append(oid);
-  void append(oid*, int);
-  void append(std::string);
-  void append(OIDInetAddr);
-  std::string to_string() const;
-  void dump() const;
-private:
-  std::vector<oid> _oids;
-};
-
-#endif

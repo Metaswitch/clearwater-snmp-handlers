@@ -85,12 +85,6 @@ TARGET_OBJS := $(patsubst %.cpp, ${OBJ_DIR}/%.o, ${TARGET_SOURCES} ${TARGET_SOUR
 TARGET_OBJS_TEST := $(patsubst %.cpp, ${OBJ_DIR_TEST}/%.o, ${TARGET_SOURCES} ${TARGET_SOURCES_TEST}) \
                     $(patsubst %,     ${OBJ_DIR_TEST}/%, $(TARGET_EXTRA_OBJS_TEST))
 
-#	We only want to do dependencies for standard test objects, not for the extra ones.
-TARGET_OBJS_DEPS := $(patsubst %.cpp, ${OBJ_DIR_TEST}/%.o, ${TARGET_SOURCES} ${TARGET_SOURCES_TEST})
-
-# The dependencies
-DEPS := $(patsubst %.o, %.depends, $(patsubst %.so, %.depends, ${TARGET_OBJS} ${TARGET_OBJS_DEPS}))
-
 # Build the production binary.
 #.PHONY: build
 #build: ${BIN_DIR} ${OBJ_DIR} ${TARGET_BIN}
@@ -112,7 +106,6 @@ clean:
 	rm -f ${TARGET_OBJS}
 	rm -f ${TARGET_OBJS_TEST}
 	rm -f ${EXTRA_CLEANS}
-	rm -f $(DEPS)
 
 
 #${TARGET_BIN}: ${TARGET_OBJS}
@@ -130,18 +123,6 @@ ${OBJ_DIR_TEST}/%.o: %.cpp
 ${OBJ_DIR_TEST}/%.o: $(UT_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_TEST) $(TARGET_ARCH) -c -o $@ $<
 
-${OBJ_DIR}/%.depends: %.cpp | ${OBJ_DIR}
-	@echo $@
-	@$(CXX) -M -MQ ${OBJ_DIR}/$*.o -MQ $@ $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_BUILD) $(TARGET_ARCH) -c -o $@ $<
-
-${OBJ_DIR_TEST}/%.depends: %.cpp | ${OBJ_DIR_TEST}
-	@echo $@
-	@$(CXX) -M -MQ ${OBJ_DIR_TEST}/$*.o -MQ $@ $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_TEST) $(TARGET_ARCH) -c -o $@ $<
-
-${OBJ_DIR_TEST}/%.depends: $(UT_DIR)/%.cpp | ${OBJ_DIR_TEST}
-	@echo $@
-	@$(CXX) -M -MQ ${OBJ_DIR_TEST}/$*.o -MQ $@ $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_TEST) $(TARGET_ARCH) -c -o $@ $<
-
 ${OBJ_DIR}:
 	mkdir -p ${OBJ_DIR}
 
@@ -153,5 +134,3 @@ ${BIN_DIR}:
 
 $(TEST_OUT_DIR):
 	mkdir -p $(TEST_OUT_DIR)
-
--include $(DEPS)
