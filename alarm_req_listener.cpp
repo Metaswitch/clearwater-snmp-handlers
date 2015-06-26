@@ -123,6 +123,10 @@ bool AlarmReqListener::zmq_init_sck()
     return false;
   }
 
+  // Set a LINGER period of 0 so that we exit immediately on shutdown
+  int linger = 0;
+  zmq_setsockopt(_sck, ZMQ_LINGER, &linger, sizeof(linger));
+
   std::stringstream ss;
   ss << "tcp://127.0.0.1:" << ZMQ_PORT; 
 
