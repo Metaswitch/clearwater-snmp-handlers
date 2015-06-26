@@ -44,6 +44,9 @@
 
 OIDTree tree;
 std::atomic_long last_seen_time;
+std::atomic_bool thread_created;
+pthread_mutex_t thread_creation_lock = PTHREAD_MUTEX_INITIALIZER;
+NodeData* global_node_data;
 const int TIMEOUT_THRESHOLD = 15;
 
 void* start_stats (void* node_data_ptr)
@@ -58,6 +61,7 @@ void* start_stats (void* node_data_ptr)
 void initialize_handler(NodeData* node_data)
 {
   netsnmp_handler_registration* my_handler;
+  thread_created.store(false);
   last_seen_time.store(0);
   static oid* root;
   snmp_clone_mem((void**)&root,
@@ -79,8 +83,7 @@ void initialize_handler(NodeData* node_data)
 
   DEBUGMSGTL(("initialize_handler", "Registering handler for Clearwater stats\n"));
   netsnmp_register_handler(my_handler);
-  pthread_t zmq_thread;
-  pthread_create(&zmq_thread, NULL, start_stats, node_data);
+  global_node_data = node_data;
 }
 
 /** handles requests for Clearwater stats, passing them off to an OIDTree */
@@ -93,6 +96,18 @@ int clearwater_handler(netsnmp_mib_handler* handler,
   netsnmp_request_info* request;
   netsnmp_variable_list* var;
 
+  if (thread_created.load() != true)
+  {
+    pthread_mutex_lock(&thread_creation_lock);
+    if (thread_created.load() != true)
+    {
+      thread_created.store(true);
+      pthread_t zmq_thread;
+      pthread_create(&zmq_thread, NULL, start_stats, global_node_data);
+    }
+    pthread_mutex_unlock(&thread_creation_lock);
+  }
+  
   bool up_to_date = ((long)time(NULL) - last_seen_time) < TIMEOUT_THRESHOLD;
   if (up_to_date)
   {

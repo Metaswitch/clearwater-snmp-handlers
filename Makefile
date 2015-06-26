@@ -46,7 +46,6 @@ TARGET := handler
 TARGET_TEST := handler_test
 
 TARGET_SOURCES := alarmdefinition.cpp \
-                  alarm_handler.cpp \
                   alarm_table_defs.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
@@ -62,6 +61,8 @@ TARGET_SOURCES_TEST := test_main.cpp \
                        test_interposer.cpp \
                        fakenetsnmp.cpp \
                        fakezmq.cpp
+
+TARGET_SOURCES_BUILD := alarms_agent.cpp
 
 TARGET_EXTRA_OBJS_TEST := gmock-all.o \
                           gtest-all.o
@@ -80,7 +81,8 @@ CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
 
 LDFLAGS += -lzmq \
            -lpthread \
-           `net-snmp-config --libs`
+           -ldl \
+           `net-snmp-config --agent-libs`
 
 #LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib
 
@@ -135,8 +137,8 @@ homestead_handler.so: homesteaddata.o ${COMMON_OBJECTS}
 cdiv_handler.so: cdivdata.o ${COMMON_OBJECTS}
 	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
-alarm_handler.so: alarm_handler.o alarmdefinition.o alarm_table_defs.o alarm_model_table.o alarm_req_listener.o alarm_trap_sender.o itu_alarm_table.o
-	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
+cw_alarm_agent: alarms_agent.o alarmdefinition.o alarm_table_defs.o alarm_model_table.o alarm_req_listener.o alarm_trap_sender.o itu_alarm_table.o
+	g++ -o $@ $^ ${LDFLAGS}
 
 memento_as_handler.so: mementoasdata.o ${COMMON_OBJECTS}
 	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
@@ -154,10 +156,10 @@ chronos_handler.so: chronosdata.o ${COMMON_OBJECTS}
 
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-handler-alarm clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-handler-chronos
+DEB_NAMES := clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-handler-chronos
 
 # Add dependencies to deb-only (target will be added by build-infra)
-deb-only: homestead_handler.so cdiv_handler.so alarm_handler.so memento_handler.so memento_as_handler.so astaire_handler.so chronos_handler.so
+deb-only: cw_alarm_agent homestead_handler.so cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so chronos_handler.so
 
 include build-infra/cw-deb.mk
 
