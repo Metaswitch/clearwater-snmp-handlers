@@ -468,6 +468,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, BindSocket)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+  EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(-1));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
@@ -482,6 +483,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, MsgReceive)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+  EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_init(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_recv(_,_,_)).WillOnce(Return(-1));
@@ -501,6 +503,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, GetSockOpt)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+  EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_init(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_recv(_,_,_)).WillOnce(Return(0));
@@ -521,6 +524,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, MsgClose)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+  EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_init(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_recv(_,_,_)).WillOnce(Return(0));
@@ -544,6 +548,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, Send)
     InSequence s;
     EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
     EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+    EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
     EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(0));
     EXPECT_CALL(_mz, zmq_msg_init(_)).WillOnce(Return(0));
     EXPECT_CALL(_mz, zmq_msg_recv(_,_,_)).WillOnce(Return(0));
@@ -570,6 +575,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, CloseSocket)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+  EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_init(_)).WillOnce(Return(-1));
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(-1));
@@ -588,6 +594,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, DestroyContext)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
+  EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_msg_init(_)).WillOnce(Return(-1));
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(0));
