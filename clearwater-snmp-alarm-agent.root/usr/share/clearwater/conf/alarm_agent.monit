@@ -5,6 +5,4 @@ check process alarm_agent_process with pidfile /var/run/cw_alarm_agent.pid
   start program = "/etc/init.d/clearwater-snmp-alarm-agent start"
   stop program = "/etc/init.d/clearwater-snmp-alarm-agent stop"
   restart program = "/etc/init.d/clearwater-snmp-alarm-agent restart"
-/etc/init.d/homestead restart'"
-
 
