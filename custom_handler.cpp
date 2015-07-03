@@ -113,7 +113,7 @@ int clearwater_handler(netsnmp_mib_handler* handler,
   {
     for(request = requests; request; request = request->next)
     {
-      OID this_oid(requests->requestvb->name, requests->requestvb->name_length);
+      OID this_oid(request->requestvb->name, request->requestvb->name_length);
       int outval;
       unsigned int retval;
       OID outoid;
