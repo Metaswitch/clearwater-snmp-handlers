@@ -69,7 +69,8 @@ TARGET_EXTRA_OBJS_TEST := gmock-all.o \
 
 CPPFLAGS += -std=c++0x -ggdb3
 CPPFLAGS += -I$(ROOT) \
-            -I$(ROOT)/modules/cpp-common/include
+            -I$(ROOT)/modules/cpp-common/include \
+            -I${ROOT}/modules/rapidjson/include
 
 CPPFLAGS_TEST += -DUNIT_TEST \
                  -fprofile-arcs -ftest-coverage \
@@ -100,7 +101,7 @@ VG_LIST = $(TEST_OUT_DIR)/vg_$(TARGET_TEST)_list
 VG_SUPPRESS = $(TARGET_TEST).supp
 
 COVERAGEFLAGS = $(OBJ_DIR_TEST) --object-directory=$(shell pwd) --root=${ROOT} \
-                --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/)' \
+                --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/|^modules/rapidjson/)' \
                 --sort-percentage
 
 EXTRA_CLEANS += *.o *.so *.d \

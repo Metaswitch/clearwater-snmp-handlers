@@ -49,25 +49,25 @@ public:
     MIB_STRING_LEN = 255
   };
 
-  AlarmTableDef() : 
+  AlarmTableDef() :
     _valid(false),
-    _alarm_definition(NULL),
-    _severity_details(NULL) {}
+    _alarm_definition(),
+    _severity_details() {}
 
-  AlarmTableDef(const AlarmDef::AlarmDefinition* alarm_definition,
-                const AlarmDef::SeverityDetails* severity_details) :
+  AlarmTableDef(const AlarmDef::AlarmDefinition alarm_definition,
+                const AlarmDef::SeverityDetails severity_details) :
     _valid(true),
     _alarm_definition(alarm_definition),
     _severity_details(severity_details) {}
 
   unsigned int state();
 
-  unsigned int index()    {return _alarm_definition->_index;} 
-  AlarmDef::Cause cause() {return _alarm_definition->_cause;}
+  unsigned int index()    {return _alarm_definition._index;} 
+  AlarmDef::Cause cause() {return _alarm_definition._cause;}
 
-  AlarmDef::Severity severity()    {return _severity_details->_severity;}
-  const std::string& description() {return _severity_details->_description;}
-  const std::string& details()     {return _severity_details->_details;}
+  AlarmDef::Severity severity()    {return _severity_details._severity;}
+  const std::string& description() {return _severity_details._description;}
+  const std::string& details()     {return _severity_details._details;}
 
   bool is_valid() {return _valid;}
   bool is_not_clear() {return severity() != AlarmDef::CLEARED;}
@@ -75,8 +75,8 @@ public:
 private:
   bool _valid;
 
-  const AlarmDef::AlarmDefinition* _alarm_definition;
-  const AlarmDef::SeverityDetails* _severity_details;
+  const AlarmDef::AlarmDefinition _alarm_definition;
+  const AlarmDef::SeverityDetails _severity_details;
 };
 
 // Unique key for alarm table definitions is comprised of alarm index and
@@ -113,13 +113,25 @@ public:
 class AlarmTableDefs
 {
 public:
-  // Generate alarm table definitions based on statically initialized
-  // alarm data. Should only be called once at sub-agent start-up.
-  bool initialize(const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions = AlarmDef::alarm_definitions);
+  // Generate alarm table definitions based on local (to the node) alarm
+  // definition. Also check the statically initialized
+  // alarm data (but this will be removed soon).
+  // Should only be called once at sub-agent start-up.
+  bool initialize(std::string& path,
+                  const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions = AlarmDef::alarm_definitions);
 
   // Retrieve alarm definition for specified index/severity
   AlarmTableDef& get_definition(unsigned int index,
                                 unsigned int severity);
+
+  // Populate the map of alarm definitions
+  bool populate_map(const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions,
+                    std::map<unsigned int, unsigned int>& dup_check);
+
+  // Parse any local alarm definitions out of a JSON file
+  bool parse_local_alarms_from_file(std::string& path,
+                                    std::vector<AlarmDef::AlarmDefinition>& local_alarms);
+
 
   // Iterator helpers for enumerating alarm table definitions.
   AlarmTableDefsIterator begin() {return _key_to_def.begin();}
