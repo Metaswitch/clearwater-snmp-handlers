@@ -1178,7 +1178,7 @@ SproutInitialRegistrationEntry ::= SEQUENCE
   sproutInitialRegistrationScope          INTEGER,
   sproutInitialRegistrationAttempts       Unsigned32,
   sproutInitialRegistrationSuccesses      Unsigned32,
-  sproutInitialRegistrationfailures       Unsigned32,
+  sproutInitialRegistrationFailures       Unsigned32
 }
 
 sproutInitialRegistrationScope OBJECT-TYPE
@@ -1213,6 +1213,416 @@ sproutInitialRegistrationFailures OBJECT-TYPE
     DESCRIPTION "The number of initial registration failures over the period."
     ::= { sproutInitialRegistrationEntry 4 }
 
+sproutReRegistrationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutReRegistrationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of re-registrations"
+    ::= { sprout 10 }
+
+sproutReRegistrationEntry OBJECT-TYPE
+    SYNTAX      SproutReRegistrationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 re-registrations"
+    INDEX       { sproutReRegistrationScope }
+    ::= { sproutReRegistrationTable 1 }
+
+SproutReRegistrationEntry ::= SEQUENCE
+{
+  sproutReRegistrationScope          INTEGER,
+  sproutReRegistrationAttempts       Unsigned32,
+  sproutReRegistrationSuccesses      Unsigned32,
+  sproutReRegistrationFailures       Unsigned32
+}
+
+sproutReRegistrationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutReRegistrationEntry 1 }
+
+sproutReRegistrationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of re-registration attempts over the period."
+    ::= { sproutReRegistrationEntry 2 }
+
+sproutReRegistrationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of re-registration successes over the period."
+    ::= { sproutReRegistrationEntry 3 }
+
+sproutReRegistrationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of re-registration failures over the period."
+    ::= { sproutReRegistrationEntry 4 }
+
+sproutDeRegistrationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutDeRegistrationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of de-registrations"
+    ::= { sprout 11 }
+
+sproutDeRegistrationEntry OBJECT-TYPE
+    SYNTAX      SproutDeRegistrationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 de-registrations"
+    INDEX       { sproutDeRegistrationScope }
+    ::= { sproutDeRegistrationTable 1 }
+
+SproutDeRegistrationEntry ::= SEQUENCE
+{
+  sproutDeRegistrationScope          INTEGER,
+  sproutDeRegistrationAttempts       Unsigned32,
+  sproutDeRegistrationSuccesses      Unsigned32,
+  sproutDeRegistrationFailures       Unsigned32
+}
+
+sproutDeRegistrationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutDeRegistrationEntry 1 }
+
+sproutDeRegistrationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of de-registration attempts over the period."
+    ::= { sproutDeRegistrationEntry 2 }
+
+sproutDeRegistrationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of de-registration successes over the period."
+    ::= { sproutDeRegistrationEntry 3 }
+
+sproutDeRegistrationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of de-registration failures over the period."
+    ::= { sproutDeRegistrationEntry 4 }
+
+sproutThirdPartyInitialRegistrationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutThirdPartyInitialRegistrationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of third-party initial registrations"
+    ::= { sprout 12 }
+
+sproutThirdPartyInitialRegistrationEntry OBJECT-TYPE
+    SYNTAX      SproutThirdPartyInitialRegistrationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 third-party initial registrations"
+    INDEX       { sproutThirdPartyInitialRegistrationScope }
+    ::= { sproutThirdPartyInitialRegistrationTable 1 }
+
+SproutThirdPartyInitialRegistrationEntry ::= SEQUENCE
+{
+  sproutThirdPartyInitialRegistrationScope          INTEGER,
+  sproutThirdPartyInitialRegistrationAttempts       Unsigned32,
+  sproutThirdPartyInitialRegistrationSuccesses      Unsigned32,
+  sproutThirdPartyInitialRegistrationFailures       Unsigned32
+}
+
+sproutThirdPartyInitialRegistrationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutThirdPartyInitialRegistrationEntry 1 }
+
+sproutThirdPartyInitialRegistrationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party initial registration attempts over
+the period."
+    ::= { sproutThirdPartyInitialRegistrationEntry 2 }
+
+sproutThirdPartyInitialRegistrationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party initial registration successes over
+                 the period."
+    ::= { sproutThirdPartyInitialRegistrationEntry 3 }
+
+sproutThirdPartyInitialRegistrationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party initial registration failures over
+                 the period."
+    ::= { sproutThirdPartyInitialRegistrationEntry 4 }
+
+sproutThirdPartyReRegistrationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutThirdPartyReRegistrationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of third-party re-registrations"
+    ::= { sprout 13 }
+
+sproutThirdPartyReRegistrationEntry OBJECT-TYPE
+    SYNTAX      SproutThirdPartyReRegistrationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 third-party re-registrations"
+    INDEX       { sproutThirdPartyReRegistrationScope }
+    ::= { sproutThirdPartyReRegistrationTable 1 }
+
+SproutThirdPartyReRegistrationEntry ::= SEQUENCE
+{
+  sproutThirdPartyReRegistrationScope          INTEGER,
+  sproutThirdPartyReRegistrationAttempts       Unsigned32,
+  sproutThirdPartyReRegistrationSuccesses      Unsigned32,
+  sproutThirdPartyReRegistrationFailures       Unsigned32
+}
+
+sproutThirdPartyReRegistrationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutThirdPartyReRegistrationEntry 1 }
+
+sproutThirdPartyReRegistrationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party re-registration attempts over the
+period."
+    ::= { sproutThirdPartyReRegistrationEntry 2 }
+
+sproutThirdPartyReRegistrationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party re-registration successes over the
+period."
+    ::= { sproutThirdPartyReRegistrationEntry 3 }
+
+sproutThirdPartyReRegistrationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party re-registration failures over the
+period."
+    ::= { sproutThirdPartyReRegistrationEntry 4 }
+
+sproutThirdPartyDeRegistrationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutThirdPartyDeRegistrationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of third-party de-registrations"
+    ::= { sprout 14 }
+
+sproutThirdPartyDeRegistrationEntry OBJECT-TYPE
+    SYNTAX      SproutThirdPartyDeRegistrationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 third-party de-registrations"
+    INDEX       { sproutThirdPartyDeRegistrationScope }
+    ::= { sproutThirdPartyDeRegistrationTable 1 }
+
+SproutThirdPartyDeRegistrationEntry ::= SEQUENCE
+{
+  sproutThirdPartyDeRegistrationScope          INTEGER,
+  sproutThirdPartyDeRegistrationAttempts       Unsigned32,
+  sproutThirdPartyDeRegistrationSuccesses      Unsigned32,
+  sproutThirdPartyDeRegistrationFailures       Unsigned32
+}
+
+sproutThirdPartyDeRegistrationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutThirdPartyDeRegistrationEntry 1 }
+
+sproutThirdPartyDeRegistrationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party de-registration attempts over the
+period."
+    ::= { sproutThirdPartyDeRegistrationEntry 2 }
+
+sproutThirdPartyDeRegistrationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party de-registration successes over the
+period."
+    ::= { sproutThirdPartyDeRegistrationEntry 3 }
+
+sproutThirdPartyDeRegistrationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of third-party de-registration failures over the
+period."
+    ::= { sproutThirdPartyDeRegistrationEntry 4 }
+
+sproutSIPDigestAuthenticationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSIPDigestAuthenticationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of SIP digest authentications"
+    ::= { sprout 15 }
+
+sproutSIPDigestAuthenticationEntry OBJECT-TYPE
+    SYNTAX      SproutSIPDigestAuthenticationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 SIP digest authentications"
+    INDEX       { sproutSIPDigestAuthenticationScope }
+    ::= { sproutSIPDigestAuthenticationTable 1 }
+
+SproutSIPDigestAuthenticationEntry ::= SEQUENCE
+{
+  sproutSIPDigestAuthenticationScope          INTEGER,
+  sproutSIPDigestAuthenticationAttempts       Unsigned32,
+  sproutSIPDigestAuthenticationSuccesses      Unsigned32,
+  sproutSIPDigestAuthenticationFailures       Unsigned32
+}
+
+sproutSIPDigestAuthenticationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutSIPDigestAuthenticationEntry 1 }
+
+sproutSIPDigestAuthenticationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP digest authentication attempts over the
+period."
+    ::= { sproutSIPDigestAuthenticationEntry 2 }
+
+sproutSIPDigestAuthenticationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP digest authentication successes over the
+period."
+    ::= { sproutSIPDigestAuthenticationEntry 3 }
+
+sproutSIPDigestAuthenticationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP digest authentication failures over the
+period."
+    ::= { sproutSIPDigestAuthenticationEntry 4 }
+
+sproutAKAAuthenticationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutAKAAuthenticationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of AKA authentications"
+    ::= { sprout 16 }
+
+sproutAKAAuthenticationEntry OBJECT-TYPE
+    SYNTAX      SproutAKAAuthenticationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 AKA authentications"
+    INDEX       { sproutAKAAuthenticationScope }
+    ::= { sproutAKAAuthenticationTable 1 }
+
+SproutAKAAuthenticationEntry ::= SEQUENCE
+{
+  sproutAKAAuthenticationScope          INTEGER,
+  sproutAKAAuthenticationAttempts       Unsigned32,
+  sproutAKAAuthenticationSuccesses      Unsigned32,
+  sproutAKAAuthenticationFailures       Unsigned32
+}
+
+sproutAKAAuthenticationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutAKAAuthenticationEntry 1 }
+
+sproutAKAAuthenticationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of AKA authentication attempts over the period."
+    ::= { sproutAKAAuthenticationEntry 2 }
+
+sproutAKAAuthenticationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of AKA authentication successes over the period."
+    ::= { sproutAKAAuthenticationEntry 3 }
+
+sproutAKAAuthenticationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of AKA authentication failures over the period."
+    ::= { sproutAKAAuthenticationEntry 4 }
 
 sproutGroup OBJECT-GROUP
     OBJECTS {
@@ -1259,7 +1669,31 @@ sproutGroup OBJECT-GROUP
       sproutQueueSizeVariance,
       sproutQueueSizeHWM,
       sproutQueueSizeLWM,
-      sproutQueueSizeCount
+      sproutQueueSizeCount,
+      sproutInitialRegistrationAttempts,
+      sproutInitialRegistrationSuccesses,
+      sproutInitialRegistrationFailures,
+      sproutReRegistrationAttempts,
+      sproutReRegistrationSuccesses,
+      sproutReRegistrationFailures,
+      sproutDeRegistrationAttempts,
+      sproutDeRegistrationSuccesses,
+      sproutDeRegistrationFailures,
+      sproutThirdPartyInitialRegistrationAttempts,
+      sproutThirdPartyInitialRegistrationSuccesses,
+      sproutThirdPartyInitialRegistrationFailures,
+      sproutThirdPartyReRegistrationAttempts,
+      sproutThirdPartyReRegistrationSuccesses,
+      sproutThirdPartyReRegistrationFailures,
+      sproutThirdPartyDeRegistrationAttempts,
+      sproutThirdPartyDeRegistrationSuccesses,
+      sproutThirdPartyDeRegistrationFailures,
+      sproutSIPDigestAuthenticationAttempts,
+      sproutSIPDigestAuthenticationSuccesses,
+      sproutSIPDigestAuthenticationFailures,
+      sproutAKAAuthenticationAttempts,
+      sproutAKAAuthenticationSuccesses,
+      sproutAKAAuthenticationFailures
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
