@@ -1156,6 +1156,64 @@ sproutQueueSizeCount OBJECT-TYPE
     DESCRIPTION "The total requests over the period."
     ::= { sproutQueueSizeEntry 6 }
 
+sproutInitialRegistrationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutInitialRegistrationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of initial registrations"
+    ::= { sprout 9 }
+
+sproutInitialRegistrationEntry OBJECT-TYPE
+    SYNTAX      SproutInitialRegistrationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 initial registrations"
+    INDEX       { sproutInitialRegistrationScope }
+    ::= { sproutInitialRegistrationTable 1 }
+
+SproutInitialRegistrationEntry ::= SEQUENCE
+{
+  sproutInitialRegistrationScope          INTEGER,
+  sproutInitialRegistrationAttempts       Unsigned32,
+  sproutInitialRegistrationSuccesses      Unsigned32,
+  sproutInitialRegistrationfailures       Unsigned32,
+}
+
+sproutInitialRegistrationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutInitialRegistrationEntry 1 }
+
+sproutInitialRegistrationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of initial registration attempts over the period."
+    ::= { sproutInitialRegistrationEntry 2 }
+
+sproutInitialRegistrationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of initial registration successes over the period."
+    ::= { sproutInitialRegistrationEntry 3 }
+
+sproutInitialRegistrationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of initial registration failures over the period."
+    ::= { sproutInitialRegistrationEntry 4 }
+
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
