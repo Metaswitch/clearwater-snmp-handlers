@@ -75,7 +75,7 @@ private:
 
 TEST_F(AlarmTableDefsTest, InitializationOk)
 {
-  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append(NOT_A_REAL_PATH));  
+  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append(NOT_A_REAL_PATH)));  
 }
 
 TEST_F(AlarmTableDefsTest, InitializationMultiDef)
@@ -144,7 +144,7 @@ TEST_F(AlarmTableDefsTest, InvalidTableDefLookup)
 }
 
 // This test is temporarily disabled during rework of alarms code
-/*TEST_F(AlarmTableDefsTest, InvalidStateMapping)
+TEST_F(AlarmTableDefsTest, DISABLED_InvalidStateMapping)
 {
   _defs.initialize(std::string(UT_DIR).append("/undef_severity.json"), alarm_definitions_empty);  
 
@@ -153,5 +153,4 @@ TEST_F(AlarmTableDefsTest, InvalidTableDefLookup)
 
   EXPECT_TRUE(_def.is_valid());
   EXPECT_THAT((int)_def.state(), Eq(2));
-}*/
-
+}

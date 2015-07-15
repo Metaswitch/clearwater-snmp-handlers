@@ -198,9 +198,9 @@ bool AlarmTableDefs::parse_local_alarms_from_file(std::string& path,
   try
   {
     // Parse the JSON file
-    JSON_ASSERT_CONTAINS(doc, "localalarms");
-    JSON_ASSERT_ARRAY(doc["localalarms"]);
-    const rapidjson::Value& alarms_arr = doc["localalarms"];
+    JSON_ASSERT_CONTAINS(doc, "local_alarms");
+    JSON_ASSERT_ARRAY(doc["local_alarms"]);
+    const rapidjson::Value& alarms_arr = doc["local_alarms"];
 
     for (rapidjson::Value::ConstValueIterator alarms_it = alarms_arr.Begin();
          alarms_it != alarms_arr.End();
@@ -208,8 +208,8 @@ bool AlarmTableDefs::parse_local_alarms_from_file(std::string& path,
     {
       int index;
       int cause;
-      JSON_GET_INT_MEMBER(*alarms_it, "alarmindex", index);
-      JSON_GET_INT_MEMBER(*alarms_it, "alarmcause", cause);
+      JSON_GET_INT_MEMBER(*alarms_it, "index", index);
+      JSON_GET_INT_MEMBER(*alarms_it, "cause", cause);
 
       JSON_ASSERT_CONTAINS(*alarms_it, "alarms");
       JSON_ASSERT_ARRAY((*alarms_it)["alarms"]);

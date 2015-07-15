@@ -1,7 +1,7 @@
 {
-    "localalarms": [
-            "alarmindex": 1000,
-            "alarmcause": 163,
+    "local_alarms": [
+            "index": 1000,
+            "cause": 163,
             "alarms": [
                 {
                     "severity": 1,

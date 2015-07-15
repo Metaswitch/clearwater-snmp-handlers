@@ -132,7 +132,6 @@ public:
   bool parse_local_alarms_from_file(std::string& path,
                                     std::vector<AlarmDef::AlarmDefinition>& local_alarms);
 
-
   // Iterator helpers for enumerating alarm table definitions.
   AlarmTableDefsIterator begin() {return _key_to_def.begin();}
   AlarmTableDefsIterator end()   {return _key_to_def.end();}
