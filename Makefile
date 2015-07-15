@@ -69,7 +69,8 @@ TARGET_EXTRA_OBJS_TEST := gmock-all.o \
 
 CPPFLAGS += -std=c++0x -ggdb3
 CPPFLAGS += -I$(ROOT) \
-            -I$(ROOT)/modules/cpp-common/include
+            -I$(ROOT)/modules/cpp-common/include \
+            -I${ROOT}/modules/rapidjson/include
 
 CPPFLAGS_TEST += -DUNIT_TEST \
                  -fprofile-arcs -ftest-coverage \
@@ -100,7 +101,7 @@ VG_LIST = $(TEST_OUT_DIR)/vg_$(TARGET_TEST)_list
 VG_SUPPRESS = $(TARGET_TEST).supp
 
 COVERAGEFLAGS = $(OBJ_DIR_TEST) --object-directory=$(shell pwd) --root=${ROOT} \
-                --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/)' \
+                --exclude='(^modules/gmock/|^modules/cpp-common/include/|^modules/cpp-common/test_utils/|^ut/|^modules/rapidjson/)' \
                 --sort-percentage
 
 EXTRA_CLEANS += *.o *.so *.d \
@@ -179,6 +180,7 @@ test: run_test coverage vg coverage-check vg-check
 # Ignore failure here; it will be detected by Jenkins.
 .PHONY: run_test
 run_test: build_test | $(TEST_OUT_DIR)
+	@mkdir -p /var/run/clearwater; if [ $$? -ne 0 ]; then echo "For tests to run, as root do the following: mkdir -p /var/run/clearwater then chmod -R o+wr /var/run/clearwater"; exit 1; fi
 	rm -f $(TEST_XML)
 	rm -f $(OBJ_DIR_TEST)/*.gcda
 	$(TARGET_BIN_TEST) $(EXTRA_TEST_ARGS) --gtest_output=xml:$(TEST_XML)

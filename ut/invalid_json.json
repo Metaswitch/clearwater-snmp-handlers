@@ -1,0 +1,14 @@
+{
+    "local_alarms": [
+            "index": 1000,
+            "cause": 163,
+            "alarms": [
+                {
+                    "severity": 1,
+                    "description": "Description",
+                    "details": "Details"
+                }
+            ]
+        }
+    ]
+}

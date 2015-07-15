@@ -36,6 +36,9 @@
 #include <zmq.h>
 
 #include <sstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <signal.h>
 
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
@@ -127,11 +130,28 @@ bool AlarmReqListener::zmq_init_sck()
   int linger = 0;
   zmq_setsockopt(_sck, ZMQ_LINGER, &linger, sizeof(linger));
 
-  std::stringstream ss;
-  ss << "tcp://127.0.0.1:" << ZMQ_PORT; 
+  std::string sck_file = std::string("/var/run/clearwater/alarms");
+  std::string sck_url = std::string("ipc://" + sck_file);
+  snmp_log(LOG_INFO, "AlarmReqListener: ss='%s'", sck_url.c_str());
 
   int rc;
-  while (((rc = zmq_bind(_sck, ss.str().c_str())) == -1) && (errno == EINTR))
+  rc=remove(sck_file.c_str());
+  if (rc == -1)
+  {
+    if (errno != ENOENT)
+    {
+      // LCOV_EXCL_START
+      snmp_log(LOG_ERR, "remove(%s) failed: %s - killing myself", sck_file.c_str(), strerror(errno));
+      kill(getpid(), SIGKILL);
+      // LCOV_EXCL_STOP
+    }
+    else
+    {
+      snmp_log(LOG_ERR, "remove(%s) failed: %s", sck_file.c_str(), strerror(errno));
+    }
+  }
+
+  while (((rc = zmq_bind(_sck, sck_url.c_str())) == -1) && (errno == EINTR))
   {
     // Ignore possible errors due to a syscall being interrupted by a signal.
   }
@@ -140,6 +160,12 @@ bool AlarmReqListener::zmq_init_sck()
   {
     snmp_log(LOG_ERR, "zmq_bind failed: %s", zmq_strerror(errno));
     return false;
+  }
+
+  rc=chmod(sck_file.c_str(), 0777);
+  if (rc == -1)
+  {
+    snmp_log(LOG_ERR, "chmod(%s, 0777) failed: %s", sck_file.c_str(), strerror(errno));
   }
 
   return true;

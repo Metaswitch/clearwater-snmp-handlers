@@ -85,7 +85,11 @@ int main (int argc, char **argv)
                       SNMP_VERSION_2c, SNMP_MSG_INFORM);  
 
   // Initialise the ZMQ listeners and alarm tables
-  AlarmTableDefs::get_instance().initialize();
+  // Pull in any local alarm definitions off the node. This is currently a 
+  // hard coded path to a single file - this should be a (configurable?) path
+  // to a folder. 
+  std::string local_alarms_path = "/usr/share/clearwater/infrastructure/local_alarms.json";
+  AlarmTableDefs::get_instance().initialize(local_alarms_path);
   AlarmReqListener::get_instance().start();
   init_alarmModelTable();
   init_ituAlarmTable();

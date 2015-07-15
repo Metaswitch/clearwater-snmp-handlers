@@ -46,6 +46,7 @@
 #include "alarm_model_table.hpp"
 #include "alarm_req_listener.hpp"
 #include "alarm_trap_sender.hpp"
+#include "test_utils.hpp"
 
 #include "fakezmq.h"
 #include "fakenetsnmp.h"
@@ -62,6 +63,11 @@ using ::testing::MatchResultListener;
 
 static const char issuer1[] = "sprout";
 static const char issuer2[] = "homestead";
+
+// This test currently doesn't parse any alarm definitions from the JSON
+// files, instead it only uses the alarms from cpp-common. This should
+// parse from file instead. 
+std::string ALARMS = std::string(UT_DIR).append("/NONEXISTENT_FILE.json");
 
 class AlarmReqListenerTest : public ::testing::Test
 {
@@ -91,7 +97,7 @@ public:
 
   static void SetUpTestCase()
   {
-    AlarmTableDefs::get_instance().initialize();
+    AlarmTableDefs::get_instance().initialize(ALARMS);
   }
 
   void sync_alarms()
