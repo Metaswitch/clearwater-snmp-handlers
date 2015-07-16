@@ -1512,7 +1512,7 @@ sproutSIPDigestAuthenticationTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of SIP digest authentications"
+                 of SIP digest authentications on register requests"
     ::= { sprout 15 }
 
 sproutSIPDigestAuthenticationEntry OBJECT-TYPE
@@ -1520,7 +1520,7 @@ sproutSIPDigestAuthenticationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 SIP digest authentications"
+                 SIP digest authentications on register requests"
     INDEX       { sproutSIPDigestAuthenticationScope }
     ::= { sproutSIPDigestAuthenticationTable 1 }
 
@@ -1547,24 +1547,24 @@ sproutSIPDigestAuthenticationAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of SIP digest authentication attempts over the
-period."
+    DESCRIPTION "The number of SIP digest authentication attempts on register
+                 requests over the period."
     ::= { sproutSIPDigestAuthenticationEntry 2 }
 
 sproutSIPDigestAuthenticationSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of SIP digest authentication successes over the
-period."
+    DESCRIPTION "The number of SIP digest authentication successes on register
+                 requests over the period."
     ::= { sproutSIPDigestAuthenticationEntry 3 }
 
 sproutSIPDigestAuthenticationFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of SIP digest authentication failures over the
-period."
+    DESCRIPTION "The number of SIP digest authentication failures on register
+                 requests over the period."
     ::= { sproutSIPDigestAuthenticationEntry 4 }
 
 sproutAKAAuthenticationTable OBJECT-TYPE
@@ -1572,7 +1572,7 @@ sproutAKAAuthenticationTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of AKA authentications"
+                 of AKA authentications on register requests"
     ::= { sprout 16 }
 
 sproutAKAAuthenticationEntry OBJECT-TYPE
@@ -1580,7 +1580,7 @@ sproutAKAAuthenticationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 AKA authentications"
+                 AKA authentications on register requests"
     INDEX       { sproutAKAAuthenticationScope }
     ::= { sproutAKAAuthenticationTable 1 }
 
@@ -1607,21 +1607,24 @@ sproutAKAAuthenticationAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of AKA authentication attempts over the period."
+    DESCRIPTION "The number of AKA authentication attempts on register
+                 requests over the period."
     ::= { sproutAKAAuthenticationEntry 2 }
 
 sproutAKAAuthenticationSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of AKA authentication successes over the period."
+    DESCRIPTION "The number of AKA authentication successes on register
+                 requests over the period."
     ::= { sproutAKAAuthenticationEntry 3 }
 
 sproutAKAAuthenticationFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of AKA authentication failures over the period."
+    DESCRIPTION "The number of AKA authentication failures on register
+                 requests over the period."
     ::= { sproutAKAAuthenticationEntry 4 }
 
 sproutGroup OBJECT-GROUP
