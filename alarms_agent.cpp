@@ -37,7 +37,10 @@
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 #include <net-snmp/agent/agent_trap.h>
 #include <signal.h>
+#include <string>
+#include <vector>
 
+#include "utils.h"
 #include "alarm_table_defs.hpp"
 #include "alarm_req_listener.hpp"
 #include "alarm_model_table.hpp"
@@ -53,7 +56,7 @@ void terminate_handler(int sig)
 
 int main (int argc, char **argv)
 {
-  char* trap_ip = NULL;
+  std::vector<std::string> trap_ips;
   char* community = NULL;
   int c;
 
@@ -66,7 +69,7 @@ int main (int argc, char **argv)
         community = optarg;
         break;
       case 'i':
-        trap_ip = optarg;
+        Utils::split_string(optarg, ',', trap_ips);
         break;
       default:
         abort ();
@@ -80,9 +83,14 @@ int main (int argc, char **argv)
   netsnmp_ds_set_boolean(NETSNMP_DS_APPLICATION_ID, NETSNMP_DS_AGENT_ROLE, 1);
   init_agent("clearwater-alarms");
 
-  // Connect to the informsink
-  create_trap_session(trap_ip, 161, community,
-                      SNMP_VERSION_2c, SNMP_MSG_INFORM);  
+  // Connect to the informsinks
+  for (std::vector<std::string>::iterator ii = trap_ips.begin();
+       ii != trap_ips.end();
+       ii++)
+  {
+    create_trap_session(const_cast<char*>(ii->c_str()), 161, community,
+                        SNMP_VERSION_2c, SNMP_MSG_INFORM);  
+  }
 
   // Initialise the ZMQ listeners and alarm tables
   AlarmTableDefs::get_instance().initialize();
