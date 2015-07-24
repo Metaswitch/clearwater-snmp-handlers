@@ -1641,15 +1641,17 @@ sproutNonRegisterAuthenticationEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  non-register authentication requests"
-    INDEX       { sproutNonRegisterAuthenticationScope }
+    INDEX       { sproutNonRegisterAuthenticationTimeScope,
+                  sproutNonRegisterAuthenticationRequestScope }
     ::= { sproutNonRegisterAuthenticationTable 1 }
 
 SproutNonRegisterAuthenticationEntry ::= SEQUENCE
 {
-  sproutNonRegisterAuthenticationScope        INTEGER,
-  sproutNonRegisterAuthenticationAttempts     Unsigned32,
-  sproutNonRegisterAuthenticationSuccesses    Unsigned32,
-  sproutNonRegisterAuthenticationFailures     Unsigned32
+  sproutNonRegisterAuthenticationScope          INTEGER,
+  sproutNonRegisterAuthenticationRequestScope   INTEGER,
+  sproutNonRegisterAuthenticationAttempts       Unsigned32,
+  sproutNonRegisterAuthenticationSuccesses      Unsigned32,
+  sproutNonRegisterAuthenticationFailures       Unsigned32
 }
 
 sproutNonRegisterAuthenticationScope OBJECT-TYPE
@@ -1663,13 +1665,36 @@ sproutNonRegisterAuthenticationScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutNonRegisterAuthenticationEntry 1 }
 
+sproutNonRegisterAuthenticationRequestScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeINVITE(0),
+                  scopeACK(1),
+                  scopeBYE(2),
+                  scopeCANCEL(3),
+                  scopeOPTIONS(4),
+                  scopeREGISTER(5),
+                  scopePRACK(6),
+                  scopeSUBSCRIBE(7),
+                  scopeNOTIFY(8),
+                  scopePUBLISH(9),
+                  scopeINFO(10),
+                  scopeREFER(11),
+                  scopeMESSAGE(12),
+                  scopeUPDATE(13),
+                  scopeOTHER(14)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The type of SIP message trying to authenticate."
+    ::= { sproutNonRegisterAuthenticationEntry 2 }
+
 sproutNonRegisterAuthenticationAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of non-register authentication attempts on register
                  requests over the period."
-    ::= { sproutNonRegisterAuthenticationEntry 2 }
+    ::= { sproutNonRegisterAuthenticationEntry 3 }
 
 sproutNonRegisterAuthenticationSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -1677,7 +1702,7 @@ sproutNonRegisterAuthenticationSuccesses OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The number of non-register authentication successes on register
                  requests over the period."
-    ::= { sproutNonRegisterAuthenticationEntry 3 }
+    ::= { sproutNonRegisterAuthenticationEntry 4 }
 
 sproutNonRegisterAuthenticationFailures OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -1685,7 +1710,7 @@ sproutNonRegisterAuthenticationFailures OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The number of non-register authentication failures on register
                  requests over the period."
-    ::= { sproutNonRegisterAuthenticationEntry 4 }
+    ::= { sproutNonRegisterAuthenticationEntry 5 }
 
 sproutGroup OBJECT-GROUP
     OBJECTS {
