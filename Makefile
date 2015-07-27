@@ -46,6 +46,7 @@ TARGET := handler
 TARGET_TEST := handler_test
 
 TARGET_SOURCES := alarmdefinition.cpp \
+                  json_alarms.cpp \
                   alarm_table_defs.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
@@ -83,6 +84,8 @@ CPPFLAGS_TEST += -I$(ROOT)/modules/cpp-common/test_utils
 LDFLAGS += -lzmq \
            -lpthread \
            -ldl \
+           -lboost_system \
+           -lboost_filesystem \
            `net-snmp-config --agent-libs`
 
 #LDFLAGS_TEST += -Wl,-rpath=$(ROOT)/usr/lib

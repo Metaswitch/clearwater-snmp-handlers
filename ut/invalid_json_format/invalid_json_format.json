@@ -1,16 +1,15 @@
 {
-    "localalarms": [
+    "alarms": [
         {
-            "alarmindex": 1000,
-            "alarmcause": 163,
-            "alarms": [
+            "index": 1000,
+            "levels": [
                 {
-                    "severity": 1,
+                    "severity": "CLEARED",
                     "description": "Description",
                     "details": "Details"
                 },
                 {
-                    "severity": 99,
+                    "severity": "CRITICAL",
                     "description": "Description",
                     "details": "Details"
                 }
@@ -18,3 +17,4 @@
         }
     ]
 }
+

@@ -1,16 +1,17 @@
 {
-    "local_alarms": [
+    "alarms": [
         {
             "index": 1000,
-            "cause": 163,
-            "alarms": [
+            "cause": "SOFTWARE_ERROR",
+            "name": "NAME",
+            "levels": [
                 {
-                    "severity": 1,
+                    "severity": "CLEARED",
                     "description": "Description",
                     "details": "Details"
                 },
                 {
-                    "severity": 3,
+                    "severity": "INDETERMINATE",
                     "description": "Description",
                     "details": "Details"
                 }
@@ -18,15 +19,16 @@
         },
         {
             "index": 1000,
-            "cause": 163,
-            "alarms": [
+            "cause": "SOFTWARE_ERROR",
+            "name": "NAME",
+            "levels": [
                 {
-                    "severity": 1,
+                    "severity": "CLEARED",
                     "description": "Description",
                     "details": "Details"
                 },
                 {
-                    "severity": 3,
+                    "severity": "CRITICAL",
                     "description": "Description",
                     "details": "Details"
                 }

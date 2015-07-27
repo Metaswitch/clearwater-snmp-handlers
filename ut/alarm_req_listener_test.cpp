@@ -64,18 +64,13 @@ using ::testing::MatchResultListener;
 static const char issuer1[] = "sprout";
 static const char issuer2[] = "homestead";
 
-// This test currently doesn't parse any alarm definitions from the JSON
-// files, instead it only uses the alarms from cpp-common. This should
-// parse from file instead. 
-std::string ALARMS = std::string(UT_DIR).append("/NONEXISTENT_FILE.json");
-
 class AlarmReqListenerTest : public ::testing::Test
 {
 public:
   AlarmReqListenerTest() :
-    _alarm_1(issuer1, AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR, AlarmDef::CRITICAL),
-    _alarm_2(issuer1, AlarmDef::SPROUT_MEMCACHED_COMM_ERROR, AlarmDef::CRITICAL),
-    _alarm_3(issuer2, AlarmDef::HOMESTEAD_CASSANDRA_COMM_ERROR, AlarmDef::CRITICAL)
+    _alarm_1(issuer1, 1000, AlarmDef::CRITICAL),
+    _alarm_2(issuer1, 1001, AlarmDef::CRITICAL),
+    _alarm_3(issuer2, 1002, AlarmDef::CRITICAL)
   {
     cwtest_completely_control_time();
     cwtest_advance_time_ms(_delta_ms);
@@ -97,7 +92,7 @@ public:
 
   static void SetUpTestCase()
   {
-    AlarmTableDefs::get_instance().initialize(ALARMS);
+    AlarmTableDefs::get_instance().initialize(std::string(UT_DIR).append("/valid_alarms/"));
   }
 
   void sync_alarms()
@@ -254,7 +249,7 @@ inline Matcher<netsnmp_variable_list*> TrapVars(TrapVarsMatcher::TrapType trap_t
 TEST_F(AlarmReqListenerTest, SetAlarm)
 {
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                        AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                        1000)));
 
   _alarm_1.set();
   _ms.trap_complete(1, 5);
@@ -263,7 +258,7 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
 TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                        1000)));
 
   _alarm_1.set();
 
@@ -282,13 +277,13 @@ TEST_F(AlarmReqListenerTest, ClearAlarms)
       Times(3);
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_MEMCACHED_COMM_ERROR)));
+                                          1001)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::HOMESTEAD_CASSANDRA_COMM_ERROR)));
+                                          1002)));
   }
 
   _alarm_1.set();
@@ -305,19 +300,19 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
   advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
 
-  int alarm_count = AlarmDef::alarm_definitions.size();
+  int alarm_count = 3;
 
   {
     InSequence s;
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(_)).
       Times(alarm_count);
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
   }
 
   _alarm_1.set();
@@ -335,10 +330,10 @@ TEST_F(AlarmReqListenerTest, SyncAlarmsNoClear)
     InSequence s;
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
   }
 
   sync_alarms_no_clear();
@@ -357,16 +352,16 @@ TEST_F(AlarmReqListenerTest, AlarmFilter)
     InSequence s;
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_MEMCACHED_COMM_ERROR)));
+                                          1001)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_MEMCACHED_COMM_ERROR)));
+                                          1001)));
   }
 
   for (int idx = 0; idx < 10; idx++)
@@ -389,16 +384,16 @@ TEST_F(AlarmReqListenerTest, AlarmFilterClean)
     InSequence s;
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          AlarmDef::SPROUT_MEMCACHED_COMM_ERROR)));
+                                          1001)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_HOMESTEAD_COMM_ERROR)));
+                                          1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          AlarmDef::SPROUT_MEMCACHED_COMM_ERROR)));
+                                          1001)));
   }
 
   _alarm_1.set();

@@ -1,16 +1,17 @@
 {
-    "local_alarms": [
+    "alarms": [
         {
             "index": 1000,
-            "cause": 163,
-            "alarms": [
+            "cause": "DATABASE_INCONSISTENCY",
+            "name": "NAME",
+            "levels": [
                 {
-                    "severity": 1,
+                    "severity": "CLEARED",
                     "description": "Description",
                     "details": "Details"
                 },
                 {
-                    "severity": 3,
+                    "severity": "MINOR",
                     "description": "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
                     "details": "Details"
                 }

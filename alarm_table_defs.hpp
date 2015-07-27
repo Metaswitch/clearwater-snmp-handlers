@@ -113,24 +113,16 @@ public:
 class AlarmTableDefs
 {
 public:
-  // Generate alarm table definitions based on local (to the node) alarm
-  // definition. Also check the statically initialized
-  // alarm data (but this will be removed soon).
-  // Should only be called once at sub-agent start-up.
-  bool initialize(std::string& path,
-                  const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions = AlarmDef::alarm_definitions);
+  // Generate alarm table definitions based on JSON files on the node
+  bool initialize(std::string& path);
 
   // Retrieve alarm definition for specified index/severity
   AlarmTableDef& get_definition(unsigned int index,
                                 unsigned int severity);
 
   // Populate the map of alarm definitions
-  bool populate_map(const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions,
+  bool populate_map(std::string path,
                     std::map<unsigned int, unsigned int>& dup_check);
-
-  // Parse any local alarm definitions out of a JSON file
-  bool parse_local_alarms_from_file(std::string& path,
-                                    std::vector<AlarmDef::AlarmDefinition>& local_alarms);
 
   // Iterator helpers for enumerating alarm table definitions.
   AlarmTableDefsIterator begin() {return _key_to_def.begin();}
