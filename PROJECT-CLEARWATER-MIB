@@ -1627,6 +1627,66 @@ sproutAKAAuthenticationFailures OBJECT-TYPE
                  requests over the period."
     ::= { sproutAKAAuthenticationEntry 4 }
 
+sproutNonRegisterAuthenticationTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutNonRegisterAuthenticationEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of non-register authentication requests"
+    ::= { sprout 17 }
+
+sproutNonRegisterAuthenticationEntry OBJECT-TYPE
+    SYNTAX      SproutNonRegisterAuthenticationEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 non-register authentication requests"
+    INDEX       { sproutNonRegisterAuthenticationScope }
+    ::= { sproutNonRegisterAuthenticationTable 1 }
+
+SproutNonRegisterAuthenticationEntry ::= SEQUENCE
+{
+  sproutNonRegisterAuthenticationScope          INTEGER,
+  sproutNonRegisterAuthenticationAttempts       Unsigned32,
+  sproutNonRegisterAuthenticationSuccesses      Unsigned32,
+  sproutNonRegisterAuthenticationFailures       Unsigned32
+}
+
+sproutNonRegisterAuthenticationScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutNonRegisterAuthenticationEntry 1 }
+
+sproutNonRegisterAuthenticationAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of non-register authentication attempts on register
+                 requests over the period."
+    ::= { sproutNonRegisterAuthenticationEntry 2 }
+
+sproutNonRegisterAuthenticationSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of non-register authentication successes on register
+                 requests over the period."
+    ::= { sproutNonRegisterAuthenticationEntry 3 }
+
+sproutNonRegisterAuthenticationFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of non-register authentication failures on register
+                 requests over the period."
+    ::= { sproutNonRegisterAuthenticationEntry 4 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -1696,7 +1756,10 @@ sproutGroup OBJECT-GROUP
       sproutSIPDigestAuthenticationFailures,
       sproutAKAAuthenticationAttempts,
       sproutAKAAuthenticationSuccesses,
-      sproutAKAAuthenticationFailures
+      sproutAKAAuthenticationFailures,
+      sproutNonRegisterAuthenticationAttempts,
+      sproutNonRegisterAuthenticationSuccesses,
+      sproutNonRegisterAuthenticationFailures
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
