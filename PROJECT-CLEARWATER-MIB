@@ -3,7 +3,8 @@ PROJECT-CLEARWATER-MIB DEFINITIONS ::= BEGIN
 IMPORTS
         MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
         MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
-        InetAddressType, InetAddress FROM INET-ADDRESS-MIB;
+        InetAddressType, InetAddress FROM INET-ADDRESS-MIB
+        TEXTUAL-CONVENTION FROM SNMPv2-TC;
 
 -- Module definition
 
@@ -77,6 +78,27 @@ memento          OBJECT IDENTIFIER ::= { projectClearwater 8 }
 astaire          OBJECT IDENTIFIER ::= { projectClearwater 9 }
 chronos          OBJECT IDENTIFIER ::= { projectClearwater 10 }
 gemini           OBJECT IDENTIFIER ::= { projectClearwater 11 }
+
+RequestType ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION "Represents a type of SIP request."
+    SYNTAX      INTEGER {
+                scopeINVITE(0),
+                scopeACK(1),
+                scopeBYE(2),
+                scopeCANCEL(3),
+                scopeOPTIONS(4),
+                scopeREGISTER(5),
+                scopePRACK(6),
+                scopeSUBSCRIBE(7),
+                scopeNOTIFY(8),
+                scopePUBLISH(9),
+                scopeINFO(10),
+                scopeREFER(11),
+                scopeMESSAGE(12),
+                scopeUPDATE(13),
+                scopeOTHER(14)
+                }
 
 -- Bono entries
 
@@ -1690,34 +1712,34 @@ sproutNonRegisterAuthenticationFailures OBJECT-TYPE
                  requests over the period."
     ::= { sproutNonRegisterAuthenticationEntry 4 }
 
-sproutICSCFIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutICSCFIncomingSipTransactionsEntry
+sproutICSCFIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutICSCFIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for the ICSCF"
     ::= { sprout 18 }
 
-sproutICSCFIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutICSCFIncomingSipTransactionsEntry
+sproutICSCFIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutICSCFIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  incoming SIP transactions for the ICSCF"
-    INDEX       { sproutICSCFIncomingSipTransactionsTimeScope,
-                  sproutICSCFIncomingSipTransactionsRequestScope }
-    ::= { sproutICSCFIncomingSipTransactionsTable 1 }
+    INDEX       { sproutICSCFIncomingSIPTransactionsTimeScope,
+                  sproutICSCFIncomingSIPTransactionsRequestScope }
+    ::= { sproutICSCFIncomingSIPTransactionsTable 1 }
 
-SproutICSCFIncomingSipTransactionsEntry ::= SEQUENCE
+SproutICSCFIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutICSCFIncomingSipTransactionsTimeScope      INTEGER,
-  sproutICSCFIncomingSipTransactionsRequestScope   INTEGER,
-  sproutICSCFIncomingSipTransactionsAttempts       Unsigned32,
-  sproutICSCFIncomingSipTransactionsSuccesses      Unsigned32,
-  sproutICSCFIncomingSipTransactionsFailures       Unsigned32
+  sproutICSCFIncomingSIPTransactionsTimeScope      INTEGER,
+  sproutICSCFIncomingSIPTransactionsRequestScope   INTEGER,
+  sproutICSCFIncomingSIPTransactionsAttempts       Unsigned32,
+  sproutICSCFIncomingSIPTransactionsSuccesses      Unsigned32,
+  sproutICSCFIncomingSIPTransactionsFailures       Unsigned32
 }
 
-sproutICSCFIncomingSipTransactionsTimeScope OBJECT-TYPE
+sproutICSCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1726,82 +1748,66 @@ sproutICSCFIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutICSCFIncomingSipTransactionsEntry 1 }
+    ::= { sproutICSCFIncomingSIPTransactionsEntry 1 }
 
-sproutICSCFIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutICSCFIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { sproutICSCFIncomingSipTransactionsEntry 2 }
+    ::= { sproutICSCFIncomingSIPTransactionsEntry 2 }
 
-sproutICSCFIncomingSipTransactionsAttempts OBJECT-TYPE
+sproutICSCFIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { sproutICSCFIncomingSipTransactionsEntry 3 }
+    ::= { sproutICSCFIncomingSIPTransactionsEntry 3 }
 
-sproutICSCFIncomingSipTransactionsSuccesses OBJECT-TYPE
+sproutICSCFIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { sproutICSCFIncomingSipTransactionsEntry 4 }
+    ::= { sproutICSCFIncomingSIPTransactionsEntry 4 }
 
-sproutICSCFIncomingSipTransactionsFailures OBJECT-TYPE
+sproutICSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { sproutICSCFIncomingSipTransactionsEntry 5 }
+    ::= { sproutICSCFIncomingSIPTransactionsEntry 5 }
 
-sproutICSCFOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutICSCFOutgoingSipTransactionsEntry
+sproutICSCFOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutICSCFOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the ICSCF"
     ::= { sprout 19 }
 
-sproutICSCFOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutICSCFOutgoingSipTransactionsEntry
+sproutICSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutICSCFOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  outgoing SIP transactions for the ICSCF"
-    INDEX       { sproutICSCFOutgoingSipTransactionsTimeScope,
-                  sproutICSCFOutgoingSipTransactionsRequestScope }
-    ::= { sproutICSCFOutgoingSipTransactionsTable 1 }
+    INDEX       { sproutICSCFOutgoingSIPTransactionsTimeScope,
+                  sproutICSCFOutgoingSIPTransactionsRequestScope }
+    ::= { sproutICSCFOutgoingSIPTransactionsTable 1 }
 
-SproutICSCFOutgoingSipTransactionsEntry ::= SEQUENCE
+SproutICSCFOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutICSCFOutgoingSipTransactionsTimeScope      INTEGER,
-  sproutICSCFOutgoingSipTransactionsRequestScope   INTEGER,
-  sproutICSCFOutgoingSipTransactionsAttempts       Unsigned32,
-  sproutICSCFOutgoingSipTransactionsSuccesses      Unsigned32,
-  sproutICSCFOutgoingSipTransactionsFailures       Unsigned32
+  sproutICSCFOutgoingSIPTransactionsTimeScope      INTEGER,
+  sproutICSCFOutgoingSIPTransactionsRequestScope   INTEGER,
+  sproutICSCFOutgoingSIPTransactionsAttempts       Unsigned32,
+  sproutICSCFOutgoingSIPTransactionsSuccesses      Unsigned32,
+  sproutICSCFOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-sproutICSCFOutgoingSipTransactionsTimeScope OBJECT-TYPE
+sproutICSCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1810,82 +1816,66 @@ sproutICSCFOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutICSCFOutgoingSipTransactionsEntry 1 }
+    ::= { sproutICSCFOutgoingSIPTransactionsEntry 1 }
 
-sproutICSCFOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutICSCFOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { sproutICSCFOutgoingSipTransactionsEntry 2 }
+    ::= { sproutICSCFOutgoingSIPTransactionsEntry 2 }
 
-sproutICSCFOutgoingSipTransactionsAttempts OBJECT-TYPE
+sproutICSCFOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { sproutICSCFOutgoingSipTransactionsEntry 3 }
+    ::= { sproutICSCFOutgoingSIPTransactionsEntry 3 }
 
-sproutICSCFOutgoingSipTransactionsSuccesses OBJECT-TYPE
+sproutICSCFOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { sproutICSCFOutgoingSipTransactionsEntry 4 }
+    ::= { sproutICSCFOutgoingSIPTransactionsEntry 4 }
 
-sproutICSCFOutgoingSipTransactionsFailures OBJECT-TYPE
+sproutICSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { sproutICSCFOutgoingSipTransactionsEntry 5 }
+    ::= { sproutICSCFOutgoingSIPTransactionsEntry 5 }
 
-sproutSCSCFIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutSCSCFIncomingSipTransactionsEntry
+sproutSCSCFIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for the SCSCF"
     ::= { sprout 20 }
 
-sproutSCSCFIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutSCSCFIncomingSipTransactionsEntry
+sproutSCSCFIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  incoming SIP transactions for the SCSCF"
-    INDEX       { sproutSCSCFIncomingSipTransactionsTimeScope,
-                  sproutSCSCFIncomingSipTransactionsRequestScope }
-    ::= { sproutSCSCFIncomingSipTransactionsTable 1 }
+    INDEX       { sproutSCSCFIncomingSIPTransactionsTimeScope,
+                  sproutSCSCFIncomingSIPTransactionsRequestScope }
+    ::= { sproutSCSCFIncomingSIPTransactionsTable 1 }
 
-SproutSCSCFIncomingSipTransactionsEntry ::= SEQUENCE
+SproutSCSCFIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutSCSCFIncomingSipTransactionsTimeScope      INTEGER,
-  sproutSCSCFIncomingSipTransactionsRequestScope   INTEGER,
-  sproutSCSCFIncomingSipTransactionsAttempts       Unsigned32,
-  sproutSCSCFIncomingSipTransactionsSuccesses      Unsigned32,
-  sproutSCSCFIncomingSipTransactionsFailures       Unsigned32
+  sproutSCSCFIncomingSIPTransactionsTimeScope      INTEGER,
+  sproutSCSCFIncomingSIPTransactionsRequestScope   INTEGER,
+  sproutSCSCFIncomingSIPTransactionsAttempts       Unsigned32,
+  sproutSCSCFIncomingSIPTransactionsSuccesses      Unsigned32,
+  sproutSCSCFIncomingSIPTransactionsFailures       Unsigned32
 }
 
-sproutSCSCFIncomingSipTransactionsTimeScope OBJECT-TYPE
+sproutSCSCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1894,82 +1884,66 @@ sproutSCSCFIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutSCSCFIncomingSipTransactionsEntry 1 }
+    ::= { sproutSCSCFIncomingSIPTransactionsEntry 1 }
 
-sproutSCSCFIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutSCSCFIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { sproutSCSCFIncomingSipTransactionsEntry 2 }
+    ::= { sproutSCSCFIncomingSIPTransactionsEntry 2 }
 
-sproutSCSCFIncomingSipTransactionsAttempts OBJECT-TYPE
+sproutSCSCFIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { sproutSCSCFIncomingSipTransactionsEntry 3 }
+    ::= { sproutSCSCFIncomingSIPTransactionsEntry 3 }
 
-sproutSCSCFIncomingSipTransactionsSuccesses OBJECT-TYPE
+sproutSCSCFIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { sproutSCSCFIncomingSipTransactionsEntry 4 }
+    ::= { sproutSCSCFIncomingSIPTransactionsEntry 4 }
 
-sproutSCSCFIncomingSipTransactionsFailures OBJECT-TYPE
+sproutSCSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { sproutSCSCFIncomingSipTransactionsEntry 5 }
+    ::= { sproutSCSCFIncomingSIPTransactionsEntry 5 }
 
-sproutSCSCFOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutSCSCFOutgoingSipTransactionsEntry
+sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the SCSCF"
     ::= { sprout 21 }
 
-sproutSCSCFOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutSCSCFOutgoingSipTransactionsEntry
+sproutSCSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  outgoing SIP transactions for the SCSCF"
-    INDEX       { sproutSCSCFOutgoingSipTransactionsTimeScope,
-                  sproutSCSCFOutgoingSipTransactionsRequestScope }
-    ::= { sproutSCSCFOutgoingSipTransactionsTable 1 }
+    INDEX       { sproutSCSCFOutgoingSIPTransactionsTimeScope,
+                  sproutSCSCFOutgoingSIPTransactionsRequestScope }
+    ::= { sproutSCSCFOutgoingSIPTransactionsTable 1 }
 
-SproutSCSCFOutgoingSipTransactionsEntry ::= SEQUENCE
+SproutSCSCFOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutSCSCFOutgoingSipTransactionsTimeScope      INTEGER,
-  sproutSCSCFOutgoingSipTransactionsRequestScope   INTEGER,
-  sproutSCSCFOutgoingSipTransactionsAttempts       Unsigned32,
-  sproutSCSCFOutgoingSipTransactionsSuccesses      Unsigned32,
-  sproutSCSCFOutgoingSipTransactionsFailures       Unsigned32
+  sproutSCSCFOutgoingSIPTransactionsTimeScope      INTEGER,
+  sproutSCSCFOutgoingSIPTransactionsRequestScope   INTEGER,
+  sproutSCSCFOutgoingSIPTransactionsAttempts       Unsigned32,
+  sproutSCSCFOutgoingSIPTransactionsSuccesses      Unsigned32,
+  sproutSCSCFOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-sproutSCSCFOutgoingSipTransactionsTimeScope OBJECT-TYPE
+sproutSCSCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1978,82 +1952,66 @@ sproutSCSCFOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutSCSCFOutgoingSipTransactionsEntry 1 }
+    ::= { sproutSCSCFOutgoingSIPTransactionsEntry 1 }
 
-sproutSCSCFOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutSCSCFOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { sproutSCSCFOutgoingSipTransactionsEntry 2 }
+    ::= { sproutSCSCFOutgoingSIPTransactionsEntry 2 }
 
-sproutSCSCFOutgoingSipTransactionsAttempts OBJECT-TYPE
+sproutSCSCFOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { sproutSCSCFOutgoingSipTransactionsEntry 3 }
+    ::= { sproutSCSCFOutgoingSIPTransactionsEntry 3 }
 
-sproutSCSCFOutgoingSipTransactionsSuccesses OBJECT-TYPE
+sproutSCSCFOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { sproutSCSCFOutgoingSipTransactionsEntry 4 }
+    ::= { sproutSCSCFOutgoingSIPTransactionsEntry 4 }
 
-sproutSCSCFOutgoingSipTransactionsFailures OBJECT-TYPE
+sproutSCSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { sproutSCSCFOutgoingSipTransactionsEntry 5 }
+    ::= { sproutSCSCFOutgoingSIPTransactionsEntry 5 }
 
-sproutBGCFIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutBGCFIncomingSipTransactionsEntry
+sproutBGCFIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutBGCFIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for the BGCF"
     ::= { sprout 22 }
 
-sproutBGCFIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutBGCFIncomingSipTransactionsEntry
+sproutBGCFIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutBGCFIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  incoming SIP transactions for the BGCF"
-    INDEX       { sproutBGCFIncomingSipTransactionsTimeScope,
-                  sproutBGCFIncomingSipTransactionsRequestScope }
-    ::= { sproutBGCFIncomingSipTransactionsTable 1 }
+    INDEX       { sproutBGCFIncomingSIPTransactionsTimeScope,
+                  sproutBGCFIncomingSIPTransactionsRequestScope }
+    ::= { sproutBGCFIncomingSIPTransactionsTable 1 }
 
-SproutBGCFIncomingSipTransactionsEntry ::= SEQUENCE
+SproutBGCFIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutBGCFIncomingSipTransactionsTimeScope      INTEGER,
-  sproutBGCFIncomingSipTransactionsRequestScope   INTEGER,
-  sproutBGCFIncomingSipTransactionsAttempts       Unsigned32,
-  sproutBGCFIncomingSipTransactionsSuccesses      Unsigned32,
-  sproutBGCFIncomingSipTransactionsFailures       Unsigned32
+  sproutBGCFIncomingSIPTransactionsTimeScope      INTEGER,
+  sproutBGCFIncomingSIPTransactionsRequestScope   INTEGER,
+  sproutBGCFIncomingSIPTransactionsAttempts       Unsigned32,
+  sproutBGCFIncomingSIPTransactionsSuccesses      Unsigned32,
+  sproutBGCFIncomingSIPTransactionsFailures       Unsigned32
 }
 
-sproutBGCFIncomingSipTransactionsTimeScope OBJECT-TYPE
+sproutBGCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2062,82 +2020,66 @@ sproutBGCFIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutBGCFIncomingSipTransactionsEntry 1 }
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 1 }
 
-sproutBGCFIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutBGCFIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { sproutBGCFIncomingSipTransactionsEntry 2 }
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 2 }
 
-sproutBGCFIncomingSipTransactionsAttempts OBJECT-TYPE
+sproutBGCFIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { sproutBGCFIncomingSipTransactionsEntry 3 }
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 3 }
 
-sproutBGCFIncomingSipTransactionsSuccesses OBJECT-TYPE
+sproutBGCFIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { sproutBGCFIncomingSipTransactionsEntry 4 }
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 4 }
 
-sproutBGCFIncomingSipTransactionsFailures OBJECT-TYPE
+sproutBGCFIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { sproutBGCFIncomingSipTransactionsEntry 5 }
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 5 }
 
-sproutBGCFOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutBGCFOutgoingSipTransactionsEntry
+sproutBGCFOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutBGCFOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the BGCF"
     ::= { sprout 23 }
 
-sproutBGCFOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutBGCFOutgoingSipTransactionsEntry
+sproutBGCFOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutBGCFOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  outgoing SIP transactions for the BGCF"
-    INDEX       { sproutBGCFOutgoingSipTransactionsTimeScope,
-                  sproutBGCFOutgoingSipTransactionsRequestScope }
-    ::= { sproutBGCFOutgoingSipTransactionsTable 1 }
+    INDEX       { sproutBGCFOutgoingSIPTransactionsTimeScope,
+                  sproutBGCFOutgoingSIPTransactionsRequestScope }
+    ::= { sproutBGCFOutgoingSIPTransactionsTable 1 }
 
-SproutBGCFOutgoingSipTransactionsEntry ::= SEQUENCE
+SproutBGCFOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutBGCFOutgoingSipTransactionsTimeScope      INTEGER,
-  sproutBGCFOutgoingSipTransactionsRequestScope   INTEGER,
-  sproutBGCFOutgoingSipTransactionsAttempts       Unsigned32,
-  sproutBGCFOutgoingSipTransactionsSuccesses      Unsigned32,
-  sproutBGCFOutgoingSipTransactionsFailures       Unsigned32
+  sproutBGCFOutgoingSIPTransactionsTimeScope      INTEGER,
+  sproutBGCFOutgoingSIPTransactionsRequestScope   INTEGER,
+  sproutBGCFOutgoingSIPTransactionsAttempts       Unsigned32,
+  sproutBGCFOutgoingSIPTransactionsSuccesses      Unsigned32,
+  sproutBGCFOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-sproutBGCFOutgoingSipTransactionsTimeScope OBJECT-TYPE
+sproutBGCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2146,82 +2088,66 @@ sproutBGCFOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutBGCFOutgoingSipTransactionsEntry 1 }
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 1 }
 
-sproutBGCFOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutBGCFOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { sproutBGCFOutgoingSipTransactionsEntry 2 }
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 2 }
 
-sproutBGCFOutgoingSipTransactionsAttempts OBJECT-TYPE
+sproutBGCFOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { sproutBGCFOutgoingSipTransactionsEntry 3 }
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 3 }
 
-sproutBGCFOutgoingSipTransactionsSuccesses OBJECT-TYPE
+sproutBGCFOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { sproutBGCFOutgoingSipTransactionsEntry 4 }
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 4 }
 
-sproutBGCFOutgoingSipTransactionsFailures OBJECT-TYPE
+sproutBGCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { sproutBGCFOutgoingSipTransactionsEntry 5 }
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 5 }
 
-sproutMMTelIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutMMTelIncomingSipTransactionsEntry
+sproutMMTelIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutMMTelIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for the MMTel"
     ::= { sprout 24 }
 
-sproutMMTelIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutMMTelIncomingSipTransactionsEntry
+sproutMMTelIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutMMTelIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  incoming SIP transactions for the MMTel"
-    INDEX       { sproutMMTelIncomingSipTransactionsTimeScope,
-                  sproutMMTelIncomingSipTransactionsRequestScope }
-    ::= { sproutMMTelIncomingSipTransactionsTable 1 }
+    INDEX       { sproutMMTelIncomingSIPTransactionsTimeScope,
+                  sproutMMTelIncomingSIPTransactionsRequestScope }
+    ::= { sproutMMTelIncomingSIPTransactionsTable 1 }
 
-SproutMMTelIncomingSipTransactionsEntry ::= SEQUENCE
+SproutMMTelIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutMMTelIncomingSipTransactionsTimeScope      INTEGER,
-  sproutMMTelIncomingSipTransactionsRequestScope   INTEGER,
-  sproutMMTelIncomingSipTransactionsAttempts       Unsigned32,
-  sproutMMTelIncomingSipTransactionsSuccesses      Unsigned32,
-  sproutMMTelIncomingSipTransactionsFailures       Unsigned32
+  sproutMMTelIncomingSIPTransactionsTimeScope      INTEGER,
+  sproutMMTelIncomingSIPTransactionsRequestScope   INTEGER,
+  sproutMMTelIncomingSIPTransactionsAttempts       Unsigned32,
+  sproutMMTelIncomingSIPTransactionsSuccesses      Unsigned32,
+  sproutMMTelIncomingSIPTransactionsFailures       Unsigned32
 }
 
-sproutMMTelIncomingSipTransactionsTimeScope OBJECT-TYPE
+sproutMMTelIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2230,82 +2156,66 @@ sproutMMTelIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutMMTelIncomingSipTransactionsEntry 1 }
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 1 }
 
-sproutMMTelIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutMMTelIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { sproutMMTelIncomingSipTransactionsEntry 2 }
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 2 }
 
-sproutMMTelIncomingSipTransactionsAttempts OBJECT-TYPE
+sproutMMTelIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { sproutMMTelIncomingSipTransactionsEntry 3 }
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 3 }
 
-sproutMMTelIncomingSipTransactionsSuccesses OBJECT-TYPE
+sproutMMTelIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { sproutMMTelIncomingSipTransactionsEntry 4 }
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 4 }
 
-sproutMMTelIncomingSipTransactionsFailures OBJECT-TYPE
+sproutMMTelIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { sproutMMTelIncomingSipTransactionsEntry 5 }
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 5 }
 
-sproutMMTelOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutMMTelOutgoingSipTransactionsEntry
+sproutMMTelOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutMMTelOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the MMTel"
     ::= { sprout 25 }
 
-sproutMMTelOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      SproutMMTelOutgoingSipTransactionsEntry
+sproutMMTelOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutMMTelOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  outgoing SIP transactions for the MMTel"
-    INDEX       { sproutMMTelOutgoingSipTransactionsTimeScope,
-                  sproutMMTelOutgoingSipTransactionsRequestScope }
-    ::= { sproutMMTelOutgoingSipTransactionsTable 1 }
+    INDEX       { sproutMMTelOutgoingSIPTransactionsTimeScope,
+                  sproutMMTelOutgoingSIPTransactionsRequestScope }
+    ::= { sproutMMTelOutgoingSIPTransactionsTable 1 }
 
-SproutMMTelOutgoingSipTransactionsEntry ::= SEQUENCE
+SproutMMTelOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  sproutMMTelOutgoingSipTransactionsTimeScope      INTEGER,
-  sproutMMTelOutgoingSipTransactionsRequestScope   INTEGER,
-  sproutMMTelOutgoingSipTransactionsAttempts       Unsigned32,
-  sproutMMTelOutgoingSipTransactionsSuccesses      Unsigned32,
-  sproutMMTelOutgoingSipTransactionsFailures       Unsigned32
+  sproutMMTelOutgoingSIPTransactionsTimeScope      INTEGER,
+  sproutMMTelOutgoingSIPTransactionsRequestScope   INTEGER,
+  sproutMMTelOutgoingSIPTransactionsAttempts       Unsigned32,
+  sproutMMTelOutgoingSIPTransactionsSuccesses      Unsigned32,
+  sproutMMTelOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-sproutMMTelOutgoingSipTransactionsTimeScope OBJECT-TYPE
+sproutMMTelOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2314,53 +2224,37 @@ sproutMMTelOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutMMTelOutgoingSipTransactionsEntry 1 }
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 1 }
 
-sproutMMTelOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+sproutMMTelOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { sproutMMTelOutgoingSipTransactionsEntry 2 }
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 2 }
 
-sproutMMTelOutgoingSipTransactionsAttempts OBJECT-TYPE
+sproutMMTelOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { sproutMMTelOutgoingSipTransactionsEntry 3 }
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 3 }
 
-sproutMMTelOutgoingSipTransactionsSuccesses OBJECT-TYPE
+sproutMMTelOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { sproutMMTelOutgoingSipTransactionsEntry 4 }
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 4 }
 
-sproutMMTelOutgoingSipTransactionsFailures OBJECT-TYPE
+sproutMMTelOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { sproutMMTelOutgoingSipTransactionsEntry 5 }
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 5 }
 
 sproutGroup OBJECT-GROUP
     OBJECTS {
@@ -2435,30 +2329,30 @@ sproutGroup OBJECT-GROUP
       sproutNonRegisterAuthenticationAttempts,
       sproutNonRegisterAuthenticationSuccesses,
       sproutNonRegisterAuthenticationFailures,
-      sproutICSCFIncomingSipTransactionsAttempts,
-      sproutICSCFIncomingSipTransactionsSuccesses,
-      sproutICSCFIncomingSipTransactionsFailures,
-      sproutICSCFOutgoingSipTransactionsAttempts,
-      sproutICSCFOutgoingSipTransactionsSuccesses,
-      sproutICSCFOutgoingSipTransactionsFailures,
-      sproutSCSCFIncomingSipTransactionsAttempts,
-      sproutSCSCFIncomingSipTransactionsSuccesses,
-      sproutSCSCFIncomingSipTransactionsFailures,
-      sproutSCSCFOutgoingSipTransactionsAttempts,
-      sproutSCSCFOutgoingSipTransactionsSuccesses,
-      sproutSCSCFOutgoingSipTransactionsFailures,
-      sproutBGCFIncomingSipTransactionsAttempts,
-      sproutBGCFIncomingSipTransactionsSuccesses,
-      sproutBGCFIncomingSipTransactionsFailures,
-      sproutBGCFOutgoingSipTransactionsAttempts,
-      sproutBGCFOutgoingSipTransactionsSuccesses,
-      sproutBGCFOutgoingSipTransactionsFailures,
-      sproutMMTelIncomingSipTransactionsAttempts,
-      sproutMMTelIncomingSipTransactionsSuccesses,
-      sproutMMTelIncomingSipTransactionsFailures,
-      sproutMMTelOutgoingSipTransactionsAttempts,
-      sproutMMTelOutgoingSipTransactionsSuccesses,
-      sproutMMTelOutgoingSipTransactionsFailures
+      sproutICSCFIncomingSIPTransactionsAttempts,
+      sproutICSCFIncomingSIPTransactionsSuccesses,
+      sproutICSCFIncomingSIPTransactionsFailures,
+      sproutICSCFOutgoingSIPTransactionsAttempts,
+      sproutICSCFOutgoingSIPTransactionsSuccesses,
+      sproutICSCFOutgoingSIPTransactionsFailures,
+      sproutSCSCFIncomingSIPTransactionsAttempts,
+      sproutSCSCFIncomingSIPTransactionsSuccesses,
+      sproutSCSCFIncomingSIPTransactionsFailures,
+      sproutSCSCFOutgoingSIPTransactionsAttempts,
+      sproutSCSCFOutgoingSIPTransactionsSuccesses,
+      sproutSCSCFOutgoingSIPTransactionsFailures,
+      sproutBGCFIncomingSIPTransactionsAttempts,
+      sproutBGCFIncomingSIPTransactionsSuccesses,
+      sproutBGCFIncomingSIPTransactionsFailures,
+      sproutBGCFOutgoingSIPTransactionsAttempts,
+      sproutBGCFOutgoingSIPTransactionsSuccesses,
+      sproutBGCFOutgoingSIPTransactionsFailures,
+      sproutMMTelIncomingSIPTransactionsAttempts,
+      sproutMMTelIncomingSIPTransactionsSuccesses,
+      sproutMMTelIncomingSIPTransactionsFailures,
+      sproutMMTelOutgoingSIPTransactionsAttempts,
+      sproutMMTelOutgoingSIPTransactionsSuccesses,
+      sproutMMTelOutgoingSIPTransactionsFailures
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
@@ -3099,34 +2993,34 @@ cdivAsNotReachable OBJECT-TYPE
                  reachable condition."
     ::= { cdivAsDiversionsEntry 7 }
 
-cdivAsIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF CdivAsIncomingSipTransactionsEntry
+cdivAsIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for the Call Diversion AS"
     ::= { callDiversionAs 2 }
 
-cdivAsIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      CdivAsIncomingSipTransactionsEntry
+cdivAsIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  incoming SIP transactions for the Call Diversion AS"
-    INDEX       { cdivAsIncomingSipTransactionsTimeScope,
-                  cdivAsIncomingSipTransactionsRequestScope }
-    ::= { cdivAsIncomingSipTransactionsTable 1 }
+    INDEX       { cdivAsIncomingSIPTransactionsTimeScope,
+                  cdivAsIncomingSIPTransactionsRequestScope }
+    ::= { cdivAsIncomingSIPTransactionsTable 1 }
 
-CdivAsIncomingSipTransactionsEntry ::= SEQUENCE
+CdivAsIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  cdivAsIncomingSipTransactionsTimeScope      INTEGER,
-  cdivAsIncomingSipTransactionsRequestScope   INTEGER,
-  cdivAsIncomingSipTransactionsAttempts       Unsigned32,
-  cdivAsIncomingSipTransactionsSuccesses      Unsigned32,
-  cdivAsIncomingSipTransactionsFailures       Unsigned32
+  cdivAsIncomingSIPTransactionsTimeScope      INTEGER,
+  cdivAsIncomingSIPTransactionsRequestScope   INTEGER,
+  cdivAsIncomingSIPTransactionsAttempts       Unsigned32,
+  cdivAsIncomingSIPTransactionsSuccesses      Unsigned32,
+  cdivAsIncomingSIPTransactionsFailures       Unsigned32
 }
 
-cdivAsIncomingSipTransactionsTimeScope OBJECT-TYPE
+cdivAsIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -3135,82 +3029,66 @@ cdivAsIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { cdivAsIncomingSipTransactionsEntry 1 }
+    ::= { cdivAsIncomingSIPTransactionsEntry 1 }
 
-cdivAsIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+cdivAsIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { cdivAsIncomingSipTransactionsEntry 2 }
+    ::= { cdivAsIncomingSIPTransactionsEntry 2 }
 
-cdivAsIncomingSipTransactionsAttempts OBJECT-TYPE
+cdivAsIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { cdivAsIncomingSipTransactionsEntry 3 }
+    ::= { cdivAsIncomingSIPTransactionsEntry 3 }
 
-cdivAsIncomingSipTransactionsSuccesses OBJECT-TYPE
+cdivAsIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { cdivAsIncomingSipTransactionsEntry 4 }
+    ::= { cdivAsIncomingSIPTransactionsEntry 4 }
 
-cdivAsIncomingSipTransactionsFailures OBJECT-TYPE
+cdivAsIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { cdivAsIncomingSipTransactionsEntry 5 }
+    ::= { cdivAsIncomingSIPTransactionsEntry 5 }
 
-cdivAsOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF CdivAsOutgoingSipTransactionsEntry
+cdivAsOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the Call Diversion AS."
     ::= { callDiversionAs 3 }
 
-cdivAsOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      CdivAsOutgoingSipTransactionsEntry
+cdivAsOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  outgoing SIP transactions for the Call Diversion AS."
-    INDEX       { cdivAsOutgoingSipTransactionsTimeScope,
-                  cdivAsOutgoingSipTransactionsRequestScope }
-    ::= { cdivAsOutgoingSipTransactionsTable 1 }
+    INDEX       { cdivAsOutgoingSIPTransactionsTimeScope,
+                  cdivAsOutgoingSIPTransactionsRequestScope }
+    ::= { cdivAsOutgoingSIPTransactionsTable 1 }
 
-CdivAsOutgoingSipTransactionsEntry ::= SEQUENCE
+CdivAsOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  cdivAsOutgoingSipTransactionsTimeScope      INTEGER,
-  cdivAsOutgoingSipTransactionsRequestScope   INTEGER,
-  cdivAsOutgoingSipTransactionsAttempts       Unsigned32,
-  cdivAsOutgoingSipTransactionsSuccesses      Unsigned32,
-  cdivAsOutgoingSipTransactionsFailures       Unsigned32
+  cdivAsOutgoingSIPTransactionsTimeScope      INTEGER,
+  cdivAsOutgoingSIPTransactionsRequestScope   INTEGER,
+  cdivAsOutgoingSIPTransactionsAttempts       Unsigned32,
+  cdivAsOutgoingSIPTransactionsSuccesses      Unsigned32,
+  cdivAsOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-cdivAsOutgoingSipTransactionsTimeScope OBJECT-TYPE
+cdivAsOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -3219,53 +3097,37 @@ cdivAsOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { cdivAsOutgoingSipTransactionsEntry 1 }
+    ::= { cdivAsOutgoingSIPTransactionsEntry 1 }
 
-cdivAsOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+cdivAsOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { cdivAsOutgoingSipTransactionsEntry 2 }
+    ::= { cdivAsOutgoingSIPTransactionsEntry 2 }
 
-cdivAsOutgoingSipTransactionsAttempts OBJECT-TYPE
+cdivAsOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { cdivAsOutgoingSipTransactionsEntry 3 }
+    ::= { cdivAsOutgoingSIPTransactionsEntry 3 }
 
-cdivAsOutgoingSipTransactionsSuccesses OBJECT-TYPE
+cdivAsOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { cdivAsOutgoingSipTransactionsEntry 4 }
+    ::= { cdivAsOutgoingSIPTransactionsEntry 4 }
 
-cdivAsOutgoingSipTransactionsFailures OBJECT-TYPE
+cdivAsOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { cdivAsOutgoingSipTransactionsEntry 5 }
+    ::= { cdivAsOutgoingSIPTransactionsEntry 5 }
 
 callDiversionASGroup OBJECT-GROUP
     OBJECTS {
@@ -3275,12 +3137,12 @@ callDiversionASGroup OBJECT-GROUP
       cdivAsNotRegistered,
       cdivAsNoAnswer,
       cdivAsNotReachable,
-      cdivAsIncomingSipTransactionsAttempts,
-      cdivAsIncomingSipTransactionsSuccesses,
-      cdivAsIncomingSipTransactionsFailures,
-      cdivAsOutgoingSipTransactionsAttempts,
-      cdivAsOutgoingSipTransactionsSuccesses,
-      cdivAsOutgoingSipTransactionsFailures
+      cdivAsIncomingSIPTransactionsAttempts,
+      cdivAsIncomingSIPTransactionsSuccesses,
+      cdivAsIncomingSIPTransactionsFailures,
+      cdivAsOutgoingSIPTransactionsAttempts,
+      cdivAsOutgoingSIPTransactionsSuccesses,
+      cdivAsOutgoingSIPTransactionsFailures
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Call Diversion AS"
@@ -3487,34 +3349,34 @@ mementoSIPCassandraWriteLatencyCount OBJECT-TYPE
     DESCRIPTION "The total number of writes over the period."
     ::= { mementoSIPCassandraWriteLatencyEntry 6 }
 
-mementoIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoIncomingSipTransactionsEntry
+mementoIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for memento"
+                 of incoming SIP transactions for Memento"
     ::= { mementoSIP 4 }
 
-mementoIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      MementoIncomingSipTransactionsEntry
+mementoIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      MementoIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for memento"
-    INDEX       { mementoIncomingSipTransactionsTimeScope,
-                  mementoIncomingSipTransactionsRequestScope }
-    ::= { mementoIncomingSipTransactionsTable 1 }
+                 incoming SIP transactions for Memento"
+    INDEX       { mementoIncomingSIPTransactionsTimeScope,
+                  mementoIncomingSIPTransactionsRequestScope }
+    ::= { mementoIncomingSIPTransactionsTable 1 }
 
-MementoIncomingSipTransactionsEntry ::= SEQUENCE
+MementoIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  mementoIncomingSipTransactionsTimeScope      INTEGER,
-  mementoIncomingSipTransactionsRequestScope   INTEGER,
-  mementoIncomingSipTransactionsAttempts       Unsigned32,
-  mementoIncomingSipTransactionsSuccesses      Unsigned32,
-  mementoIncomingSipTransactionsFailures       Unsigned32
+  mementoIncomingSIPTransactionsTimeScope      INTEGER,
+  mementoIncomingSIPTransactionsRequestScope   INTEGER,
+  mementoIncomingSIPTransactionsAttempts       Unsigned32,
+  mementoIncomingSIPTransactionsSuccesses      Unsigned32,
+  mementoIncomingSIPTransactionsFailures       Unsigned32
 }
 
-mementoIncomingSipTransactionsTimeScope OBJECT-TYPE
+mementoIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -3523,82 +3385,66 @@ mementoIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { mementoIncomingSipTransactionsEntry 1 }
+    ::= { mementoIncomingSIPTransactionsEntry 1 }
 
-mementoIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+mementoIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { mementoIncomingSipTransactionsEntry 2 }
+    ::= { mementoIncomingSIPTransactionsEntry 2 }
 
-mementoIncomingSipTransactionsAttempts OBJECT-TYPE
+mementoIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { mementoIncomingSipTransactionsEntry 3 }
+    ::= { mementoIncomingSIPTransactionsEntry 3 }
 
-mementoIncomingSipTransactionsSuccesses OBJECT-TYPE
+mementoIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { mementoIncomingSipTransactionsEntry 4 }
+    ::= { mementoIncomingSIPTransactionsEntry 4 }
 
-mementoIncomingSipTransactionsFailures OBJECT-TYPE
+mementoIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { mementoIncomingSipTransactionsEntry 5 }
+    ::= { mementoIncomingSIPTransactionsEntry 5 }
 
-mementoOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoOutgoingSipTransactionsEntry
+mementoOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for memento"
+                 of outgoing SIP transactions for Memento"
     ::= { mementoSIP 5 }
 
-mementoOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      MementoOutgoingSipTransactionsEntry
+mementoOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      MementoOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for memento"
-    INDEX       { mementoOutgoingSipTransactionsTimeScope,
-                  mementoOutgoingSipTransactionsRequestScope }
-    ::= { mementoOutgoingSipTransactionsTable 1 }
+                 outgoing SIP transactions for Memento"
+    INDEX       { mementoOutgoingSIPTransactionsTimeScope,
+                  mementoOutgoingSIPTransactionsRequestScope }
+    ::= { mementoOutgoingSIPTransactionsTable 1 }
 
-MementoOutgoingSipTransactionsEntry ::= SEQUENCE
+MementoOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  mementoOutgoingSipTransactionsTimeScope      INTEGER,
-  mementoOutgoingSipTransactionsRequestScope   INTEGER,
-  mementoOutgoingSipTransactionsAttempts       Unsigned32,
-  mementoOutgoingSipTransactionsSuccesses      Unsigned32,
-  mementoOutgoingSipTransactionsFailures       Unsigned32
+  mementoOutgoingSIPTransactionsTimeScope      INTEGER,
+  mementoOutgoingSIPTransactionsRequestScope   INTEGER,
+  mementoOutgoingSIPTransactionsAttempts       Unsigned32,
+  mementoOutgoingSIPTransactionsSuccesses      Unsigned32,
+  mementoOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-mementoOutgoingSipTransactionsTimeScope OBJECT-TYPE
+mementoOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -3607,53 +3453,37 @@ mementoOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { mementoOutgoingSipTransactionsEntry 1 }
+    ::= { mementoOutgoingSIPTransactionsEntry 1 }
 
-mementoOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+mementoOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { mementoOutgoingSipTransactionsEntry 2 }
+    ::= { mementoOutgoingSIPTransactionsEntry 2 }
 
-mementoOutgoingSipTransactionsAttempts OBJECT-TYPE
+mementoOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { mementoOutgoingSipTransactionsEntry 3 }
+    ::= { mementoOutgoingSIPTransactionsEntry 3 }
 
-mementoOutgoingSipTransactionsSuccesses OBJECT-TYPE
+mementoOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { mementoOutgoingSipTransactionsEntry 4 }
+    ::= { mementoOutgoingSIPTransactionsEntry 4 }
 
-mementoOutgoingSipTransactionsFailures OBJECT-TYPE
+mementoOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { mementoOutgoingSipTransactionsEntry 5 }
+    ::= { mementoOutgoingSIPTransactionsEntry 5 }
 
 mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
 
@@ -4157,12 +3987,12 @@ mementoGroup OBJECT-GROUP
         mementoAuthFailureCount,
         mementoAuthStaleCount,
         mementoDatabaseDiskUsage,
-        mementoIncomingSipTransactionsAttempts,
-        mementoIncomingSipTransactionsSuccesses,
-        mementoIncomingSipTransactionsFailures,
-        mementoOutgoingSipTransactionsAttempts,
-        mementoOutgoingSipTransactionsSuccesses,
-        mementoOutgoingSipTransactionsFailures
+        mementoIncomingSIPTransactionsAttempts,
+        mementoIncomingSIPTransactionsSuccesses,
+        mementoIncomingSIPTransactionsFailures,
+        mementoOutgoingSIPTransactionsAttempts,
+        mementoOutgoingSIPTransactionsSuccesses,
+        mementoOutgoingSIPTransactionsFailures
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Memento"
@@ -4580,34 +4410,34 @@ chronosGroup OBJECT-GROUP
 
 -- Gemini Entries
 
-geminiIncomingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF GeminiIncomingSipTransactionsEntry
+geminiIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF GeminiIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for Gemini"
     ::= { gemini 1 }
 
-geminiIncomingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      GeminiIncomingSipTransactionsEntry
+geminiIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      GeminiIncomingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for gemini"
-    INDEX       { geminiIncomingSipTransactionsTimeScope,
-                  geminiIncomingSipTransactionsRequestScope }
-    ::= { geminiIncomingSipTransactionsTable 1 }
+                 incoming SIP transactions for Gemini"
+    INDEX       { geminiIncomingSIPTransactionsTimeScope,
+                  geminiIncomingSIPTransactionsRequestScope }
+    ::= { geminiIncomingSIPTransactionsTable 1 }
 
-GeminiIncomingSipTransactionsEntry ::= SEQUENCE
+GeminiIncomingSIPTransactionsEntry ::= SEQUENCE
 {
-  geminiIncomingSipTransactionsTimeScope      INTEGER,
-  geminiIncomingSipTransactionsRequestScope   INTEGER,
-  geminiIncomingSipTransactionsAttempts       Unsigned32,
-  geminiIncomingSipTransactionsSuccesses      Unsigned32,
-  geminiIncomingSipTransactionsFailures       Unsigned32
+  geminiIncomingSIPTransactionsTimeScope      INTEGER,
+  geminiIncomingSIPTransactionsRequestScope   INTEGER,
+  geminiIncomingSIPTransactionsAttempts       Unsigned32,
+  geminiIncomingSIPTransactionsSuccesses      Unsigned32,
+  geminiIncomingSIPTransactionsFailures       Unsigned32
 }
 
-geminiIncomingSipTransactionsTimeScope OBJECT-TYPE
+geminiIncomingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -4616,82 +4446,66 @@ geminiIncomingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { geminiIncomingSipTransactionsEntry 1 }
+    ::= { geminiIncomingSIPTransactionsEntry 1 }
 
-geminiIncomingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+geminiIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the incoming transaction."
-    ::= { geminiIncomingSipTransactionsEntry 2 }
+    ::= { geminiIncomingSIPTransactionsEntry 2 }
 
-geminiIncomingSipTransactionsAttempts OBJECT-TYPE
+geminiIncomingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of incoming SIP transactions over the time period."
-    ::= { geminiIncomingSipTransactionsEntry 3 }
+    ::= { geminiIncomingSIPTransactionsEntry 3 }
 
-geminiIncomingSipTransactionsSuccesses OBJECT-TYPE
+geminiIncomingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful incoming SIP transactions over the
                  time period."
-    ::= { geminiIncomingSipTransactionsEntry 4 }
+    ::= { geminiIncomingSIPTransactionsEntry 4 }
 
-geminiIncomingSipTransactionsFailures OBJECT-TYPE
+geminiIncomingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
                  time period."
-    ::= { geminiIncomingSipTransactionsEntry 5 }
+    ::= { geminiIncomingSIPTransactionsEntry 5 }
 
-geminiOutgoingSipTransactionsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF GeminiOutgoingSipTransactionsEntry
+geminiOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF GeminiOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for Gemini."
     ::= { gemini 2 }
 
-geminiOutgoingSipTransactionsEntry OBJECT-TYPE
-    SYNTAX      GeminiOutgoingSipTransactionsEntry
+geminiOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      GeminiOutgoingSIPTransactionsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
                  outgoing SIP transactions for Gemini."
-    INDEX       { geminiOutgoingSipTransactionsTimeScope,
-                  geminiOutgoingSipTransactionsRequestScope }
-    ::= { geminiOutgoingSipTransactionsTable 1 }
+    INDEX       { geminiOutgoingSIPTransactionsTimeScope,
+                  geminiOutgoingSIPTransactionsRequestScope }
+    ::= { geminiOutgoingSIPTransactionsTable 1 }
 
-GeminiOutgoingSipTransactionsEntry ::= SEQUENCE
+GeminiOutgoingSIPTransactionsEntry ::= SEQUENCE
 {
-  geminiOutgoingSipTransactionsTimeScope      INTEGER,
-  geminiOutgoingSipTransactionsRequestScope   INTEGER,
-  geminiOutgoingSipTransactionsAttempts       Unsigned32,
-  geminiOutgoingSipTransactionsSuccesses      Unsigned32,
-  geminiOutgoingSipTransactionsFailures       Unsigned32
+  geminiOutgoingSIPTransactionsTimeScope      INTEGER,
+  geminiOutgoingSIPTransactionsRequestScope   INTEGER,
+  geminiOutgoingSIPTransactionsAttempts       Unsigned32,
+  geminiOutgoingSIPTransactionsSuccesses      Unsigned32,
+  geminiOutgoingSIPTransactionsFailures       Unsigned32
 }
 
-geminiOutgoingSipTransactionsTimeScope OBJECT-TYPE
+geminiOutgoingSIPTransactionsTimeScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -4700,62 +4514,46 @@ geminiOutgoingSipTransactionsTimeScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { geminiOutgoingSipTransactionsEntry 1 }
+    ::= { geminiOutgoingSIPTransactionsEntry 1 }
 
-geminiOutgoingSipTransactionsRequestScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopeINVITE(0),
-                  scopeACK(1),
-                  scopeBYE(2),
-                  scopeCANCEL(3),
-                  scopeOPTIONS(4),
-                  scopeREGISTER(5),
-                  scopePRACK(6),
-                  scopeSUBSCRIBE(7),
-                  scopeNOTIFY(8),
-                  scopePUBLISH(9),
-                  scopeINFO(10),
-                  scopeREFER(11),
-                  scopeMESSAGE(12),
-                  scopeUPDATE(13),
-                  scopeOTHER(14)
-                }
+geminiOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The method type of the outgoing transaction."
-    ::= { geminiOutgoingSipTransactionsEntry 2 }
+    ::= { geminiOutgoingSIPTransactionsEntry 2 }
 
-geminiOutgoingSipTransactionsAttempts OBJECT-TYPE
+geminiOutgoingSIPTransactionsAttempts OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of outgoing SIP transactions over the time period."
-    ::= { geminiOutgoingSipTransactionsEntry 3 }
+    ::= { geminiOutgoingSIPTransactionsEntry 3 }
 
-geminiOutgoingSipTransactionsSuccesses OBJECT-TYPE
+geminiOutgoingSIPTransactionsSuccesses OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of successful outgoing SIP transactions over the
                  time period."
-    ::= { geminiOutgoingSipTransactionsEntry 4 }
+    ::= { geminiOutgoingSIPTransactionsEntry 4 }
 
-geminiOutgoingSipTransactionsFailures OBJECT-TYPE
+geminiOutgoingSIPTransactionsFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
-    ::= { geminiOutgoingSipTransactionsEntry 5 }
+    ::= { geminiOutgoingSIPTransactionsEntry 5 }
 
 geminiGroup OBJECT-GROUP
     OBJECTS {
-      geminiIncomingSipTransactionsAttempts,
-      geminiIncomingSipTransactionsSuccesses,
-      geminiIncomingSipTransactionsFailures,
-      geminiOutgoingSipTransactionsAttempts,
-      geminiOutgoingSipTransactionsSuccesses,
-      geminiOutgoingSipTransactionsFailures
+      geminiIncomingSIPTransactionsAttempts,
+      geminiIncomingSIPTransactionsSuccesses,
+      geminiIncomingSIPTransactionsFailures,
+      geminiOutgoingSIPTransactionsAttempts,
+      geminiOutgoingSIPTransactionsSuccesses,
+      geminiOutgoingSIPTransactionsFailures
     }
     STATUS    current
     DESCRIPTION "Statistics exposed by Gemini"
