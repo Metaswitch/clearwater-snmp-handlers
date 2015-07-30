@@ -40,10 +40,15 @@
 
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
+
+#include <boost/filesystem.hpp>
+
 #include "json_parse_utils.h"
+#include "json_alarms.h"
 
 #include <fstream>
 #include <sys/stat.h>
+#include <dirent.h>
 
 AlarmTableDefs AlarmTableDefs::_instance;
 
@@ -52,14 +57,7 @@ AlarmTableDefs AlarmTableDefs::_instance;
 unsigned int AlarmTableDef::state()
 {
   static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
-
   unsigned int idx = severity();
-
-  if ((idx < AlarmDef::CLEARED) || (idx > AlarmDef::WARNING))
-  {
-    idx = 0; // LCOV_EXCL_LINE (during rework)
-  }
-
   return severity_to_state[idx];
 }
 
@@ -69,47 +67,60 @@ bool AlarmTableDefKey::operator<(const AlarmTableDefKey& rhs) const
          ((_index == rhs._index) && (_severity < rhs._severity));
 }
 
-bool AlarmTableDefs::initialize(std::string& path,
-                                const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions)
+bool AlarmTableDefs::initialize(std::string& path)
 {
   std::map<unsigned int, unsigned int> dup_check;
-  bool init_ok = true;
-
   _key_to_def.clear();
 
-  // The intent is that we'll loop over any JSON files in a known
-  // location to get the definition for all the alarms. During the
-  // rework, we take all the alarms from AlarmDef::AlarmDefinition, and
-  // only check whether there's a single extra file.
-  init_ok = populate_map(alarm_definitions, dup_check);
+  bool rc = true;
+  boost::filesystem::path p(path);
 
-  // Load any local alarm definitions, and add them to the definition map
-  if (init_ok)
+  if ((boost::filesystem::exists(p)) && (boost::filesystem::is_directory(p)))
   {
-    std::vector<AlarmDef::AlarmDefinition> local_alarms;
-    init_ok = parse_local_alarms_from_file(path, local_alarms);
-    init_ok &= populate_map(local_alarms, dup_check);
+    boost::filesystem::directory_iterator dir_it(p);
+    boost::filesystem::directory_iterator end_it;
+
+    while ((dir_it != end_it) && (rc))
+    {
+      if ((boost::filesystem::is_regular_file(dir_it->status())) &&
+          (dir_it->path().extension() == ".json"))
+      {
+        rc = populate_map(dir_it->path().c_str(), dup_check);
+      }
+
+      dir_it++;
+    }
+  }
+  else
+  {
+    snmp_log(LOG_ERR, "Unable to open directory at %s", path.c_str());
+    rc = false;
   }
 
-  return init_ok;
+  return rc;
 }
 
-bool AlarmTableDefs::populate_map(const std::vector<AlarmDef::AlarmDefinition>& alarm_definitions,
+bool AlarmTableDefs::populate_map(std::string path,
                                   std::map<unsigned int, unsigned int>& dup_check)
 {
-  bool init_ok = true;
+  std::string error;
+  std::vector<AlarmDef::AlarmDefinition> alarm_definitions;
+  bool rc = JSONAlarms::validate_alarms_from_json(path, error, alarm_definitions);
+
+  if (!rc)
+  {
+    snmp_log(LOG_ERR, "%s", error.c_str());
+    return rc;
+  }
 
   std::vector<AlarmDef::AlarmDefinition>::const_iterator a_it;
   for (a_it = alarm_definitions.begin(); a_it != alarm_definitions.end(); a_it++)
   {
-    bool has_non_cleared = false;
-    bool has_cleared = false;
-
     if (dup_check.count(a_it->_index))
     {
       snmp_log(LOG_ERR, "alarm %d.*: is multiply defined", a_it->_index);
-      init_ok = false;
-      continue;
+      rc = false;
+      break;
     }
     else
     {
@@ -117,133 +128,16 @@ bool AlarmTableDefs::populate_map(const std::vector<AlarmDef::AlarmDefinition>& 
     }
 
     std::vector<AlarmDef::SeverityDetails>::const_iterator s_it;
+
     for (s_it = a_it->_severity_details.begin(); s_it != a_it->_severity_details.end(); s_it++)
     {
-      if (s_it->_description.size() > AlarmTableDef::MIB_STRING_LEN)
-      {
-        snmp_log(LOG_ERR, "alarm %d.%d: 'description' exceeds %d char limit", a_it->_index, s_it->_severity,
-                                                                              AlarmTableDef::MIB_STRING_LEN);
-        init_ok = false;
-        continue;
-      }
-
-      if (s_it->_details.size() > AlarmTableDef::MIB_STRING_LEN)
-      {
-        snmp_log(LOG_ERR, "alarm %d.%d: 'details' exceeds %d char limit", a_it->_index, s_it->_severity,
-                                                                          AlarmTableDef::MIB_STRING_LEN);
-        init_ok = false;
-        continue;
-      }
-
-      has_non_cleared |= (s_it->_severity != AlarmDef::CLEARED);
-      has_cleared     |= (s_it->_severity == AlarmDef::CLEARED);
-
       AlarmTableDef def(*a_it, *s_it);
       AlarmTableDefKey key(a_it->_index, s_it->_severity);
       _key_to_def.emplace(key, def);
     }
-
-    if (!has_non_cleared)
-    {
-      snmp_log(LOG_ERR, "alarm %d.*: must define at least one non-CLEARED severity", a_it->_index);
-      init_ok = false;
-    }
-
-    if (!has_cleared)
-    {
-      snmp_log(LOG_ERR, "alarm %d.*: must define a CLEARED severity", a_it->_index);
-      init_ok = false;
-    }
   }
 
-  return init_ok;
-}
-
-bool AlarmTableDefs::parse_local_alarms_from_file(std::string& path,
-                                                  std::vector<AlarmDef::AlarmDefinition>& local_alarms)
-{
-  // Check whether the file exists.
-  struct stat s;
-  if ((stat(path.c_str(), &s) != 0) &&
-      (errno == ENOENT))
-  {
-    snmp_log(LOG_DEBUG, "No such file: %s", path.c_str());
-    return true;
-  }
-
-  // Read from the file
-  std::ifstream fs(path.c_str());
-  std::string local_alarms_str((std::istreambuf_iterator<char>(fs)),
-                                std::istreambuf_iterator<char>());
-
-  if (local_alarms_str == "")
-  {
-    // LCOV_EXCL_START - Not tested in UT
-    snmp_log(LOG_ERR, "Empty file: %s", path.c_str());
-    return false; 
-    // LCOV_EXCL_STOP
-  }
-
-  // Now parse the document
-  rapidjson::Document doc;
-  doc.Parse<0>(local_alarms_str.c_str());
-
-  if (doc.HasParseError())
-  {
-    snmp_log(LOG_ERR, "Invalid JSON file. Error: %s", 
-             rapidjson::GetParseError_En(doc.GetParseError()));
-    return false; 
-  }
-
-  try
-  {
-    // Parse the JSON file
-    JSON_ASSERT_CONTAINS(doc, "local_alarms");
-    JSON_ASSERT_ARRAY(doc["local_alarms"]);
-    const rapidjson::Value& alarms_arr = doc["local_alarms"];
-
-    for (rapidjson::Value::ConstValueIterator alarms_it = alarms_arr.Begin();
-         alarms_it != alarms_arr.End();
-         ++alarms_it)
-    {
-      int index;
-      int cause;
-      JSON_GET_INT_MEMBER(*alarms_it, "index", index);
-      JSON_GET_INT_MEMBER(*alarms_it, "cause", cause);
-
-      JSON_ASSERT_CONTAINS(*alarms_it, "alarms");
-      JSON_ASSERT_ARRAY((*alarms_it)["alarms"]);
-      const rapidjson::Value& alarms_def_arr = (*alarms_it)["alarms"];
-
-      std::vector<AlarmDef::SeverityDetails> severity_vec;
-      for (rapidjson::Value::ConstValueIterator alarms_def_it = alarms_def_arr.Begin();
-           alarms_def_it != alarms_def_arr.End();
-           ++alarms_def_it)
-      {
-        int severity;
-        std::string details;
-        std::string description;
-        JSON_GET_INT_MEMBER(*alarms_def_it, "severity", severity);
-        JSON_GET_STRING_MEMBER(*alarms_def_it, "details", details);
-        JSON_GET_STRING_MEMBER(*alarms_def_it, "description", description);
-        AlarmDef::SeverityDetails sd = {(AlarmDef::Severity)severity, description, details};
-        severity_vec.push_back(sd);     
-      }
-
-      AlarmDef::AlarmDefinition ad = {(AlarmDef::Index)index,
-                                      (AlarmDef::Cause)cause,
-                                      severity_vec};
-      local_alarms.push_back(ad);
-    }
-  }
-  catch (JsonFormatError err)
-  {
-    snmp_log(LOG_ERR, "Invalid JSON file (hit error at %s:%d)",
-             err._file, err._line);
-    return false; 
-  }
-
-  return true;
+  return rc;
 }
 
 AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index, 
@@ -255,4 +149,3 @@ AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index,
 
   return (it != _key_to_def.end()) ? it->second : _invalid_def;
 }
-

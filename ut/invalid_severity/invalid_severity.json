@@ -1,15 +1,17 @@
 {
-    "local_alarms": [
+    "alarms": [
         {
             "index": 1000,
-            "alarms": [
+            "cause": "SOFTWARE_ERROR",
+            "name": "NAME",
+            "levels": [
                 {
-                    "severity": 1,
+                    "severity": "CLEARED",
                     "description": "Description",
                     "details": "Details"
                 },
                 {
-                    "severity": 3,
+                    "severity": "UNDEF",
                     "description": "Description",
                     "details": "Details"
                 }
@@ -17,4 +19,3 @@
         }
     ]
 }
-

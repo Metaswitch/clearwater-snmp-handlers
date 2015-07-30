@@ -48,12 +48,6 @@ using ::testing::Eq;
 using ::testing::StrEq;
 using ::testing::StartsWith;
 
-const std::vector<AlarmDef::AlarmDefinition> alarm_definitions_empty =
-{
-};
-
-std::string NOT_A_REAL_PATH = std::string(UT_DIR).append("/NONEXISTENT_FILE.json");
-
 class AlarmTableDefsTest : public ::testing::Test
 {
 public:
@@ -73,84 +67,84 @@ private:
   MockNetSnmpInterface _ms;
 };
 
-TEST_F(AlarmTableDefsTest, InitializationOk)
+TEST_F(AlarmTableDefsTest, InitializationNoFiles)
 {
-  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append(NOT_A_REAL_PATH)));  
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("NOT_A_REAL_PATH")));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationMultiDef)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/multi_definition.json"), alarm_definitions_empty));  
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/multi_definition/")));
   EXPECT_TRUE(_ms.log_contains("multiply defined"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationClearMissing)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/clear_missing.json"), alarm_definitions_empty));  
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/clear_missing/")));
   EXPECT_TRUE(_ms.log_contains("define a CLEARED"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationNonClearMissing)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/non_clear_missing.json"), alarm_definitions_empty));  
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/non_clear_missing/")));
   EXPECT_TRUE(_ms.log_contains("define at least one non-CLEARED"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationDescTooLong)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/desc_too_long.json"), alarm_definitions_empty));  
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/desc_too_long/")));
   EXPECT_TRUE(_ms.log_contains("'description' exceeds"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationDetailsTooLong)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/details_too_long.json"), alarm_definitions_empty));  
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/details_too_long/")));
   EXPECT_TRUE(_ms.log_contains("'details' exceeds"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidJson)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json.json"), alarm_definitions_empty));
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json/")));
   EXPECT_TRUE(_ms.log_contains("Invalid JSON file"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidJsonFormat)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json_format.json"), alarm_definitions_empty));
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json_format/")));
   EXPECT_TRUE(_ms.log_contains("Invalid JSON file"));
+}
+
+TEST_F(AlarmTableDefsTest, InitializationInvalidSeverity)
+{
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_severity/")));
+  EXPECT_TRUE(_ms.log_contains("Invalid severity"));
+}
+
+TEST_F(AlarmTableDefsTest, InitializationInvalidCause)
+{
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_cause/")));
+  EXPECT_TRUE(_ms.log_contains("Invalid cause"));
 }
 
 TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
 {
-  _defs.initialize(NOT_A_REAL_PATH);
+  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append("/valid_alarms/")));
 
-  AlarmTableDef& _def = _defs.get_definition(AlarmDef::SPROUT_PROCESS_FAIL,
+  AlarmTableDef& _def = _defs.get_definition(1000,
                                              AlarmDef::CRITICAL);
 
   EXPECT_TRUE(_def.is_valid());
   EXPECT_THAT((int)_def.state(), Eq(6));
   EXPECT_THAT((int)_def.cause(), Eq(AlarmDef::SOFTWARE_ERROR));
-  EXPECT_THAT(_def.description(), StrEq("Sprout: Process failure"));
-  EXPECT_THAT(_def.details(), StartsWith("Monit has detected that the Sprout process has failed."));
+  EXPECT_THAT(_def.description(), StrEq("Process failure"));
+  EXPECT_THAT(_def.details(), StartsWith("Monit has detected that the process has failed"));
 }
 
-TEST_F(AlarmTableDefsTest, InvalidTableDefLookup)
+TEST_F(AlarmTableDefsTest, InvalidTableDefLookup) 
 {
-  _defs.initialize(NOT_A_REAL_PATH);
+  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append("/valid_alarms/")));
 
   AlarmTableDef& _def = _defs.get_definition(0, 0);
 
   EXPECT_FALSE(_def.is_valid());
-}
-
-// This test is temporarily disabled during rework of alarms code
-TEST_F(AlarmTableDefsTest, DISABLED_InvalidStateMapping)
-{
-  _defs.initialize(std::string(UT_DIR).append("/undef_severity.json"), alarm_definitions_empty);  
-
-  AlarmTableDef& _def = _defs.get_definition(AlarmDef::SPROUT_PROCESS_FAIL,
-                                             AlarmDef::UNDEFINED_SEVERITY);
-
-  EXPECT_TRUE(_def.is_valid());
-  EXPECT_THAT((int)_def.state(), Eq(2));
 }
