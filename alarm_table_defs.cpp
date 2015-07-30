@@ -94,6 +94,7 @@ bool AlarmTableDefs::initialize(std::string& path)
   else
   {
     snmp_log(LOG_ERR, "Unable to open directory at %s", path.c_str());
+    rc = false;
   }
 
   return rc;
@@ -104,9 +105,7 @@ bool AlarmTableDefs::populate_map(std::string path,
 {
   std::string error;
   std::vector<AlarmDef::AlarmDefinition> alarm_definitions;
-  std::map<std::string, int> unused;
-
-  bool rc = JSONAlarms::validate_alarms_from_json(path, error, alarm_definitions, unused);
+  bool rc = JSONAlarms::validate_alarms_from_json(path, error, alarm_definitions);
 
   if (!rc)
   {

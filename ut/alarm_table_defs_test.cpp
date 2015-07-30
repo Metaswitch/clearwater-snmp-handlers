@@ -48,8 +48,6 @@ using ::testing::Eq;
 using ::testing::StrEq;
 using ::testing::StartsWith;
 
-std::string NOT_A_REAL_PATH = std::string(UT_DIR).append("/NONEXISTENT_FILE.json");
-
 class AlarmTableDefsTest : public ::testing::Test
 {
 public:
@@ -69,9 +67,9 @@ private:
   MockNetSnmpInterface _ms;
 };
 
-TEST_F(AlarmTableDefsTest, InitializationOk)
+TEST_F(AlarmTableDefsTest, InitializationNoFiles)
 {
-  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append(NOT_A_REAL_PATH)));
+  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("NOT_A_REAL_PATH")));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationMultiDef)
