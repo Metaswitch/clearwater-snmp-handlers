@@ -161,6 +161,9 @@ bool AlarmReqListener::zmq_init_sck()
   if (rc == -1)
   {
     snmp_log(LOG_ERR, "chmod(%s, 0777) failed: %s", sck_file.c_str(), strerror(errno));
+    // We don't return false in UT as the chmod always fails (because the
+    // previous zmq calls are mocked out the socket file isn't created so can't
+    // be chmodded).
 #ifndef UNIT_TEST
     return false;
 #endif
