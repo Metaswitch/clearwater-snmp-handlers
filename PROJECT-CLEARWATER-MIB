@@ -2377,8 +2377,9 @@ sproutSmoothedLatencyValue OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The smoothed latency value
-                 at last PRR update."
+    DESCRIPTION "The smoothed latency value at last PRR update.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
     ::= { sprout 28 }
 
 sproutTargetLatencyValue OBJECT-TYPE
@@ -2394,7 +2395,9 @@ sproutPenaltiesValue OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of overload responses
-                Sprout received from upstream at last PRR update."
+                 Sprout received from upstream at last PRR update.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
     ::= { sprout 30 }
 
 sproutPRRCurrentValue OBJECT-TYPE
