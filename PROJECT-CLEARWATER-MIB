@@ -2433,7 +2433,9 @@ HomesteadLatencyEntry ::= SEQUENCE
 
 homesteadLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2505,7 +2507,9 @@ HomesteadHSSLatencyEntry ::= SEQUENCE
 
 homesteadHSSLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2577,7 +2581,9 @@ HomesteadCacheLatencyEntry ::= SEQUENCE
 
 homesteadCacheLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2649,7 +2655,9 @@ HomesteadDigestLatencyEntry ::= SEQUENCE
 
 homesteadDigestLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2721,7 +2729,9 @@ HomesteadSubscriptionLatencyEntry ::= SEQUENCE
 
 homesteadSubscriptionLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2787,7 +2797,9 @@ HomesteadIncomingRequestsEntry ::= SEQUENCE
 
 homesteadIncomingRequestsScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2825,7 +2837,9 @@ HomesteadRejectedOverloadEntry ::= SEQUENCE
 
 homesteadRejectedOverloadScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2864,7 +2878,9 @@ HomesteadDiameterInvalidRealmEntry ::= SEQUENCE
 
 homesteadDiameterInvalidRealmScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
@@ -2902,7 +2918,9 @@ HomesteadDiameterInvalidHostEntry ::= SEQUENCE
 
 homesteadDiameterInvalidHostScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
