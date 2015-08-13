@@ -2878,7 +2878,7 @@ HomesteadDiameterInvalidRealmEntry ::= SEQUENCE
 
 homesteadDiameterInvalidRealmScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
                   scopePrevious5MinutePeriod(3)
                 }
@@ -2918,7 +2918,7 @@ HomesteadDiameterInvalidHostEntry ::= SEQUENCE
 
 homesteadDiameterInvalidHostScope OBJECT-TYPE
     SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1)
+                  scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
                   scopePrevious5MinutePeriod(3)
                 }
