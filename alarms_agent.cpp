@@ -78,6 +78,7 @@ int main (int argc, char **argv)
 
   // Log SNMP library output to syslog
   snmp_enable_calllog();
+  snmp_enable_syslog_ident("alarms_agent", LOG_DAEMON);
 
   // Set ourselves up as a subagent
   netsnmp_ds_set_boolean(NETSNMP_DS_APPLICATION_ID, NETSNMP_DS_AGENT_ROLE, 1);
@@ -88,7 +89,7 @@ int main (int argc, char **argv)
        ii != trap_ips.end();
        ii++)
   {
-    create_trap_session(const_cast<char*>(ii->c_str()), 161, community,
+    create_trap_session(const_cast<char*>(ii->c_str()), 162, community,
                         SNMP_VERSION_2c, SNMP_MSG_INFORM);  
   }
 
@@ -96,7 +97,14 @@ int main (int argc, char **argv)
   // Pull in any local alarm definitions off the node.
   std::string alarms_path = "/usr/share/clearwater/infrastructure/alarms/";
   AlarmTableDefs::get_instance().initialize(alarms_path);
-  AlarmReqListener::get_instance().start();
+
+  // Exit if the ReqListener wasn't able to fully start
+  if (!AlarmReqListener::get_instance().start())
+  {
+    snmp_log(LOG_ERR, "Hit error starting the listener - shutting down");
+    return 0;
+  }
+
   init_alarmModelTable();
   init_ituAlarmTable();
 

@@ -75,12 +75,9 @@ bool AlarmReqListener::start()
   if (rc != 0)
   {
     // LCOV_EXCL_START - No mock for pthread_create
-
     snmp_log(LOG_ERR, "error creating listener thread: %s", strerror(rc));
-
     zmq_clean_ctx();
     return false;
-
     // LCOV_EXCL_STOP
   }
 
@@ -120,6 +117,7 @@ bool AlarmReqListener::zmq_init_ctx()
 bool AlarmReqListener::zmq_init_sck()
 {
   _sck = zmq_socket(_ctx, ZMQ_REP);
+
   if (_sck == NULL)
   {
     snmp_log(LOG_ERR, "zmq_socket failed: %s", zmq_strerror(errno));
@@ -134,20 +132,17 @@ bool AlarmReqListener::zmq_init_sck()
   std::string sck_url = std::string("ipc://" + sck_file);
   snmp_log(LOG_INFO, "AlarmReqListener: ss='%s'", sck_url.c_str());
 
-  int rc;
-  rc=remove(sck_file.c_str());
+  int rc = remove(sck_file.c_str());
+
   if (rc == -1)
   {
+    snmp_log(LOG_ERR, "remove(%s) failed: %s", sck_file.c_str(), strerror(errno));
+
     if (errno != ENOENT)
     {
       // LCOV_EXCL_START
-      snmp_log(LOG_ERR, "remove(%s) failed: %s - killing myself", sck_file.c_str(), strerror(errno));
-      kill(getpid(), SIGKILL);
+      return false;
       // LCOV_EXCL_STOP
-    }
-    else
-    {
-      snmp_log(LOG_ERR, "remove(%s) failed: %s", sck_file.c_str(), strerror(errno));
     }
   }
 
@@ -166,6 +161,12 @@ bool AlarmReqListener::zmq_init_sck()
   if (rc == -1)
   {
     snmp_log(LOG_ERR, "chmod(%s, 0777) failed: %s", sck_file.c_str(), strerror(errno));
+    // We don't return false in UT as the chmod always fails (because the
+    // previous zmq calls are mocked out the socket file isn't created so can't
+    // be chmodded).
+#ifndef UNIT_TEST
+    return false;
+#endif
   }
 
   return true;
