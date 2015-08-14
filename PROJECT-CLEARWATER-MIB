@@ -503,7 +503,7 @@ sproutConnectedHomersEntry OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Statistics for a single connected upstream Homer"
-    INDEX { sproutHomerInetAddrType, 
+    INDEX { sproutHomerInetAddrType,
             sproutHomerInetAddr      }
     ::= { sproutConnectedHomersTable 1 }
 
@@ -2298,6 +2298,117 @@ sproutRequestsRoutedByPreloadedRouteCount OBJECT-TYPE
                  over the given time period."
     ::= { sproutRequestsRoutedByPreloadedRouteEntry 2 }
 
+
+sproutPRRTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutPRREntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION "Statistics for the value of the permitted request rate.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
+    ::= { sprout 27 }
+
+sproutPRREntry OBJECT-TYPE
+    SYNTAX      SproutPRREntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, HWM, LWM and count of the permitted request rate"
+    INDEX       { sproutPRRScope }
+    ::= { sproutPRRTable 1 }
+
+SproutPRREntry ::= SEQUENCE
+{
+  sproutPRRScope          INTEGER,
+  sproutPRRAverage        Unsigned32,
+  sproutPRRVariance       Unsigned32,
+  sproutPRRHWM            Unsigned32,
+  sproutPRRLWM            Unsigned32,
+  sproutPRRCount          Unsigned32
+}
+
+sproutPRRScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutPRREntry 1 }
+
+sproutPRRAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average permitted request rate over the period."
+    ::= { sproutPRREntry 2 }
+
+sproutPRRVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the permitted request rate over the period."
+    ::= { sproutPRREntry 3 }
+
+sproutPRRHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest permitted request rate over the period."
+    ::= { sproutPRREntry 4 }
+
+sproutPRRLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest permitted request rate over the period."
+    ::= { sproutPRREntry 5 }
+
+sproutPRRCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of permitted request rate
+                 updates over the period."
+    ::= { sproutPRREntry 6 }
+
+sproutSmoothedLatencyValue OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The smoothed latency value at last PRR update.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
+    ::= { sprout 28 }
+
+sproutTargetLatencyValue OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The maximum acceptable latency that
+                 should be experienced by requests."
+    ::= { sprout 29 }
+
+sproutPenaltiesValue OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of overload responses
+                 Sprout received from upstream at last PRR update.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
+    ::= { sprout 30 }
+
+sproutPRRCurrentValue OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The curent permitted request rate.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
+    ::= { sprout 31 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -2395,7 +2506,16 @@ sproutGroup OBJECT-GROUP
       sproutMMTelOutgoingSIPTransactionsAttempts,
       sproutMMTelOutgoingSIPTransactionsSuccesses,
       sproutMMTelOutgoingSIPTransactionsFailures,
-      sproutRequestsRoutedByPreloadedRouteCount
+      sproutRequestsRoutedByPreloadedRouteCount,
+      sproutPRRAverage,
+      sproutPRRVariance,
+      sproutPRRHWM,
+      sproutPRRLWM,
+      sproutPRRCount,
+      sproutSmoothedLatencyValue,
+      sproutTargetLatencyValue,
+      sproutPenaltiesValue,
+      sproutPRRCurrentValue
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
