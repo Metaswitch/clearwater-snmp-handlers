@@ -4501,7 +4501,7 @@ chronosRemainingNodesQuery OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Current count of the remaining Chronos nodes to query during a
-scaling operation."
+                 scaling operation."
     ::= { chronos 1 }
 
 chronosTimersProcessedTable OBJECT-TYPE
@@ -4585,8 +4585,8 @@ chronosTotalTimersTable OBJECT-TYPE
     MAX-ACCESS         not-accessible
     STATUS             current
     DESCRIPTION        "The total number of timers this Chronos node
-                       is managing - including primary and backup
-                       timers"
+                       is managing. This includes timers for which this node
+                       is primary, and timers for which this node is a backup"
     ::= { chronos 4 }
 
 chronosTotalTimersEntry OBJECT-TYPE
