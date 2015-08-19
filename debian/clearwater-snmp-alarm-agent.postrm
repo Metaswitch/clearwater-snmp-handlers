@@ -43,4 +43,3 @@ reload clearwater-monit || true
 
 # Trigger an snmpd restart to unload the sub-agent
 service snmpd restart || true
-
