@@ -1,7 +1,7 @@
 PROJECT-CLEARWATER-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
-        MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
+        MODULE-IDENTITY, OBJECT-TYPE, Integer32, Unsigned32 FROM SNMPv2-SMI
         MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
         InetAddressType, InetAddress FROM INET-ADDRESS-MIB
         TEXTUAL-CONVENTION FROM SNMPv2-TC;
@@ -3054,6 +3054,384 @@ homesteadDiameterInvalidHostCount OBJECT-TYPE
     DESCRIPTION "The total number of Diameter requests with an invalid Destination-Host over the period."
     ::= { homesteadDiameterInvalidHostEntry 2 }
 
+homesteadCxMARResultsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCxMARResultsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The number of MARs sent over the Cx interface indexed by
+                 result-code"
+    ::= { homestead 10 }
+
+homesteadCxMARResultsEntry OBJECT-TYPE
+    SYNTAX       HomesteadCxMARResultsEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "The number of MARs sent over the Cx interface"
+    INDEX        { homesteadCxMARResultsTimeScope,
+                   homesteadCxMARResultsDiameterAppIdScope,
+                   homesteadCxMARResultsResultCodeScope }
+    ::= { homesteadCxMARResultsTable 1 }
+
+HomesteadCxMARResultsEntry ::= SEQUENCE
+{
+  homesteadCxMARResultsTimeScope           INTEGER,
+  homesteadCxMARResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxMARResultsResultCodeScope     Integer32,
+  homesteadCxMARResultsCount               Unsigned32
+}
+
+homesteadCxMARResultsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over wich the statistics were collected."
+    ::= { homesteadCxMARResultsEntry 1 }
+
+homesteadCxMARResultsDiameterAppIdScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeBase(0),
+                  scope3GPP(1),
+                  scopeTimeout(2)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The protocol which the result-code is referring to."
+    ::= { homesteadCxMARResultsEntry 2 }
+
+homesteadCxMARResultsResultCodeScope OBJECT-TYPE
+    SYNTAX      Integer32 (0..6000)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The result-code returned in the answer."
+    ::= { homesteadCxMARResultsEntry 3 }
+    
+homesteadCxMARResultsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times that result-code has been returned as an
+                 answer over the time period."
+    ::= { homesteadCxMARResultsEntry 4 }
+
+homesteadCxSARResultsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCxSARResultsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The number of SARs sent over the Cx interface indexed by
+                 result-code"
+    ::= { homestead 11 }
+
+homesteadCxSARResultsEntry OBJECT-TYPE
+    SYNTAX       HomesteadCxSARResultsEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "The number of SARs sent over the Cx interface"
+    INDEX        { homesteadCxSARResultsTimeScope,
+                   homesteadCxSARResultsDiameterAppIdScope,
+                   homesteadCxSARResultsResultCodeScope }
+    ::= { homesteadCxSARResultsTable 1 }
+
+HomesteadCxSARResultsEntry ::= SEQUENCE
+{
+  homesteadCxSARResultsTimeScope           INTEGER,
+  homesteadCxSARResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxSARResultsResultCodeScope     Integer32,
+  homesteadCxSARResultsCount               Unsigned32
+}
+
+homesteadCxSARResultsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over wich the statistics were collected."
+    ::= { homesteadCxSARResultsEntry 1 }
+
+homesteadCxSARResultsDiameterAppIdScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeBase(0),
+                  scope3GPP(1),
+                  scopeTimeout(2)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The protocol which the result-code is referring to."
+    ::= { homesteadCxSARResultsEntry 2 }
+
+homesteadCxSARResultsResultCodeScope OBJECT-TYPE
+    SYNTAX      Integer32 (0..6000)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The result-code returned in the answer."
+    ::= { homesteadCxSARResultsEntry 3 }
+    
+homesteadCxSARResultsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times that result-code has been returned as an
+                 answer over the time period."
+    ::= { homesteadCxSARResultsEntry 4 }
+
+homesteadCxUARResultsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCxUARResultsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The number of UARs sent over the Cx interface indexed by
+                 result-code"
+    ::= { homestead 12 }
+
+homesteadCxUARResultsEntry OBJECT-TYPE
+    SYNTAX       HomesteadCxUARResultsEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "The number of UARs sent over the Cx interface"
+    INDEX        { homesteadCxUARResultsTimeScope,
+                   homesteadCxUARResultsDiameterAppIdScope,
+                   homesteadCxUARResultsResultCodeScope }
+    ::= { homesteadCxUARResultsTable 1 }
+
+HomesteadCxUARResultsEntry ::= SEQUENCE
+{
+  homesteadCxUARResultsTimeScope           INTEGER,
+  homesteadCxUARResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxUARResultsResultCodeScope     Integer32,
+  homesteadCxUARResultsCount               Unsigned32
+}
+
+homesteadCxUARResultsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over wich the statistics were collected."
+    ::= { homesteadCxUARResultsEntry 1 }
+
+homesteadCxUARResultsDiameterAppIdScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeBase(0),
+                  scope3GPP(1),
+                  scopeTimeout(2)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The protocol which the result-code is referring to."
+    ::= { homesteadCxUARResultsEntry 2 }
+
+homesteadCxUARResultsResultCodeScope OBJECT-TYPE
+    SYNTAX      Integer32 (0..6000)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The result-code returned in the answer."
+    ::= { homesteadCxUARResultsEntry 3 }
+    
+homesteadCxUARResultsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times that result-code has been returned as an
+                 answer over the time period."
+    ::= { homesteadCxUARResultsEntry 4 }
+
+homesteadCxLIRResultsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCxLIRResultsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The number of LIRs sent over the Cx interface indexed by
+                 result-code"
+    ::= { homestead 13 }
+
+homesteadCxLIRResultsEntry OBJECT-TYPE
+    SYNTAX       HomesteadCxLIRResultsEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "The number of LIRs sent over the Cx interface"
+    INDEX        { homesteadCxLIRResultsTimeScope,
+                   homesteadCxLIRResultsDiameterAppIdScope,
+                   homesteadCxLIRResultsResultCodeScope }
+    ::= { homesteadCxLIRResultsTable 1 }
+
+HomesteadCxLIRResultsEntry ::= SEQUENCE
+{
+  homesteadCxLIRResultsTimeScope           INTEGER,
+  homesteadCxLIRResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxLIRResultsResultCodeScope     Integer32,
+  homesteadCxLIRResultsCount               Unsigned32
+}
+
+homesteadCxLIRResultsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over wich the statistics were collected."
+    ::= { homesteadCxLIRResultsEntry 1 }
+
+homesteadCxLIRResultsDiameterAppIdScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeBase(0),
+                  scope3GPP(1),
+                  scopeTimeout(2)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The protocol which the result-code is referring to."
+    ::= { homesteadCxLIRResultsEntry 2 }
+
+homesteadCxLIRResultsResultCodeScope OBJECT-TYPE
+    SYNTAX      Integer32 (0..6000)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The result-code returned in the answer."
+    ::= { homesteadCxLIRResultsEntry 3 }
+    
+homesteadCxLIRResultsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times that result-code has been returned as an
+                 answer over the time period."
+    ::= { homesteadCxLIRResultsEntry 4 }
+
+homesteadCxPPRResultsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCxPPRResultsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The number of PPRs received over the Cx interface indexed by
+                 result-code"
+    ::= { homestead 14 }
+
+homesteadCxPPRResultsEntry OBJECT-TYPE
+    SYNTAX       HomesteadCxPPRResultsEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "The number of PPRs sent over the Cx interface"
+    INDEX        { homesteadCxPPRResultsTimeScope,
+                   homesteadCxPPRResultsDiameterAppIdScope,
+                   homesteadCxPPRResultsResultCodeScope }
+    ::= { homesteadCxPPRResultsTable 1 }
+
+HomesteadCxPPRResultsEntry ::= SEQUENCE
+{
+  homesteadCxPPRResultsTimeScope           INTEGER,
+  homesteadCxPPRResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxPPRResultsResultCodeScope     Integer32,
+  homesteadCxPPRResultsCount               Unsigned32
+}
+
+homesteadCxPPRResultsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over wich the statistics were collected."
+    ::= { homesteadCxPPRResultsEntry 1 }
+
+homesteadCxPPRResultsDiameterAppIdScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeBase(0),
+                  scope3GPP(1),
+                  scopeTimeout(2)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The protocol which the result-code is referring to."
+    ::= { homesteadCxPPRResultsEntry 2 }
+
+homesteadCxPPRResultsResultCodeScope OBJECT-TYPE
+    SYNTAX      Integer32 (0..6000)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The result-code returned in the answer."
+    ::= { homesteadCxPPRResultsEntry 3 }
+    
+homesteadCxPPRResultsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times that result-code has been returned as an
+                 answer over the time period."
+    ::= { homesteadCxPPRResultsEntry 4 }
+
+homesteadCxRTRResultsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCxRTRResultsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The number of RTRs received over the Cx interface indexed by
+                 result-code"
+    ::= { homestead 15 }
+
+homesteadCxRTRResultsEntry OBJECT-TYPE
+    SYNTAX       HomesteadCxRTRResultsEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION  "The number of RTRs received over the Cx interface"
+    INDEX        { homesteadCxRTRResultsTimeScope,
+                   homesteadCxRTRResultsDiameterAppIdScope,
+                   homesteadCxRTRResultsResultCodeScope }
+    ::= { homesteadCxRTRResultsTable 1 }
+
+HomesteadCxRTRResultsEntry ::= SEQUENCE
+{
+  homesteadCxRTRResultsTimeScope           INTEGER,
+  homesteadCxRTRResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxRTRResultsResultCodeScope     Integer32,
+  homesteadCxRTRResultsCount               Unsigned32
+}
+
+homesteadCxRTRResultsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over wich the statistics were collected."
+    ::= { homesteadCxRTRResultsEntry 1 }
+
+homesteadCxRTRResultsDiameterAppIdScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopeBase(0),
+                  scope3GPP(1),
+                  scopeTimeout(2)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The protocol which the result-code is referring to."
+    ::= { homesteadCxRTRResultsEntry 2 }
+
+homesteadCxRTRResultsResultCodeScope OBJECT-TYPE
+    SYNTAX      Integer32 (0..6000)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The result-code returned in the answer."
+    ::= { homesteadCxRTRResultsEntry 3 }
+    
+homesteadCxRTRResultsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times that result-code has been returned as an
+                 answer over the time period."
+    ::= { homesteadCxRTRResultsEntry 4 }
+
 homesteadGroup OBJECT-GROUP
     OBJECTS {
       homesteadLatencyAverage,
@@ -3084,7 +3462,13 @@ homesteadGroup OBJECT-GROUP
       homesteadIncomingRequestsCount,
       homesteadRejectedOverloadCount,
       homesteadDiameterInvalidRealmCount,
-      homesteadDiameterInvalidHostCount
+      homesteadDiameterInvalidHostCount,
+      homesteadCxMARResultsCount,
+      homesteadCxSARResultsCount,
+      homesteadCxUARResultsCount,
+      homesteadCxLIRResultsCount,
+      homesteadCxPPRResultsCount,
+      homesteadCxRTRResultsCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Homestead"
