@@ -1,7 +1,7 @@
 PROJECT-CLEARWATER-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
-        MODULE-IDENTITY, OBJECT-TYPE, Integer32, Unsigned32 FROM SNMPv2-SMI
+        MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
         MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
         InetAddressType, InetAddress FROM INET-ADDRESS-MIB
         TEXTUAL-CONVENTION FROM SNMPv2-TC;
@@ -3076,7 +3076,7 @@ HomesteadCxMARResultsEntry ::= SEQUENCE
 {
   homesteadCxMARResultsTimeScope           INTEGER,
   homesteadCxMARResultsDiameterAppIdScope  INTEGER, 
-  homesteadCxMARResultsResultCodeScope     Integer32,
+  homesteadCxMARResultsResultCodeScope     Unsigned32,
   homesteadCxMARResultsCount               Unsigned32
 }
 
@@ -3088,7 +3088,7 @@ homesteadCxMARResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over wich the statistics were collected."
+    DESCRIPTION "The period over whch the statistics were collected."
     ::= { homesteadCxMARResultsEntry 1 }
 
 homesteadCxMARResultsDiameterAppIdScope OBJECT-TYPE
@@ -3099,11 +3099,11 @@ homesteadCxMARResultsDiameterAppIdScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The protocol which the result-code is referring to."
+    DESCRIPTION "The Diameter application which the result-code is referring to."
     ::= { homesteadCxMARResultsEntry 2 }
 
 homesteadCxMARResultsResultCodeScope OBJECT-TYPE
-    SYNTAX      Integer32 (0..6000)
+    SYNTAX      Unsigned32 (0..6000)
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
@@ -3139,7 +3139,7 @@ HomesteadCxSARResultsEntry ::= SEQUENCE
 {
   homesteadCxSARResultsTimeScope           INTEGER,
   homesteadCxSARResultsDiameterAppIdScope  INTEGER, 
-  homesteadCxSARResultsResultCodeScope     Integer32,
+  homesteadCxSARResultsResultCodeScope     Unsigned32,
   homesteadCxSARResultsCount               Unsigned32
 }
 
@@ -3151,7 +3151,7 @@ homesteadCxSARResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over wich the statistics were collected."
+    DESCRIPTION "The period over whch the statistics were collected."
     ::= { homesteadCxSARResultsEntry 1 }
 
 homesteadCxSARResultsDiameterAppIdScope OBJECT-TYPE
@@ -3162,11 +3162,11 @@ homesteadCxSARResultsDiameterAppIdScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The protocol which the result-code is referring to."
+    DESCRIPTION "The Diameter application which the result-code is referring to."
     ::= { homesteadCxSARResultsEntry 2 }
 
 homesteadCxSARResultsResultCodeScope OBJECT-TYPE
-    SYNTAX      Integer32 (0..6000)
+    SYNTAX      Unsigned32 (0..6000)
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
@@ -3202,7 +3202,7 @@ HomesteadCxUARResultsEntry ::= SEQUENCE
 {
   homesteadCxUARResultsTimeScope           INTEGER,
   homesteadCxUARResultsDiameterAppIdScope  INTEGER, 
-  homesteadCxUARResultsResultCodeScope     Integer32,
+  homesteadCxUARResultsResultCodeScope     Unsigned32,
   homesteadCxUARResultsCount               Unsigned32
 }
 
@@ -3214,7 +3214,7 @@ homesteadCxUARResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over wich the statistics were collected."
+    DESCRIPTION "The period over whch the statistics were collected."
     ::= { homesteadCxUARResultsEntry 1 }
 
 homesteadCxUARResultsDiameterAppIdScope OBJECT-TYPE
@@ -3225,11 +3225,11 @@ homesteadCxUARResultsDiameterAppIdScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The protocol which the result-code is referring to."
+    DESCRIPTION "The Diameter application which the result-code is referring to."
     ::= { homesteadCxUARResultsEntry 2 }
 
 homesteadCxUARResultsResultCodeScope OBJECT-TYPE
-    SYNTAX      Integer32 (0..6000)
+    SYNTAX      Unsigned32 (0..6000)
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
@@ -3265,7 +3265,7 @@ HomesteadCxLIRResultsEntry ::= SEQUENCE
 {
   homesteadCxLIRResultsTimeScope           INTEGER,
   homesteadCxLIRResultsDiameterAppIdScope  INTEGER, 
-  homesteadCxLIRResultsResultCodeScope     Integer32,
+  homesteadCxLIRResultsResultCodeScope     Unsigned32,
   homesteadCxLIRResultsCount               Unsigned32
 }
 
@@ -3277,7 +3277,7 @@ homesteadCxLIRResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over wich the statistics were collected."
+    DESCRIPTION "The period over whch the statistics were collected."
     ::= { homesteadCxLIRResultsEntry 1 }
 
 homesteadCxLIRResultsDiameterAppIdScope OBJECT-TYPE
@@ -3288,11 +3288,11 @@ homesteadCxLIRResultsDiameterAppIdScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The protocol which the result-code is referring to."
+    DESCRIPTION "The Diameter application which the result-code is referring to."
     ::= { homesteadCxLIRResultsEntry 2 }
 
 homesteadCxLIRResultsResultCodeScope OBJECT-TYPE
-    SYNTAX      Integer32 (0..6000)
+    SYNTAX      Unsigned32 (0..6000)
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
@@ -3318,7 +3318,7 @@ homesteadCxPPRResultsEntry OBJECT-TYPE
     SYNTAX       HomesteadCxPPRResultsEntry
     MAX-ACCESS   not-accessible
     STATUS       current
-    DESCRIPTION  "The number of PPRs sent over the Cx interface"
+    DESCRIPTION  "The number of PPRs received over the Cx interface"
     INDEX        { homesteadCxPPRResultsTimeScope,
                    homesteadCxPPRResultsDiameterAppIdScope,
                    homesteadCxPPRResultsResultCodeScope }
@@ -3328,7 +3328,7 @@ HomesteadCxPPRResultsEntry ::= SEQUENCE
 {
   homesteadCxPPRResultsTimeScope           INTEGER,
   homesteadCxPPRResultsDiameterAppIdScope  INTEGER, 
-  homesteadCxPPRResultsResultCodeScope     Integer32,
+  homesteadCxPPRResultsResultCodeScope     Unsigned32,
   homesteadCxPPRResultsCount               Unsigned32
 }
 
@@ -3340,7 +3340,7 @@ homesteadCxPPRResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over wich the statistics were collected."
+    DESCRIPTION "The period over whch the statistics were collected."
     ::= { homesteadCxPPRResultsEntry 1 }
 
 homesteadCxPPRResultsDiameterAppIdScope OBJECT-TYPE
@@ -3351,11 +3351,11 @@ homesteadCxPPRResultsDiameterAppIdScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The protocol which the result-code is referring to."
+    DESCRIPTION "The Diameter application which the result-code is referring to."
     ::= { homesteadCxPPRResultsEntry 2 }
 
 homesteadCxPPRResultsResultCodeScope OBJECT-TYPE
-    SYNTAX      Integer32 (0..6000)
+    SYNTAX      Unsigned32 (0..6000)
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
@@ -3391,7 +3391,7 @@ HomesteadCxRTRResultsEntry ::= SEQUENCE
 {
   homesteadCxRTRResultsTimeScope           INTEGER,
   homesteadCxRTRResultsDiameterAppIdScope  INTEGER, 
-  homesteadCxRTRResultsResultCodeScope     Integer32,
+  homesteadCxRTRResultsResultCodeScope     Unsigned32,
   homesteadCxRTRResultsCount               Unsigned32
 }
 
@@ -3403,7 +3403,7 @@ homesteadCxRTRResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over wich the statistics were collected."
+    DESCRIPTION "The period over whch the statistics were collected."
     ::= { homesteadCxRTRResultsEntry 1 }
 
 homesteadCxRTRResultsDiameterAppIdScope OBJECT-TYPE
@@ -3414,11 +3414,11 @@ homesteadCxRTRResultsDiameterAppIdScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The protocol which the result-code is referring to."
+    DESCRIPTION "The Diameter application which the result-code is referring to."
     ::= { homesteadCxRTRResultsEntry 2 }
 
 homesteadCxRTRResultsResultCodeScope OBJECT-TYPE
-    SYNTAX      Integer32 (0..6000)
+    SYNTAX      Unsigned32 (0..6000)
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
