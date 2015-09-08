@@ -3088,7 +3088,7 @@ homesteadCxMARResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over whch the statistics were collected."
+    DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCxMARResultsEntry 1 }
 
 homesteadCxMARResultsDiameterAppIdScope OBJECT-TYPE
@@ -3151,7 +3151,7 @@ homesteadCxSARResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over whch the statistics were collected."
+    DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCxSARResultsEntry 1 }
 
 homesteadCxSARResultsDiameterAppIdScope OBJECT-TYPE
@@ -3214,7 +3214,7 @@ homesteadCxUARResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over whch the statistics were collected."
+    DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCxUARResultsEntry 1 }
 
 homesteadCxUARResultsDiameterAppIdScope OBJECT-TYPE
@@ -3277,7 +3277,7 @@ homesteadCxLIRResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over whch the statistics were collected."
+    DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCxLIRResultsEntry 1 }
 
 homesteadCxLIRResultsDiameterAppIdScope OBJECT-TYPE
@@ -3340,7 +3340,7 @@ homesteadCxPPRResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over whch the statistics were collected."
+    DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCxPPRResultsEntry 1 }
 
 homesteadCxPPRResultsDiameterAppIdScope OBJECT-TYPE
@@ -3403,7 +3403,7 @@ homesteadCxRTRResultsTimeScope OBJECT-TYPE
                 }
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "The period over whch the statistics were collected."
+    DESCRIPTION "The period over which the statistics were collected."
     ::= { homesteadCxRTRResultsEntry 1 }
 
 homesteadCxRTRResultsDiameterAppIdScope OBJECT-TYPE
