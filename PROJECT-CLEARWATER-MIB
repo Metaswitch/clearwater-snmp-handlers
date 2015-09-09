@@ -2409,6 +2409,90 @@ sproutPRRCurrentValue OBJECT-TYPE
                  sustainable request rate without causing large latency."
     ::= { sprout 31 }
 
+sproutINVITEsCancelledBefore1xxTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutINVITEsCancelledBefore1xxEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of INVITE transactions that were cancelled before a 1xx
+                 response was seen."
+    ::= { sprout 32 }
+
+sproutINVITEsCancelledBefore1xxEntry OBJECT-TYPE
+    SYNTAX      SproutINVITEsCancelledBefore1xxEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of INVITE transactions that were cancelled before a
+                 1xx response was seen."
+    INDEX       { sproutINVITEsCancelledBefore1xxScope }
+    ::= { sproutINVITEsCancelledBefore1xxTable 1 }
+
+SproutINVITEsCancelledBefore1xxEntry ::= SEQUENCE
+{
+  sproutINVITEsCancelledBefore1xxScope        INTEGER,
+  sproutINVITEsCancelledBefore1xxCount        Unsigned32
+}
+
+sproutINVITEsCancelledBefore1xxScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutINVITEsCancelledBefore1xxEntry 1 }
+
+sproutINVITEsCancelledBefore1xxCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of INVITE transactions that were cancelled before a
+                 1xx response was seen."
+    ::= { sproutINVITEsCancelledBefore1xxEntry 2 }
+
+sproutINVITEsCancelledAfter1xxTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutINVITEsCancelledAfter1xxEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of INVITE transactions that were cancelled before a 1xx
+                 response was seen."
+    ::= { sprout 33 }
+
+sproutINVITEsCancelledAfter1xxEntry OBJECT-TYPE
+    SYNTAX      SproutINVITEsCancelledAfter1xxEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of INVITE transactions that were cancelled after a
+                 1xx response was seen."
+    INDEX       { sproutINVITEsCancelledAfter1xxScope }
+    ::= { sproutINVITEsCancelledAfter1xxTable 1 }
+
+SproutINVITEsCancelledAfter1xxEntry ::= SEQUENCE
+{
+  sproutINVITEsCancelledAfter1xxScope        INTEGER,
+  sproutINVITEsCancelledAfter1xxCount        Unsigned32
+}
+
+sproutINVITEsCancelledAfter1xxScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutINVITEsCancelledAfter1xxEntry 1 }
+
+sproutINVITEsCancelledAfter1xxCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of INVITE transactions that were cancelled after a
+                 1xx response was seen."
+    ::= { sproutINVITEsCancelledAfter1xxEntry 2 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -2515,7 +2599,9 @@ sproutGroup OBJECT-GROUP
       sproutSmoothedLatencyValue,
       sproutTargetLatencyValue,
       sproutPenaltiesValue,
-      sproutPRRCurrentValue
+      sproutPRRCurrentValue,
+      sproutINVITEsCancelledBefore1xxCount,
+      sproutINVITEsCancelledAfter1xxCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
