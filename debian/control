@@ -21,7 +21,7 @@ Description: The SNMP handler library for statistics about the Call Diversion AS
 
 Package: clearwater-snmp-alarm-agent
 Architecture: any
-Depends: clearwater-snmpd
+Depends: clearwater-snmpd, libboost-filesystem1.54.0
 Description: The SNMP subagent for Clearwater alarm reporting
 
 Package: clearwater-snmp-handler-memento-as
