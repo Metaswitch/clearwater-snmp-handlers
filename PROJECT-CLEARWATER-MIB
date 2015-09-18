@@ -4580,34 +4580,34 @@ chronosInvalidTimersProcessedCount OBJECT-TYPE
     DESCRIPTION "The total number of invalid timers processed over the period."
     ::= { chronosInvalidTimersProcessedEntry 2 }
 
-chronosTotalTimersTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF ChronosTotalTimersEntry
+chronosRegTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosRegEntry
     MAX-ACCESS         not-accessible
     STATUS             current
-    DESCRIPTION        "The total number of timers this Chronos node
-                       is managing. This includes timers for which this node
+    DESCRIPTION        "The total number of REG timers this Chronos node
+                       is managing. This includes REG timers for which this node
                        is primary, and timers for which this node is a backup"
     ::= { chronos 4 }
 
-chronosTotalTimersEntry OBJECT-TYPE
-    SYNTAX      ChronosTotalTimersEntry
+chronosRegEntry OBJECT-TYPE
+    SYNTAX      ChronosRegEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, HWM and LWM of
-                 the total timers stored by this Chronos"
+                 the REG timers stored by this Chronos"
     INDEX       { chronosTotalTimersScope }
-    ::= { chronosTotalTimersTable 1 }
+    ::= { chronosRegTable 1 }
 
-ChronosTotalTimersEntry ::= SEQUENCE
+ChronosRegEntry ::= SEQUENCE
 {
-  chronosTotalTimersScope        INTEGER
-  chronosTotalTimersAverage      Unsigned32,
-  chronosTotalTimersVariance     Unsigned32,
-  chronosTotalTimersHWM          Unsigned32,
-  chronosTotalTimersLWM          Unsigned32,
+  chronosRegScope        INTEGER
+  chronosRegAverage      Unsigned32,
+  chronosRegVariance     Unsigned32,
+  chronosRegHWM          Unsigned32,
+  chronosRegLWM          Unsigned32,
 }
 
-chronosTotalTimersScope OBJECT-TYPE
+chronosRegScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -4616,39 +4616,179 @@ chronosTotalTimersScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { chronosTotalTimersEntry 1 }
+    ::= { chronosRegEntry 1 }
 
-chronosTotalTimersAverage OBJECT-TYPE
+chronosRegAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The average of the total number of timers
+    DESCRIPTION "The average number of REG timers
                  stored over the period."
-    ::= { chronosTotalTimersEntry 2 }
+    ::= { chronosRegEntry 2 }
 
-chronosTotalTimersVariance OBJECT-TYPE
+chronosRegVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The variance of the total number of timers
+    DESCRIPTION "The variance of REG timers
                  stored over the period."
-    ::= { chronosTotalTimersEntry 3 }
+    ::= { chronosRegEntry 3 }
 
-chronosTotalTimersHWM OBJECT-TYPE
+chronosRegHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The highest number of total timers stored
+    DESCRIPTION "The highest number of REG timers stored
                  over the period."
-    ::= { chronosTotalTimersEntry 4 }
+    ::= { chronosRegEntry 4 }
 
-chronosTotalTimersLWM OBJECT-TYPE
+chronosRegLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The lowest number of total timers stored
+    DESCRIPTION "The lowest number of REG timers stored
                  over the period."
-    ::= { chronosTotalTimersEntry 5 }
+    ::= { chronosRegEntry 5 }
+
+chronosCallTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosCallEntry
+    MAX-ACCESS         not-accessible
+    STATUS             current
+    DESCRIPTION        "The total number of CALL timers this Chronos node
+                       is managing. This includes timers for which this node
+                       is primary, and timers for which this node is a backup"
+    ::= { chronos 5 }
+
+chronosCallEntry OBJECT-TYPE
+    SYNTAX      ChronosCallEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, HWM and LWM of
+                 the CALL timers stored by this Chronos"
+    INDEX       { chronosTotalTimersScope }
+    ::= { chronosCallTable 1 }
+
+ChronosCallEntry ::= SEQUENCE
+{
+  chronosCallScope        INTEGER
+  chronosCallAverage      Unsigned32,
+  chronosCallVariance     Unsigned32,
+  chronosCallHWM          Unsigned32,
+  chronosCallLWM          Unsigned32,
+}
+
+chronosCallScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosCallEntry 1 }
+
+chronosCallAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average number of CALL timers
+                 stored over the period."
+    ::= { chronosCallEntry 2 }
+
+chronosCallVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the CALL timers
+                 stored over the period."
+    ::= { chronosCallEntry 3 }
+
+chronosCallHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest number of CALL timers stored
+                 over the period."
+    ::= { chronosCallEntry 4 }
+
+chronosCallLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest number of CALL timers stored
+                 over the period."
+    ::= { chronosCallEntry 5 }
+
+chronosSubTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosSubEntry
+    MAX-ACCESS         not-accessible
+    STATUS             current
+    DESCRIPTION        "The total number of SUB timers this Chronos node
+                       is managing. This includes timers for which this node
+                       is primary, and timers for which this node is a backup"
+    ::= { chronos 6 }
+
+chronosSubEntry OBJECT-TYPE
+    SYNTAX      ChronosSubEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, HWM and LWM of
+                 the SUB timers stored by this Chronos"
+    INDEX       { chronosTotalTimersScope }
+    ::= { chronosSubTable 1 }
+
+ChronosSubEntry ::= SEQUENCE
+{
+  chronosSubScope        INTEGER
+  chronosSubAverage      Unsigned32,
+  chronosSubVariance     Unsigned32,
+  chronosSubHWM          Unsigned32,
+  chronosSubLWM          Unsigned32,
+}
+
+chronosSubScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosSubEntry 1 }
+
+chronosSubAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average number of SUB timers
+                 stored over the period."
+    ::= { chronosSubEntry 2 }
+
+chronosSubVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the SUB timers
+                 stored over the period."
+    ::= { chronosSubEntry 3 }
+
+chronosSubHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest number of SUB timers stored
+                 over the period."
+    ::= { chronosSubEntry 4 }
+
+chronosSubLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest number of SUB timers stored
+                 over the period."
+    ::= { chronosSubEntry 5 }
 
 chronosCurrentTimers OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -4657,17 +4797,25 @@ chronosCurrentTimers OBJECT-TYPE
     DESCRIPTION "The current number of timers that Chronos
                  is managing. This includes timers for which this node
                  is primary, and timers for which this node is a backup"
-    ::= { chronos 5 }
+    ::= { chronos 7 }
 
 chronosGroup OBJECT-GROUP
     OBJECTS {
         chronosRemainingNodesQuery,
         chronosTimersProcessedCount,
         chronosInvalidTimersProcessedCount,
-        chronosTotalTimersAverage,
-        chronosTotalTimersVariance,
-        chronosTotalTimersHWM,
-        chronosTotalTimersLWM,
+        chronosRegAverage,
+        chronosRegVariance,
+        chronosRegHWM,
+        chronosRegLWM,
+        chronosCallAverage,
+        chronosCallVariance,
+        chronosCallHWM,
+        chronosCallLWM,
+        chronosSubAverage,
+        chronosSubVariance,
+        chronosSubHWM,
+        chronosSubLWM,
         chronosCurrentTimers
     }
     STATUS      current
