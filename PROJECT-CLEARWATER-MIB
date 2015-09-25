@@ -4587,7 +4587,7 @@ chronosRegTable OBJECT-TYPE
     DESCRIPTION        "The total number of REG timers this Chronos node
                        is managing. This includes REG timers for which this node
                        is primary, and timers for which this node is a backup"
-    ::= { chronos 4 }
+    ::= { chronos 5 }
 
 chronosRegEntry OBJECT-TYPE
     SYNTAX      ChronosRegEntry
@@ -4657,7 +4657,7 @@ chronosCallTable OBJECT-TYPE
     DESCRIPTION        "The total number of CALL timers this Chronos node
                        is managing. This includes timers for which this node
                        is primary, and timers for which this node is a backup"
-    ::= { chronos 5 }
+    ::= { chronos 6 }
 
 chronosCallEntry OBJECT-TYPE
     SYNTAX      ChronosCallEntry
@@ -4727,7 +4727,7 @@ chronosSubTable OBJECT-TYPE
     DESCRIPTION        "The total number of SUB timers this Chronos node
                        is managing. This includes timers for which this node
                        is primary, and timers for which this node is a backup"
-    ::= { chronos 6 }
+    ::= { chronos 7 }
 
 chronosSubEntry OBJECT-TYPE
     SYNTAX      ChronosSubEntry
