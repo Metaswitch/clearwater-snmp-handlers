@@ -4797,7 +4797,7 @@ chronosCurrentTimers OBJECT-TYPE
     DESCRIPTION "The current number of timers that Chronos
                  is managing. This includes timers for which this node
                  is primary, and timers for which this node is a backup"
-    ::= { chronos 7 }
+    ::= { chronos 8 }
 
 chronosGroup OBJECT-GROUP
     OBJECTS {
