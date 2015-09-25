@@ -4595,7 +4595,7 @@ chronosRegEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The average, variance, HWM and LWM of
                  the REG timers stored by this Chronos"
-    INDEX       { chronosTotalTimersScope }
+    INDEX       { chronosRegScope }
     ::= { chronosRegTable 1 }
 
 ChronosRegEntry ::= SEQUENCE
@@ -4665,7 +4665,7 @@ chronosCallEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The average, variance, HWM and LWM of
                  the CALL timers stored by this Chronos"
-    INDEX       { chronosTotalTimersScope }
+    INDEX       { chronosCallScope }
     ::= { chronosCallTable 1 }
 
 ChronosCallEntry ::= SEQUENCE
@@ -4735,7 +4735,7 @@ chronosSubEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The average, variance, HWM and LWM of
                  the SUB timers stored by this Chronos"
-    INDEX       { chronosTotalTimersScope }
+    INDEX       { chronosSubScope }
     ::= { chronosSubTable 1 }
 
 ChronosSubEntry ::= SEQUENCE
