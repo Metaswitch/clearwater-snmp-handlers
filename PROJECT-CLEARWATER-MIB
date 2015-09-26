@@ -5206,12 +5206,7 @@ chronosGroup OBJECT-GROUP
         chronosCallAverage,
         chronosCallVariance,
         chronosCallHWM,
-        chronosCallLWM,
-        chronosSubAverage,
-        chronosSubVariance,
-        chronosSubHWM,
-        chronosSubLWM,
-        chronosCurrentTimers
+        chronosCallLWM
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Chronos"
