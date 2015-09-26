@@ -1,6 +1,6 @@
-#/bin/sh
+#!/bin/bash
 
-# @file clearwater-snmp-alarm-agent.postinst
+# @file clearwater-snmp-alarm-agent_restart
 #
 # Project Clearwater - IMS in the Cloud
 # Copyright (C) 2015  Metaswitch Networks Ltd
@@ -34,12 +34,4 @@
 # under which the OpenSSL Project distributes the OpenSSL toolkit software,
 # as those licenses appear in the file LICENSE-OPENSSL.
 
-#
-# see: dh_installdeb(1)
-
-rm -f /etc/monit/conf.d/alarm_agent.monit
-# Force monit to reload its configuration
-reload clearwater-monit || true
-
-# Trigger an snmpd restart to unload the sub-agent
-service snmpd restart || true
+service clearwater-snmp-alarm-agent stop
