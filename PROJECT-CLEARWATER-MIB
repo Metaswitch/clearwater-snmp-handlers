@@ -9,7 +9,7 @@ IMPORTS
 -- Module definition
 
   projectClearwater MODULE-IDENTITY
-        LAST-UPDATED "201506220000Z"
+        LAST-UPDATED "201510070000Z"
         ORGANIZATION "Metaswitch"
         CONTACT-INFO
           "Metaswitch
@@ -20,6 +20,9 @@ IMPORTS
            Tel: +44 20 8366 1177"
         DESCRIPTION  "This MIB module defines the Project
                       Clearwater statistics MIBs"
+
+        REVISION      "201510070000Z" -- 07 Oct 2015
+        DESCRIPTION   "Fix warning messages about naming conventions"
 
         REVISION      "201506220000Z" -- 22 Jun 2015
         DESCRIPTION   "Additional time scopes for Sprout/Bono stats"
