@@ -9,7 +9,7 @@ IMPORTS
 -- Module definition
 
   projectClearwater MODULE-IDENTITY
-        LAST-UPDATED "201506220000Z"
+        LAST-UPDATED "201510070000Z"
         ORGANIZATION "Metaswitch"
         CONTACT-INFO
           "Metaswitch
@@ -20,6 +20,9 @@ IMPORTS
            Tel: +44 20 8366 1177"
         DESCRIPTION  "This MIB module defines the Project
                       Clearwater statistics MIBs"
+
+        REVISION      "201510070000Z" -- 07 Oct 2015
+        DESCRIPTION   "Fix warning messages about naming conventions"
 
         REVISION      "201506220000Z" -- 22 Jun 2015
         DESCRIPTION   "Additional time scopes for Sprout/Bono stats"
@@ -3804,21 +3807,21 @@ callDiversionASGroup OBJECT-GROUP
 mementoSIP OBJECT IDENTIFIER ::= { memento 1 }
 
 mementoCallsRecordedTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoCallsRecordedTableEntry
+    SYNTAX SEQUENCE OF MementoCallsRecordedEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Counts of call record creation outcomes for the given period."
     ::= { mementoSIP 1 }
 
-mementoCallsRecordedTableEntry OBJECT-TYPE
-    SYNTAX      MementoCallsRecordedTableEntry
+mementoCallsRecordedEntry OBJECT-TYPE
+    SYNTAX      MementoCallsRecordedEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Counts of call record creation outcomes"
     INDEX       { mementoCallsRecordedScope }
     ::= { mementoCallsRecordedTable 1 }
 
-MementoCallsRecordedTableEntry ::= SEQUENCE
+MementoCallsRecordedEntry ::= SEQUENCE
 {
     mementoCallsRecordedScope            INTEGER,
     mementoCompletedCallsRecorded        Unsigned32,
@@ -3833,28 +3836,28 @@ mementoCallsRecordedScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { mementoCallsRecordedTableEntry 1 }
+    ::= { mementoCallsRecordedEntry 1 }
 
 mementoCompletedCallsRecorded OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of successful calls recorded."
-    ::= { mementoCallsRecordedTableEntry 2 }
+    ::= { mementoCallsRecordedEntry 2 }
 
 mementoFailedCallsRecorded OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of failed call attempts recorded."
-    ::= { mementoCallsRecordedTableEntry 3 }
+    ::= { mementoCallsRecordedEntry 3 }
 
 mementoCallsNotRecordedDueToOverload OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of call records dropped due to overload."
-    ::= { mementoCallsRecordedTableEntry 4 }
+    ::= { mementoCallsRecordedEntry 4 }
 
 mementoSIPCassandraReadLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoSIPCassandraReadLatencyEntry
@@ -3929,7 +3932,7 @@ mementoSIPCassandraReadLatencyCount OBJECT-TYPE
     ::= { mementoSIPCassandraReadLatencyEntry 6 }
 
 mementoSIPCassandraWriteLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoSIPCassandraWriteLatencyTableEntry
+    SYNTAX SEQUENCE OF MementoSIPCassandraWriteLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database write
@@ -3938,7 +3941,7 @@ mementoSIPCassandraWriteLatencyTable OBJECT-TYPE
     ::= { mementoSIP 3 }
 
 mementoSIPCassandraWriteLatencyEntry OBJECT-TYPE
-    SYNTAX      MementoSIPCassandraWriteLatencyTableEntry
+    SYNTAX      MementoSIPCassandraWriteLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database write
@@ -3946,7 +3949,7 @@ mementoSIPCassandraWriteLatencyEntry OBJECT-TYPE
     INDEX       { mementoSIPCassandraWriteLatencyScope }
     ::= { mementoSIPCassandraWriteLatencyTable 1 }
 
-MementoSIPCassandraWriteLatencyTableEntry ::= SEQUENCE
+MementoSIPCassandraWriteLatencyEntry ::= SEQUENCE
 {
   mementoSIPCassandraWriteLatencyScope          INTEGER,
   mementoSIPCassandraWriteLatencyAverage        Unsigned32,
@@ -4139,22 +4142,22 @@ mementoOutgoingSIPTransactionsFailures OBJECT-TYPE
 mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
 
 mementoHTTPRequestTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoHTTPRequestTableEntry
+    SYNTAX SEQUENCE OF MementoHTTPRequestEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Counts of HTTP requests and their outcomes for the given
                  period"
     ::= { mementoHTTP 1 }
 
-mementoHTTPRequestTableEntry OBJECT-TYPE
-    SYNTAX      MementoHTTPRequestTableEntry
+mementoHTTPRequestEntry OBJECT-TYPE
+    SYNTAX      MementoHTTPRequestEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Counts of HTTP requests and their outcomes"
     INDEX       { mementoHTTPRequestScope }
     ::= { mementoHTTPRequestTable 1 }
 
-MementoHTTPRequestTableEntry ::= SEQUENCE
+MementoHTTPRequestEntry ::= SEQUENCE
 {
     mementoHTTPRequestScope            INTEGER,
     mementoHTTPRequestCount            Unsigned32,
@@ -4168,24 +4171,24 @@ mementoHTTPRequestScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { mementoHTTPRequestTableEntry 1 }
+    ::= { mementoHTTPRequestEntry 1 }
 
 mementoHTTPRequestCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of HTTP requests received."
-    ::= { mementoHTTPRequestTableEntry 2 }
+    ::= { mementoHTTPRequestEntry 2 }
 
 mementoHTTPRejectedDueToOverload OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of HTTP requests rejected due to overload."
-    ::= { mementoHTTPRequestTableEntry 3 }
+    ::= { mementoHTTPRequestEntry 3 }
 
 mementoHTTPRequestLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoHTTPRequestLatencyTableEntry
+    SYNTAX SEQUENCE OF MementoHTTPRequestLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of HTTP call record retrieval requests over the given
@@ -4193,14 +4196,14 @@ mementoHTTPRequestLatencyTable OBJECT-TYPE
     ::= { mementoHTTP 2 }
 
 mementoHTTPRequestLatencyEntry OBJECT-TYPE
-    SYNTAX      MementoHTTPRequestLatencyTableEntry
+    SYNTAX      MementoHTTPRequestLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of HTTP call retrieval latency"
     INDEX       { mementoHTTPRequestLatencyScope }
     ::= { mementoHTTPRequestLatencyTable 1 }
 
-MementoHTTPRequestLatencyTableEntry ::= SEQUENCE
+MementoHTTPRequestLatencyEntry ::= SEQUENCE
 {
   mementoHTTPRequestLatencyScope          INTEGER,
   mementoHTTPRequestLatencyAverage        Unsigned32,
@@ -4255,7 +4258,7 @@ mementoHTTPRequestLatencyCount OBJECT-TYPE
     ::= { mementoHTTPRequestLatencyEntry 6 }
 
 mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoHTTPCassandraReadLatencyTableEntry
+    SYNTAX SEQUENCE OF MementoHTTPCassandraReadLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
@@ -4264,7 +4267,7 @@ mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
     ::= { mementoHTTP 3 }
 
 mementoHTTPCassandraReadLatencyEntry OBJECT-TYPE
-    SYNTAX      MementoHTTPCassandraReadLatencyTableEntry
+    SYNTAX      MementoHTTPCassandraReadLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
@@ -4272,7 +4275,7 @@ mementoHTTPCassandraReadLatencyEntry OBJECT-TYPE
     INDEX       { mementoHTTPCassandraReadLatencyScope }
     ::= { mementoHTTPCassandraReadLatencyTable 1 }
 
-MementoHTTPCassandraReadLatencyTableEntry ::= SEQUENCE
+MementoHTTPCassandraReadLatencyEntry ::= SEQUENCE
 {
   mementoHTTPCassandraReadLatencyScope          INTEGER,
   mementoHTTPCassandraReadLatencyAverage        Unsigned32,
@@ -4327,7 +4330,7 @@ mementoHTTPCassandraReadLatencyCount OBJECT-TYPE
     ::= { mementoHTTPCassandraReadLatencyEntry 6 }
 
 mementoRetrievedCallRecordSizeTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoRetrievedCallRecordSizeTableEntry
+    SYNTAX SEQUENCE OF MementoRetrievedCallRecordSizeEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Average, variance, HWM and LWM of the size (in kB) of call records
@@ -4335,7 +4338,7 @@ mementoRetrievedCallRecordSizeTable OBJECT-TYPE
     ::= { mementoHTTP 4 }
 
 mementoRetrievedCallRecordSizeEntry OBJECT-TYPE
-    SYNTAX      MementoRetrievedCallRecordSizeTableEntry
+    SYNTAX      MementoRetrievedCallRecordSizeEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Average, variance, HWM and LWM of the size (in kB) of call records
@@ -4343,7 +4346,7 @@ mementoRetrievedCallRecordSizeEntry OBJECT-TYPE
     INDEX       { mementoRetrievedCallRecordSizeScope }
     ::= { mementoRetrievedCallRecordSizeTable 1 }
 
-MementoRetrievedCallRecordSizeTableEntry ::= SEQUENCE
+MementoRetrievedCallRecordSizeEntry ::= SEQUENCE
 {
   mementoRetrievedCallRecordSizeScope          INTEGER,
   mementoRetrievedCallRecordSizeAverage        Unsigned32,
@@ -4398,7 +4401,7 @@ mementoRetrievedCallRecordSizeCount OBJECT-TYPE
     ::= { mementoRetrievedCallRecordSizeEntry 6 }
 
 mementoRetrievedCallRecordLengthTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoRetrievedCallRecordLengthTableEntry
+    SYNTAX SEQUENCE OF MementoRetrievedCallRecordLengthEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Average, variance, HWM and LWM of the length (# of records) of call
@@ -4406,7 +4409,7 @@ mementoRetrievedCallRecordLengthTable OBJECT-TYPE
     ::= { mementoHTTP 5 }
 
 mementoRetrievedCallRecordLengthEntry OBJECT-TYPE
-    SYNTAX      MementoRetrievedCallRecordLengthTableEntry
+    SYNTAX      MementoRetrievedCallRecordLengthEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Average, variance, HWM and LWM of the length (# of records) of call
@@ -4414,7 +4417,7 @@ mementoRetrievedCallRecordLengthEntry OBJECT-TYPE
     INDEX       { mementoRetrievedCallRecordLengthScope }
     ::= { mementoRetrievedCallRecordLengthTable 1 }
 
-MementoRetrievedCallRecordLengthTableEntry ::= SEQUENCE
+MementoRetrievedCallRecordLengthEntry ::= SEQUENCE
 {
   mementoRetrievedCallRecordLengthScope          INTEGER,
   mementoRetrievedCallRecordLengthAverage        Unsigned32,
@@ -4517,21 +4520,21 @@ mementoHomesteadConnectionCount OBJECT-TYPE
     ::= { mementoConnectedHomesteadsEntry 3 }
 
 mementoAuthAttemptTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF MementoAuthAttemptTableEntry
+    SYNTAX SEQUENCE OF MementoAuthAttemptEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts of authentication attempts over the given period."
     ::= { mementoAuthProxy 2 }
 
 mementoAuthAttemptEntry OBJECT-TYPE
-    SYNTAX      MementoAuthAttemptTableEntry
+    SYNTAX      MementoAuthAttemptEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Counts of authentication attempts over the given period."
     INDEX       { mementoAuthAttemptScope }
     ::= { mementoAuthAttemptTable 1 }
 
-MementoAuthAttemptTableEntry ::= SEQUENCE
+MementoAuthAttemptEntry ::= SEQUENCE
 {
   mementoAuthAttemptScope          INTEGER,
   mementoAuthChallengeCount        Unsigned32,
@@ -4692,21 +4695,21 @@ astaireDataResynchronized OBJECT-TYPE
     ::= { astaire 4 }
 
 astaireBandwidthTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF AstaireBandwidthTableEntry
+    SYNTAX SEQUENCE OF AstaireBandwidthEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth for the given period."
     ::= { astaire 5 }
 
-astaireBandwidthTableEntry OBJECT-TYPE
-    SYNTAX      AstaireBandwidthTableEntry
+astaireBandwidthEntry OBJECT-TYPE
+    SYNTAX      AstaireBandwidthEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth."
     INDEX       { astaireBandwidthScope }
     ::= { astaireBandwidthTable 1 }
 
-AstaireBandwidthTableEntry ::= SEQUENCE
+AstaireBandwidthEntry ::= SEQUENCE
 {
     astaireBandwidthScope          INTEGER,
     astaireBandwidth               Unsigned32
@@ -4719,24 +4722,24 @@ astaireBandwidthScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { astaireBandwidthTableEntry 1 }
+    ::= { astaireBandwidthEntry 1 }
 
 astaireBandwidth OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth (bytes per second) over the period."
-    ::= { astaireBandwidthTableEntry 2 }
+    ::= { astaireBandwidthEntry 2 }
 
 astaireConnectionTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF AstaireConnectionTableEntry
+    SYNTAX SEQUENCE OF AstaireConnectionEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization statistics on a per-connection basis."
     ::= { astaire 6 }
 
-astaireConnectionTableEntry OBJECT-TYPE
-    SYNTAX      AstaireConnectionTableEntry
+astaireConnectionEntry OBJECT-TYPE
+    SYNTAX      AstaireConnectionEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization statistics for a specific connection.  Entries only
@@ -4747,7 +4750,7 @@ astaireConnectionTableEntry OBJECT-TYPE
             astaireConnectionInetPort      }
     ::= { astaireConnectionTable 1 }
 
-AstaireConnectionTableEntry ::= SEQUENCE
+AstaireConnectionEntry ::= SEQUENCE
 {
   astaireConnectionInetAddrType           InetAddressType,
   astaireConnectionInetAddr               InetAddress,
@@ -4761,21 +4764,21 @@ astaireConnectionInetAddrType OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Inet address type of the connection peer"
-    ::= { astaireConnectionTableEntry 1 }
+    ::= { astaireConnectionEntry 1 }
 
 astaireConnectionInetAddr OBJECT-TYPE
     SYNTAX      InetAddress (SIZE (1..16))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Inet address of the connection peer"
-    ::= { astaireConnectionTableEntry 2 }
+    ::= { astaireConnectionEntry 2 }
 
 astaireConnectionInetPort OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Port of the connection peer"
-    ::= { astaireConnectionTableEntry 3 }
+    ::= { astaireConnectionEntry 3 }
 
 astaireConnectionBucketsNeedingResync OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -4783,7 +4786,7 @@ astaireConnectionBucketsNeedingResync OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Count of buckets needing to be synchronized over this
                  connection for the current resynchronization operation."
-    ::= { astaireConnectionTableEntry 4 }
+    ::= { astaireConnectionEntry 4 }
 
 astaireConnectionBucketsResynchronized OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -4791,18 +4794,18 @@ astaireConnectionBucketsResynchronized OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Number of buckets already resynchronized over this connection
                  during the current resynchronization operation."
-    ::= { astaireConnectionTableEntry 5 }
+    ::= { astaireConnectionEntry 5 }
 
 astaireConnectionBucketTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF AstaireConnectionBucketTableEntry
+    SYNTAX SEQUENCE OF AstaireConnectionBucketEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization statistics on a per-connection and
                  per-bucket basis."
     ::= { astaire 7 }
 
-astaireConnectionBucketTableEntry OBJECT-TYPE
-    SYNTAX      AstaireConnectionBucketTableEntry
+astaireConnectionBucketEntry OBJECT-TYPE
+    SYNTAX      AstaireConnectionBucketEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization statistics for a specific connection and
@@ -4813,15 +4816,14 @@ astaireConnectionBucketTableEntry OBJECT-TYPE
             astaireConnectionBucketId }
     ::= { astaireConnectionBucketTable 1 }
 
-AstaireConnectionBucketTableEntry ::= SEQUENCE
+AstaireConnectionBucketEntry ::= SEQUENCE
 {
   astaireConnectionBucketInetAddrType           InetAddressType,
-  astaireConnectionBucketInetAddr               InetAddress (SIZE (1..16)),
+  astaireConnectionBucketInetAddr               InetAddress,
   astaireConnectionBucketInetPort               Unsigned32,
   astaireConnectionBucketId                     Unsigned32,
   astaireConnectionBucketEntriesResynchronized  Unsigned32,
-  astaireConnectionBucketDataResynchronized     Unsigned32,
-  astaireConnectionBucketBandwidthTable         SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
+  astaireConnectionBucketDataResynchronized     Unsigned32
 }
 
 astaireConnectionBucketInetAddrType OBJECT-TYPE
@@ -4829,28 +4831,28 @@ astaireConnectionBucketInetAddrType OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Inet address type of the connection peer"
-    ::= { astaireConnectionBucketTableEntry 1 }
+    ::= { astaireConnectionBucketEntry 1 }
 
 astaireConnectionBucketInetAddr OBJECT-TYPE
     SYNTAX      InetAddress (SIZE (1..16))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Inet address of the connection peer"
-    ::= { astaireConnectionBucketTableEntry 2 }
+    ::= { astaireConnectionBucketEntry 2 }
 
 astaireConnectionBucketInetPort OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Port of the connection peer"
-    ::= { astaireConnectionBucketTableEntry 3 }
+    ::= { astaireConnectionBucketEntry 3 }
 
 astaireConnectionBucketId OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Identifier of this bucket."
-    ::= { astaireConnectionBucketTableEntry 4 }
+    ::= { astaireConnectionBucketEntry 4 }
 
 astaireConnectionBucketEntriesResynchronized OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -4858,7 +4860,7 @@ astaireConnectionBucketEntriesResynchronized OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Number of entries already resynchronized during the current
                  resynchronization operation on this connection and bucket."
-    ::= { astaireConnectionBucketTableEntry 5 }
+    ::= { astaireConnectionBucketEntry 5 }
 
 astaireConnectionBucketDataResynchronized OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -4866,64 +4868,32 @@ astaireConnectionBucketDataResynchronized OBJECT-TYPE
     STATUS      current
     DESCRIPTION "Amout of data (in bytes) already resynchronized during the current
                  resynchronization operation on this connection and bucket."
-    ::= { astaireConnectionBucketTableEntry 6 }
+    ::= { astaireConnectionBucketEntry 6 }
 
 astaireConnectionBucketBandwidthTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
+    SYNTAX SEQUENCE OF AstaireConnectionBucketBandwidthEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth for this bucket for the given period."
     ::= { astaire 8 }
 
-astaireConnectionBucketBandwidthTableEntry OBJECT-TYPE
-    SYNTAX      AstaireConnectionBucketBandwidthTableEntry
+astaireConnectionBucketBandwidthEntry OBJECT-TYPE
+    SYNTAX      AstaireConnectionBucketBandwidthEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth for this bucket."
-    INDEX       { astaireConnectionBucketBandwidthInetAddrType,
-                  astaireConnectionBucketBandwidthInetAddr,
-                  astaireConnectionBucketBandwidthInetPort,
-                  astaireConnectionBucketBandwidthBucketId,
-                  astaireConnectionBucketBandwidthScope }
+    INDEX { astaireConnectionBucketInetAddrType,
+            astaireConnectionBucketInetAddr,
+            astaireConnectionBucketInetPort,
+            astaireConnectionBucketId,
+            astaireConnectionBucketBandwidthScope }
     ::= { astaireConnectionBucketBandwidthTable 1 }
 
-AstaireConnectionBucketBandwidthTableEntry ::= SEQUENCE
+AstaireConnectionBucketBandwidthEntry ::= SEQUENCE
 {
-    astaireConnectionBucketBandwidthInetAddrType InetAddressType,
-    astaireConnectionBucketBandwidthInetAddr     InetAddress (SIZE (1..16)),
-    astaireConnectionBucketBandwidthInetPort     Unsigned32,
-    astaireConnectionBucketBandwidthBucketId     Unsigned32,
     astaireConnectionBucketBandwidthScope        INTEGER,
     astaireConnectionBucketBandwidth             Unsigned32
 }
-
-astaireConnectionBucketBandwidthInetAddrType OBJECT-TYPE
-    SYNTAX      InetAddressType
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Inet address type of the connection peer"
-    ::= { astaireConnectionBucketBandwidthTableEntry 1 }
-
-astaireConnectionBucketBandwidthInetAddr OBJECT-TYPE
-    SYNTAX      InetAddress (SIZE (1..16))
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Inet address of the connection peer"
-    ::= { astaireConnectionBucketBandwidthTableEntry 2 }
-
-astaireConnectionBucketBandwidthInetPort OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Port of the connection peer"
-    ::= { astaireConnectionBucketBandwidthTableEntry 3 }
-
-astaireConnectionBucketBandwidthBucketId OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Identifier of this bucket."
-    ::= { astaireConnectionBucketBandwidthTableEntry 4 }
 
 astaireConnectionBucketBandwidthScope OBJECT-TYPE
     SYNTAX      INTEGER {
@@ -4932,14 +4902,14 @@ astaireConnectionBucketBandwidthScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { astaireConnectionBucketBandwidthTableEntry 5 }
+    ::= { astaireConnectionBucketBandwidthEntry 5 }
 
 astaireConnectionBucketBandwidth OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth (bytes per second) over the period."
-    ::= { astaireConnectionBucketBandwidthTableEntry 6 }
+    ::= { astaireConnectionBucketBandwidthEntry 6 }
 
 astaireGroup OBJECT-GROUP
     OBJECTS {
@@ -4947,22 +4917,16 @@ astaireGroup OBJECT-GROUP
         astaireBucketsResynchronized,
         astaireEntriesResynchronized,
         astaireDataResynchronized,
-        astaireBandwidthScope,
         astaireBandwidth,
-        astaireConnectionInetAddrType,
-        astaireConnectionInetAddr,
-        astaireConnectionInetPort,
         astaireConnectionBucketsNeedingResync,
         astaireConnectionBucketsResynchronized,
-        astaireConnectionBucketId,
         astaireConnectionBucketEntriesResynchronized,
         astaireConnectionBucketDataResynchronized,
-        astaireConnectionBucketBandwidthScope,
         astaireConnectionBucketBandwidth
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Astaire"
-    ::= { projectClearwaterObjectGroups 6 }
+    ::= { projectClearwaterObjectGroups 8 }
 
 -- Chronos Entries
 
@@ -5072,11 +5036,11 @@ chronosRegEntry OBJECT-TYPE
 
 ChronosRegEntry ::= SEQUENCE
 {
-  chronosRegScope        INTEGER
+  chronosRegScope        INTEGER,
   chronosRegAverage      Unsigned32,
   chronosRegVariance     Unsigned32,
   chronosRegHWM          Unsigned32,
-  chronosRegLWM          Unsigned32,
+  chronosRegLWM          Unsigned32
 }
 
 chronosRegScope OBJECT-TYPE
@@ -5144,11 +5108,11 @@ chronosCallEntry OBJECT-TYPE
 
 ChronosCallEntry ::= SEQUENCE
 {
-  chronosCallScope        INTEGER
+  chronosCallScope        INTEGER,
   chronosCallAverage      Unsigned32,
   chronosCallVariance     Unsigned32,
   chronosCallHWM          Unsigned32,
-  chronosCallLWM          Unsigned32,
+  chronosCallLWM          Unsigned32
 }
 
 chronosCallScope OBJECT-TYPE
