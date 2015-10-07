@@ -4816,12 +4816,11 @@ astaireConnectionBucketTableEntry OBJECT-TYPE
 AstaireConnectionBucketTableEntry ::= SEQUENCE
 {
   astaireConnectionBucketInetAddrType           InetAddressType,
-  astaireConnectionBucketInetAddr               InetAddress (SIZE (1..16)),
+  astaireConnectionBucketInetAddr               InetAddress,
   astaireConnectionBucketInetPort               Unsigned32,
   astaireConnectionBucketId                     Unsigned32,
   astaireConnectionBucketEntriesResynchronized  Unsigned32,
-  astaireConnectionBucketDataResynchronized     Unsigned32,
-  astaireConnectionBucketBandwidthTable         SEQUENCE OF AstaireConnectionBucketBandwidthTableEntry
+  astaireConnectionBucketDataResynchronized     Unsigned32
 }
 
 astaireConnectionBucketInetAddrType OBJECT-TYPE
@@ -4880,50 +4879,18 @@ astaireConnectionBucketBandwidthTableEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Resynchronization bandwidth for this bucket."
-    INDEX       { astaireConnectionBucketBandwidthInetAddrType,
-                  astaireConnectionBucketBandwidthInetAddr,
-                  astaireConnectionBucketBandwidthInetPort,
-                  astaireConnectionBucketBandwidthBucketId,
-                  astaireConnectionBucketBandwidthScope }
+    INDEX { astaireConnectionBucketInetAddrType,
+            astaireConnectionBucketInetAddr,
+            astaireConnectionBucketInetPort,
+            astaireConnectionBucketId,
+            astaireConnectionBucketBandwidthScope }
     ::= { astaireConnectionBucketBandwidthTable 1 }
 
 AstaireConnectionBucketBandwidthTableEntry ::= SEQUENCE
 {
-    astaireConnectionBucketBandwidthInetAddrType InetAddressType,
-    astaireConnectionBucketBandwidthInetAddr     InetAddress (SIZE (1..16)),
-    astaireConnectionBucketBandwidthInetPort     Unsigned32,
-    astaireConnectionBucketBandwidthBucketId     Unsigned32,
     astaireConnectionBucketBandwidthScope        INTEGER,
     astaireConnectionBucketBandwidth             Unsigned32
 }
-
-astaireConnectionBucketBandwidthInetAddrType OBJECT-TYPE
-    SYNTAX      InetAddressType
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Inet address type of the connection peer"
-    ::= { astaireConnectionBucketBandwidthTableEntry 1 }
-
-astaireConnectionBucketBandwidthInetAddr OBJECT-TYPE
-    SYNTAX      InetAddress (SIZE (1..16))
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Inet address of the connection peer"
-    ::= { astaireConnectionBucketBandwidthTableEntry 2 }
-
-astaireConnectionBucketBandwidthInetPort OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Port of the connection peer"
-    ::= { astaireConnectionBucketBandwidthTableEntry 3 }
-
-astaireConnectionBucketBandwidthBucketId OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "Identifier of this bucket."
-    ::= { astaireConnectionBucketBandwidthTableEntry 4 }
 
 astaireConnectionBucketBandwidthScope OBJECT-TYPE
     SYNTAX      INTEGER {
@@ -4947,22 +4914,16 @@ astaireGroup OBJECT-GROUP
         astaireBucketsResynchronized,
         astaireEntriesResynchronized,
         astaireDataResynchronized,
-        astaireBandwidthScope,
         astaireBandwidth,
-        astaireConnectionInetAddrType,
-        astaireConnectionInetAddr,
-        astaireConnectionInetPort,
         astaireConnectionBucketsNeedingResync,
         astaireConnectionBucketsResynchronized,
-        astaireConnectionBucketId,
         astaireConnectionBucketEntriesResynchronized,
         astaireConnectionBucketDataResynchronized,
-        astaireConnectionBucketBandwidthScope,
         astaireConnectionBucketBandwidth
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Astaire"
-    ::= { projectClearwaterObjectGroups 6 }
+    ::= { projectClearwaterObjectGroups 8 }
 
 -- Chronos Entries
 
@@ -5072,11 +5033,11 @@ chronosRegEntry OBJECT-TYPE
 
 ChronosRegEntry ::= SEQUENCE
 {
-  chronosRegScope        INTEGER
+  chronosRegScope        INTEGER,
   chronosRegAverage      Unsigned32,
   chronosRegVariance     Unsigned32,
   chronosRegHWM          Unsigned32,
-  chronosRegLWM          Unsigned32,
+  chronosRegLWM          Unsigned32
 }
 
 chronosRegScope OBJECT-TYPE
@@ -5144,11 +5105,11 @@ chronosCallEntry OBJECT-TYPE
 
 ChronosCallEntry ::= SEQUENCE
 {
-  chronosCallScope        INTEGER
+  chronosCallScope        INTEGER,
   chronosCallAverage      Unsigned32,
   chronosCallVariance     Unsigned32,
   chronosCallHWM          Unsigned32,
-  chronosCallLWM          Unsigned32,
+  chronosCallLWM          Unsigned32
 }
 
 chronosCallScope OBJECT-TYPE
