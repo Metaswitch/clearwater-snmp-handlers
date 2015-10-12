@@ -5075,7 +5075,7 @@ ChronosAllTimersEntry ::= SEQUENCE
   chronosAllTimersVariance    Unsigned32,
   chronosAllTimersHWM         Unsigned32,
   chronosAllTimersLWM         Unsigned32,
-  chronosAllTimersActions       Unsigned32
+  chronosAllTimersActions     Unsigned32
 }
 
 chronosAllTimersScope OBJECT-TYPE
