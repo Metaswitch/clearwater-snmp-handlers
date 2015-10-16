@@ -14,7 +14,6 @@ Packages
 It contains the following packages:
 
 * clearwater-snmp-alarm-agent: alarms for Clearwater nodes
-* clearwater-snmp-handler-homestead: stats for Homestead nodes
 * clearwater-snmp-handler-cdiv: stats for Call Diversion AS nodes
 * clearwater-snmp-handler-memento: stats for Memento (HTTP) nodes
 * clearwater-snmp-handler-memento-as: stats for Memento (SIP) AS nodes
