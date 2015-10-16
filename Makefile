@@ -135,9 +135,6 @@ include ${MK_DIR}/platform.mk
 
 COMMON_OBJECTS := custom_handler.o oid.o oidtree.o oid_inet_addr.o zmq_listener.o zmq_message_handler.o
 
-homestead_handler.so: homesteaddata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
-
 cdiv_handler.so: cdivdata.o ${COMMON_OBJECTS}
 	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
@@ -153,17 +150,14 @@ memento_handler.so: mementodata.o ${COMMON_OBJECTS}
 astaire_handler.so: astairedata.o ${COMMON_OBJECTS}
 	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
-chronos_handler.so: chronosdata.o ${COMMON_OBJECTS}
-	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
-
 # Makefile for Clearwater infrastructure packages
 
 DEB_COMPONENT := clearwater-snmp-handlers
 DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-homestead clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-handler-chronos
+DEB_NAMES := clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire
 
 # Add dependencies to deb-only (target will be added by build-infra)
-deb-only: cw_alarm_agent homestead_handler.so cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so chronos_handler.so
+deb-only: cw_alarm_agent cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so
 
 include build-infra/cw-deb.mk
 
