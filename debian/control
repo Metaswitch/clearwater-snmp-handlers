@@ -9,11 +9,6 @@ Build-Depends: debhelper (>= 8.0.0), build-essential, libsnmp-dev, libboost-dev,
 Standards-Version: 3.9.2
 Homepage: http://projectclearwater.org/
 
-Package: clearwater-snmp-handler-homestead
-Architecture: any
-Depends: clearwater-snmpd
-Description: The SNMP handler library for statistics about Homestead
-
 Package: clearwater-snmp-handler-cdiv
 Architecture: any
 Depends: clearwater-snmpd
@@ -38,8 +33,3 @@ Package: clearwater-snmp-handler-astaire
 Architecture: any
 Depends: clearwater-snmpd
 Description: The SNMP handler library for statistics about Astaire
-
-Package: clearwater-snmp-handler-chronos
-Architecture: any
-Depends: clearwater-snmpd
-Description: The SNMP handler library for statistics about Chronos
