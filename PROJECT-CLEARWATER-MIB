@@ -5086,7 +5086,7 @@ chronosAllTimersActions OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of changes made over the period."
+    DESCRIPTION "The number of actions made over the period."
     ::= { chronosAllTimersEntry 6 }
 
 chronosRegTable OBJECT-TYPE
