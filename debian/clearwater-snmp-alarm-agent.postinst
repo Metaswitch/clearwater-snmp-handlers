@@ -55,10 +55,15 @@ case "$1" in
     configure)
 
         install -D --mode=0644 /usr/share/clearwater/conf/alarm_agent.monit /etc/monit/conf.d/
+
         # Force monit to reload its configuration
         reload clearwater-monit || true
+
         # Trigger an snmpd restart to load the sub-agent
-        service snmpd restart || true
+        service snmpd stop || true
+
+        # Restart the service
+        service clearwater-snmp-alarm-agent stop || true
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
