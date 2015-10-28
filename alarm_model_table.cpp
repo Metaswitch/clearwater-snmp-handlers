@@ -40,6 +40,7 @@
  */
 
 #include "alarm_model_table.hpp"
+#include "log.h"
 
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
@@ -88,7 +89,7 @@ int initialize_table_alarmModelTable(void)
 
   if (my_handler)
   {
-    snmp_log(LOG_ERR, "initialize_table_alarmModelTable called again");
+    TRC_ERROR("initialize_table_alarmModelTable called again");
     return SNMP_ERR_NOERROR;
   }
 
@@ -105,7 +106,7 @@ int initialize_table_alarmModelTable(void)
             
   if (!my_handler || !table_info)
   {
-    snmp_log(LOG_ERR, "malloc failed: initialize_table_alarmModelTable");
+    TRC_ERROR("malloc failed: initialize_table_alarmModelTable");
     return SNMP_ERR_GENERR;
   }
 
@@ -234,7 +235,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
     
     default: /** We shouldn't get here */
     {
-      snmp_log(LOG_ERR, "unknown column: alarmModelTable_get_value");
+      TRC_ERROR("unknown column: alarmModelTable_get_value");
       return SNMP_ERR_GENERR;
     }
   }
@@ -253,7 +254,7 @@ alarmModelTable_context* alarmModelTable_create_row_context(char* name,
   alarmModelTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmModelTable_context);
   if (!ctx)
   {
-    snmp_log(LOG_ERR, "malloc failed: alarmModelTable_create_row_context");
+    TRC_ERROR("malloc failed: alarmModelTable_create_row_context");
     return NULL;
   }
         
@@ -313,7 +314,7 @@ int alarmModelTable_index_to_oid(char* name,
   err = build_oid(&oid_idx->oids, &oid_idx->len, NULL, 0, &var_alarmListName);
   if (err)
   {
-    snmp_log(LOG_ERR, "error %d converting index to oid: alarmModelTable_index_to_oid", err);
+    TRC_ERROR("error %d converting index to oid: alarmModelTable_index_to_oid", err);
   }
 
   /*

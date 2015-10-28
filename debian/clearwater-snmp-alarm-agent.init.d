@@ -78,6 +78,8 @@ get_settings()
 {
         snmp_ip=0.0.0.0
         snmp_community=clearwater
+        log_directory=/var/log/clearwater-alarms/
+        log_level=4
         # Set up defaults and then pull in any overrides.
         . /etc/clearwater/config
 }
@@ -87,6 +89,8 @@ get_settings()
 #
 do_start()
 {
+        mkdir -p $log_directory
+        export MIBS=""
         # Return
         #   0 if daemon has been started
         #   1 if daemon was already running
@@ -101,7 +105,7 @@ do_start()
         # enable gdb to dump a parent process's stack
         echo 0 > /proc/sys/kernel/yama/ptrace_scope
         get_settings
-        DAEMON_ARGS="-i $snmp_ip -c $snmp_community"
+        DAEMON_ARGS="--snmp-ips $snmp_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
 
         start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON --chdir $HOME -- $DAEMON_ARGS \
                 || return 2

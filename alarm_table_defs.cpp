@@ -36,6 +36,7 @@
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 
+#include "log.h"
 #include "alarm_table_defs.hpp"
 
 #include "rapidjson/document.h"
@@ -93,7 +94,7 @@ bool AlarmTableDefs::initialize(std::string& path)
   }
   else
   {
-    snmp_log(LOG_ERR, "Unable to open directory at %s", path.c_str());
+    TRC_ERROR("Unable to open directory at %s", path.c_str());
     rc = false;
   }
 
@@ -109,7 +110,7 @@ bool AlarmTableDefs::populate_map(std::string path,
 
   if (!rc)
   {
-    snmp_log(LOG_ERR, "%s", error.c_str());
+    TRC_ERROR("%s", error.c_str());
     return rc;
   }
 
@@ -118,7 +119,7 @@ bool AlarmTableDefs::populate_map(std::string path,
   {
     if (dup_check.count(a_it->_index))
     {
-      snmp_log(LOG_ERR, "alarm %d.*: is multiply defined", a_it->_index);
+      TRC_ERROR("alarm %d.*: is multiply defined", a_it->_index);
       rc = false;
       break;
     }

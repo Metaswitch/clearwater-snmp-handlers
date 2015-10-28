@@ -41,6 +41,9 @@
 #include <vector>
 
 #include "utils.h"
+#include "snmp_agent.h"
+#include "logger.h"
+#include "log.h"
 #include "alarm_table_defs.hpp"
 #include "alarm_req_listener.hpp"
 #include "alarm_model_table.hpp"
@@ -51,38 +54,76 @@ bool done = false;
 // Signal handler that triggers termination.
 void terminate_handler(int sig)
 {
+  snmp_terminate("clearwater-alarms");
   done = true;
+}
+
+enum OptionTypes
+{
+  OPT_COMMUNITY=256+1,
+  OPT_SNMP_IPS,
+  OPT_LOG_LEVEL,
+  OPT_LOG_DIR
+};
+
+const static struct option long_opt[] =
+{
+  { "community",                       required_argument, 0, OPT_COMMUNITY},
+  { "snmp-ips",                        required_argument, 0, OPT_SNMP_IPS},
+  { "log-level",                       required_argument, 0, OPT_LOG_LEVEL},
+  { "log-dir",                         required_argument, 0, OPT_LOG_DIR},
+};
+
+static void usage(void)
+{
+    puts("Options:\n"
+         "\n"
+         " --snmp-ips <ip>,<ip>       Send SNMP notifications to the specified IPs\n"
+         " --community <name>         Include the given community string on notifications\n"
+         " --log-dir <directory>\n"
+         "                            Log to file in specified directory\n"
+         " --log-level N              Set log level to N (default: 4)\n"
+        );
 }
 
 int main (int argc, char **argv)
 {
   std::vector<std::string> trap_ips;
   char* community = NULL;
+  std::string logdir = "";
+  int loglevel = 4;
   int c;
+  int optind;
 
+  printf("Helo world\n");
   opterr = 0;
-  while ((c = getopt (argc, argv, "i:c:")) != -1)
+  while ((c = getopt_long(argc, argv, "", long_opt, &optind)) != -1)
   {
     switch (c)
       {
-      case 'c':
+      case OPT_COMMUNITY:
         community = optarg;
         break;
-      case 'i':
+      case OPT_SNMP_IPS:
         Utils::split_string(optarg, ',', trap_ips);
         break;
+      case OPT_LOG_LEVEL:
+        loglevel = atoi(optarg);
+        break;
+      case OPT_LOG_DIR:
+        logdir = optarg;
+        break;
       default:
-        abort ();
+        usage();
+        abort();
       }
   }
-
-  // Log SNMP library output to syslog
-  snmp_enable_calllog();
-  snmp_enable_syslog_ident("alarms_agent", LOG_DAEMON);
-
-  // Set ourselves up as a subagent
-  netsnmp_ds_set_boolean(NETSNMP_DS_APPLICATION_ID, NETSNMP_DS_AGENT_ROLE, 1);
-  init_agent("clearwater-alarms");
+  
+  Log::setLoggingLevel(loglevel);
+  Log::setLogger(new Logger(logdir, "clearwater-alarms"));
+  TRC_ERROR("I have started");
+  printf("Logging to %s at level %d\n", logdir.c_str(), loglevel);
+  snmp_setup("clearwater-alarms");
 
   // Connect to the informsinks
   for (std::vector<std::string>::iterator ii = trap_ips.begin();
@@ -101,7 +142,7 @@ int main (int argc, char **argv)
   // Exit if the ReqListener wasn't able to fully start
   if (!AlarmReqListener::get_instance().start())
   {
-    snmp_log(LOG_ERR, "Hit error starting the listener - shutting down");
+    TRC_ERROR("Hit error starting the listener - shutting down");
     return 0;
   }
 
@@ -109,16 +150,14 @@ int main (int argc, char **argv)
   init_ituAlarmTable();
 
   // Run forever
-  init_snmp("clearwater-alarms");
+  init_snmp_handler_threads("clearwater-alarms");
 
   signal(SIGTERM, terminate_handler);
   
   while (!done)
   {
-    agent_check_and_process(1);
+    sleep(1);
   }
-
-  snmp_shutdown("clearwater-alarms");
 
   return 0;
 }

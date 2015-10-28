@@ -44,6 +44,7 @@
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 
+#include "log.h"
 #include "alarm_req_listener.hpp"
 #include "alarm_trap_sender.hpp"
 
@@ -75,7 +76,7 @@ bool AlarmReqListener::start()
   if (rc != 0)
   {
     // LCOV_EXCL_START - No mock for pthread_create
-    snmp_log(LOG_ERR, "error creating listener thread: %s", strerror(rc));
+    TRC_ERROR("error creating listener thread: %s", strerror(rc));
     zmq_clean_ctx();
     return false;
     // LCOV_EXCL_STOP
@@ -107,7 +108,7 @@ bool AlarmReqListener::zmq_init_ctx()
   _ctx = zmq_ctx_new();
   if (_ctx == NULL)
   {
-    snmp_log(LOG_ERR, "zmq_ctx_new failed: %s", zmq_strerror(errno));
+    TRC_ERROR("zmq_ctx_new failed: %s", zmq_strerror(errno));
     return false;
   }
 
@@ -120,7 +121,7 @@ bool AlarmReqListener::zmq_init_sck()
 
   if (_sck == NULL)
   {
-    snmp_log(LOG_ERR, "zmq_socket failed: %s", zmq_strerror(errno));
+    TRC_ERROR("zmq_socket failed: %s", zmq_strerror(errno));
     return false;
   }
 
@@ -130,13 +131,13 @@ bool AlarmReqListener::zmq_init_sck()
 
   std::string sck_file = std::string("/var/run/clearwater/alarms");
   std::string sck_url = std::string("ipc://" + sck_file);
-  snmp_log(LOG_INFO, "AlarmReqListener: ss='%s'", sck_url.c_str());
+  TRC_INFO("AlarmReqListener: ss='%s'", sck_url.c_str());
 
   int rc = remove(sck_file.c_str());
 
   if (rc == -1)
   {
-    snmp_log(LOG_ERR, "remove(%s) failed: %s", sck_file.c_str(), strerror(errno));
+    TRC_ERROR("remove(%s) failed: %s", sck_file.c_str(), strerror(errno));
 
     if (errno != ENOENT)
     {
@@ -153,14 +154,14 @@ bool AlarmReqListener::zmq_init_sck()
 
   if (rc == -1)
   {
-    snmp_log(LOG_ERR, "zmq_bind failed: %s", zmq_strerror(errno));
+    TRC_ERROR("zmq_bind failed: %s", zmq_strerror(errno));
     return false;
   }
 
   rc=chmod(sck_file.c_str(), 0777);
   if (rc == -1)
   {
-    snmp_log(LOG_ERR, "chmod(%s, 0777) failed: %s", sck_file.c_str(), strerror(errno));
+    TRC_ERROR("chmod(%s, 0777) failed: %s", sck_file.c_str(), strerror(errno));
     // We don't return false in UT as the chmod always fails (because the
     // previous zmq calls are mocked out the socket file isn't created so can't
     // be chmodded).
@@ -178,7 +179,7 @@ void AlarmReqListener::zmq_clean_ctx()
   {
     if (zmq_ctx_destroy(_ctx) == -1)
     {
-      snmp_log(LOG_ERR, "zmq_ctx_destroy failed: %s", zmq_strerror(errno));
+      TRC_ERROR("zmq_ctx_destroy failed: %s", zmq_strerror(errno));
     }
 
     _ctx = NULL;
@@ -191,7 +192,7 @@ void AlarmReqListener::zmq_clean_sck()
   {
     if (zmq_close(_sck) == -1)
     {
-      snmp_log(LOG_ERR, "zmq_close failed: %s", zmq_strerror(errno));
+      TRC_ERROR("zmq_close failed: %s", zmq_strerror(errno));
     }
 
     _sck = NULL;
@@ -239,7 +240,7 @@ void AlarmReqListener::listener()
     }
     else
     {
-      snmp_log(LOG_ERR, "unexpected alarm request: %s, %lu", msg[0].c_str(), msg.size());
+      TRC_ERROR("unexpected alarm request: %s, %lu", msg[0].c_str(), msg.size());
     }
 
     reply("ok");
@@ -259,7 +260,7 @@ bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
 
     if (zmq_msg_init(&msg_part) != 0)
     {
-      snmp_log(LOG_ERR, "zmq_msg_init failed: %s", zmq_strerror(errno));
+      TRC_ERROR("zmq_msg_init failed: %s", zmq_strerror(errno));
       return false;
     }
 
@@ -272,7 +273,7 @@ bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
     {
       if (errno != ETERM)
       {
-        snmp_log(LOG_ERR, "zmq_msg_recv failed: %s", zmq_strerror(errno));
+        TRC_ERROR("zmq_msg_recv failed: %s", zmq_strerror(errno));
       }
 
       return false;
@@ -289,7 +290,7 @@ bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
     {
       if (errno != ETERM)
       {
-        snmp_log(LOG_ERR, "zmq_getsockopt failed: %s", zmq_strerror(errno));
+        TRC_ERROR("zmq_getsockopt failed: %s", zmq_strerror(errno));
       }
 
       return false;
@@ -297,7 +298,7 @@ bool AlarmReqListener::next_msg(std::vector<std::string>& msg)
 
     if (zmq_msg_close(&msg_part) == -1)
     {
-      snmp_log(LOG_ERR, "zmq_msg_close failed: %s", zmq_strerror(errno));
+      TRC_ERROR("zmq_msg_close failed: %s", zmq_strerror(errno));
       return false;
     }
 
@@ -310,7 +311,7 @@ void AlarmReqListener::reply(const char* response)
 {
   if (zmq_send(_sck, response, strlen(response), 0) == -1)
   {
-    snmp_log(LOG_ERR, "zmq_send failed: %s", zmq_strerror(errno));
+    TRC_ERROR("zmq_send failed: %s", zmq_strerror(errno));
   }
 }
 

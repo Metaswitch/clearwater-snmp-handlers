@@ -38,6 +38,7 @@
 
 #include <stdexcept>
 
+#include "log.h"
 #include "alarm_trap_sender.hpp"
 #include "itu_alarm_table.hpp"
 
@@ -144,7 +145,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 
   if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2)
   {
-    snmp_log(LOG_ERR, "malformed alarm identifier: %s", identifier.c_str());
+    TRC_ERROR("malformed alarm identifier: %s", identifier.c_str());
     return;
   }
 
@@ -162,7 +163,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
   }
   else
   {
-    snmp_log(LOG_ERR, "unknown alarm definition: %s", identifier.c_str());
+    TRC_ERROR("unknown alarm definition: %s", identifier.c_str());
   }
 }
 
@@ -218,6 +219,8 @@ void AlarmTrapSender::sync_alarms(bool do_clear)
 
 void AlarmTrapSender::send_trap(AlarmTableDef& alarm_table_def)
 {
+  TRC_WARNING("Trap with alarm ID %d.%d being sent", alarm_table_def.index(), alarm_table_def.state());
+
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
   static const oid active_oid[] = {1,3,6,1,2,1,118,0,2};
