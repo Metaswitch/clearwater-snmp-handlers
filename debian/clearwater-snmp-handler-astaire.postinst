@@ -54,7 +54,7 @@ set -e
 case "$1" in
     configure)
         # Trigger an snmpd restart to load the sub-agent
-        service snmpd restart || true
+        service snmpd stop || true
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
