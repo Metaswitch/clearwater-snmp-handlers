@@ -5028,8 +5028,8 @@ chronosAllTimersEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM, HWM and
-                 count of all timers on this Chronos
-                 node, over time."
+                 actions total of all timers on this
+                 Chronos node, over time."
     INDEX       {chronosAllTimersScope}
     ::= { chronosAllTimersTable 1 }
 
