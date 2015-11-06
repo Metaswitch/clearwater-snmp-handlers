@@ -39,6 +39,7 @@
 #include <signal.h>
 #include <string>
 #include <vector>
+#include <semaphore.h>
 
 #include "utils.h"
 #include "snmp_agent.h"
