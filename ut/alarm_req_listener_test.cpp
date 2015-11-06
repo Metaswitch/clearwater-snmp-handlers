@@ -50,6 +50,7 @@
 
 #include "fakezmq.h"
 #include "fakenetsnmp.h"
+#include "fakelogger.h"
 #include "test_interposer.hpp"
 
 using ::testing::_;
@@ -153,6 +154,7 @@ public:
 
 private:
   MockNetSnmpInterface _ms;
+  CapturingTestLogger _log;
   Alarm _alarm_1;
   Alarm _alarm_2;
   Alarm _alarm_3;
@@ -180,6 +182,7 @@ public:
 
 private:
   MockNetSnmpInterface _ms;
+  CapturingTestLogger _log;
   MockZmqInterface _mz;
   int _c;
   int _s;
@@ -419,7 +422,7 @@ TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
   invalid_zmq_request();
   usleep(100000);
 
-  EXPECT_TRUE(_ms.log_contains("unexpected alarm request"));
+  EXPECT_TRUE(_log.contains("unexpected alarm request"));
 }
 
 TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
@@ -430,7 +433,7 @@ TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
   issue_malformed_alarm();
   usleep(100000);
 
-  EXPECT_TRUE(_ms.log_contains("malformed alarm identifier"));
+  EXPECT_TRUE(_log.contains("malformed alarm identifier"));
 }
 
 TEST_F(AlarmReqListenerTest, UnknownAlarmIdentifier)
@@ -441,7 +444,7 @@ TEST_F(AlarmReqListenerTest, UnknownAlarmIdentifier)
   issue_unknown_alarm();
   usleep(100000);
 
-  EXPECT_TRUE(_ms.log_contains("unknown alarm definition"));
+  EXPECT_TRUE(_log.contains("unknown alarm definition"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, CreateContext)
@@ -449,7 +452,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, CreateContext)
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(ReturnNull());
 
   EXPECT_FALSE(AlarmReqListener::get_instance().start());
-  EXPECT_TRUE(_ms.log_contains("zmq_ctx_new failed:"));
+  EXPECT_TRUE(_log.contains("zmq_ctx_new failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, CreateSocket)
@@ -462,7 +465,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, CreateSocket)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_socket failed:"));
+  EXPECT_TRUE(_log.contains("zmq_socket failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, BindSocket)
@@ -477,7 +480,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, BindSocket)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_bind failed:"));
+  EXPECT_TRUE(_log.contains("zmq_bind failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, MsgReceive)
@@ -497,7 +500,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, MsgReceive)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_msg_recv failed:"));
+  EXPECT_TRUE(_log.contains("zmq_msg_recv failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, GetSockOpt)
@@ -518,7 +521,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, GetSockOpt)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_getsockopt failed:"));
+  EXPECT_TRUE(_log.contains("zmq_getsockopt failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, MsgClose)
@@ -540,7 +543,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, MsgClose)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_msg_close failed:"));
+  EXPECT_TRUE(_log.contains("zmq_msg_close failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, Send)
@@ -568,8 +571,8 @@ TEST_F(AlarmReqListenerZmqErrorTest, Send)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_send failed:"));
-  EXPECT_TRUE(_ms.log_contains("zmq_msg_init failed:"));
+  EXPECT_TRUE(_log.contains("zmq_send failed:"));
+  EXPECT_TRUE(_log.contains("zmq_msg_init failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, CloseSocket)
@@ -588,7 +591,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, CloseSocket)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_close failed:"));
+  EXPECT_TRUE(_log.contains("zmq_close failed:"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, DestroyContext)
@@ -607,5 +610,5 @@ TEST_F(AlarmReqListenerZmqErrorTest, DestroyContext)
 
   AlarmReqListener::get_instance().stop();
 
-  EXPECT_TRUE(_ms.log_contains("zmq_ctx_destroy failed:"));
+  EXPECT_TRUE(_log.contains("zmq_ctx_destroy failed:"));
 }

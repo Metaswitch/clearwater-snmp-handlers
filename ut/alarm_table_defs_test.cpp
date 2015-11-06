@@ -43,6 +43,7 @@
 #include "test_utils.hpp"
 
 #include "fakenetsnmp.h"
+#include "fakelogger.h"
 
 using ::testing::Eq;
 using ::testing::StrEq;
@@ -65,6 +66,7 @@ public:
 private:
   AlarmTableDefs& _defs;
   MockNetSnmpInterface _ms;
+  CapturingTestLogger _log;
 };
 
 TEST_F(AlarmTableDefsTest, InitializationNoFiles)
@@ -75,55 +77,55 @@ TEST_F(AlarmTableDefsTest, InitializationNoFiles)
 TEST_F(AlarmTableDefsTest, InitializationMultiDef)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/multi_definition/")));
-  EXPECT_TRUE(_ms.log_contains("multiply defined"));
+  EXPECT_TRUE(_log.contains("multiply defined"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationClearMissing)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/clear_missing/")));
-  EXPECT_TRUE(_ms.log_contains("define a CLEARED"));
+  EXPECT_TRUE(_log.contains("define a CLEARED"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationNonClearMissing)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/non_clear_missing/")));
-  EXPECT_TRUE(_ms.log_contains("define at least one non-CLEARED"));
+  EXPECT_TRUE(_log.contains("define at least one non-CLEARED"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationDescTooLong)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/desc_too_long/")));
-  EXPECT_TRUE(_ms.log_contains("'description' exceeds"));
+  EXPECT_TRUE(_log.contains("'description' exceeds"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationDetailsTooLong)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/details_too_long/")));
-  EXPECT_TRUE(_ms.log_contains("'details' exceeds"));
+  EXPECT_TRUE(_log.contains("'details' exceeds"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidJson)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json/")));
-  EXPECT_TRUE(_ms.log_contains("Invalid JSON file"));
+  EXPECT_TRUE(_log.contains("Invalid JSON file"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidJsonFormat)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json_format/")));
-  EXPECT_TRUE(_ms.log_contains("Invalid JSON file"));
+  EXPECT_TRUE(_log.contains("Invalid JSON file"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidSeverity)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_severity/")));
-  EXPECT_TRUE(_ms.log_contains("Invalid severity"));
+  EXPECT_TRUE(_log.contains("Invalid severity"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidCause)
 {
   EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_cause/")));
-  EXPECT_TRUE(_ms.log_contains("Invalid cause"));
+  EXPECT_TRUE(_log.contains("Invalid cause"));
 }
 
 TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
