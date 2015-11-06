@@ -89,6 +89,7 @@ get_settings()
 #
 do_start()
 {
+        get_settings
         mkdir -p $log_directory
 
         # Don't try and load MIBS at startup - we don't need them and this just causes lots of
@@ -107,7 +108,6 @@ do_start()
         ulimit -c unlimited
         # enable gdb to dump a parent process's stack
         echo 0 > /proc/sys/kernel/yama/ptrace_scope
-        get_settings
         DAEMON_ARGS="--snmp-ips $snmp_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
 
         start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON --chdir $HOME -- $DAEMON_ARGS \
