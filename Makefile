@@ -62,6 +62,7 @@ TARGET_SOURCES_TEST := test_main.cpp \
                        alarm_req_listener_test.cpp \
                        test_interposer.cpp \
                        fakenetsnmp.cpp \
+                       fakelogger.cpp \
                        fakezmq.cpp
 
 TARGET_SOURCES_BUILD := alarms_agent.cpp
