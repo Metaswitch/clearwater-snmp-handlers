@@ -47,6 +47,9 @@ TARGET_TEST := handler_test
 
 TARGET_SOURCES := alarmdefinition.cpp \
                   json_alarms.cpp \
+                  log.cpp \
+                  logger.cpp \
+                  snmp_agent.cpp \
                   alarm_table_defs.cpp \
                   alarm_req_listener.cpp \
                   alarm_trap_sender.cpp \
@@ -55,8 +58,6 @@ TARGET_SOURCES := alarmdefinition.cpp \
 
 TARGET_SOURCES_TEST := test_main.cpp \
                        alarm.cpp \
-                       log.cpp \
-                       logger.cpp \
                        alarm_table_defs_test.cpp \
                        alarm_req_listener_test.cpp \
                        test_interposer.cpp \
@@ -138,7 +139,7 @@ COMMON_OBJECTS := custom_handler.o oid.o oidtree.o oid_inet_addr.o zmq_listener.
 cdiv_handler.so: cdivdata.o ${COMMON_OBJECTS}
 	g++ -o $@ $^ ${LDFLAGS} -fPIC -shared
 
-cw_alarm_agent: alarms_agent.o alarmdefinition.o alarm_table_defs.o alarm_model_table.o alarm_req_listener.o alarm_trap_sender.o itu_alarm_table.o json_alarms.o
+cw_alarm_agent: alarms_agent.o alarmdefinition.o alarm_table_defs.o alarm_model_table.o alarm_req_listener.o alarm_trap_sender.o itu_alarm_table.o json_alarms.o log.o logger.o snmp_agent.o
 	g++ -o $@ $^ ${LDFLAGS}
 
 memento_as_handler.so: mementoasdata.o ${COMMON_OBJECTS}
