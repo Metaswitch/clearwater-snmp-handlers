@@ -90,6 +90,9 @@ get_settings()
 do_start()
 {
         mkdir -p $log_directory
+
+        # Don't try and load MIBS at startup - we don't need them and this just causes lots of
+        # "missing MIB" error logs.
         export MIBS=""
         # Return
         #   0 if daemon has been started

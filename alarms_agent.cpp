@@ -49,13 +49,12 @@
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
 
-bool done = false;
+static sem_t term_sem;
 
 // Signal handler that triggers termination.
 void terminate_handler(int sig)
 {
-  snmp_terminate("clearwater-alarms");
-  done = true;
+  sem_post(&term_sem);
 }
 
 enum OptionTypes
@@ -121,9 +120,8 @@ int main (int argc, char **argv)
   
   Log::setLoggingLevel(loglevel);
   Log::setLogger(new Logger(logdir, "clearwater-alarms"));
-  TRC_ERROR("I have started");
-  printf("Logging to %s at level %d\n", logdir.c_str(), loglevel);
   snmp_setup("clearwater-alarms");
+  sem_init(&term_sem, 0, 0);
 
   // Connect to the informsinks
   for (std::vector<std::string>::iterator ii = trap_ips.begin();
@@ -149,15 +147,14 @@ int main (int argc, char **argv)
   init_alarmModelTable();
   init_ituAlarmTable();
 
-  // Run forever
   init_snmp_handler_threads("clearwater-alarms");
+
+  TRC_STATUS("Alarm agent has started");
 
   signal(SIGTERM, terminate_handler);
   
-  while (!done)
-  {
-    sleep(1);
-  }
+  sem_wait(&term_sem);
+  snmp_terminate("clearwater-alarms");
 
   return 0;
 }
