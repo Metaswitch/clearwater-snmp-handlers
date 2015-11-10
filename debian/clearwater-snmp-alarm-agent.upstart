@@ -1,0 +1,34 @@
+# clearwater-socket-factory
+#
+# This process runs as root in the default namespace, and enables processes
+# running in different namespaces to obtain sockets in other namespaces.
+
+description "Clearwater alarm agent"
+
+start on (starting clearwater-monit)
+stop on runlevel [!2345]
+
+respawn
+# Sleep for 5 seconds on stop, to avoid respawning too quickly
+post-stop exec sleep 5
+
+script
+  get_daemon_args()
+  {
+    snmp_ip=0.0.0.0
+    snmp_community=clearwater
+    log_directory=/var/log/clearwater-alarms/
+    log_level=4
+    # Set up defaults and then pull in any overrides.
+    . /etc/clearwater/config
+    mkdir -p $log_directory
+
+    # Don't try and load MIBS at startup - we don't need them and this just causes lots of
+    # "missing MIB" error logs.
+    export MIBS=""
+    DAEMON_ARGS="--snmp-ips $snmp_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
+  }
+
+  get_daemon_args
+  /usr/share/clearwater/bin/cw_alarm_agent $DAEMON_ARGS
+end script
