@@ -53,9 +53,8 @@ set -e
 
 case "$1" in
     configure)
-
-        install -D --mode=0644 /usr/share/clearwater/conf/alarm_agent.monit /etc/monit/conf.d/
-
+        # Ensure monit isn't monitoring us - this should be done by upstart
+        rm -f /etc/monit/conf.d/alarm_agent.monit
         # Force monit to reload its configuration
         reload clearwater-monit || true
 
