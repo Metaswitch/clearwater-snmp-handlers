@@ -5302,7 +5302,31 @@ chronosSubLWM OBJECT-TYPE
                  over the period."
     ::= { chronosSubEntry 5 }
 
+chronosInstantaneousCounts OBJECT IDENTIFIER ::= { chronos 8 }
 
+chronosRegInstantaneousCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The instantaneous number of REG
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 1 }
+
+chronosCallInstantaneousCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The instantaneous number of CALL
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 2 }
+
+chronosSubInstantaneousCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The instantaneous number of SUB
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 3 }
 
 chronosGroup OBJECT-GROUP
     OBJECTS {
@@ -5325,7 +5349,10 @@ chronosGroup OBJECT-GROUP
         chronosSubAverage,
         chronosSubVariance,
         chronosSubHWM,
-        chronosSubLWM
+        chronosSubLWM,
+        chronosRegInstantaneousCount,
+        chronosCallInstantaneousCount,
+        chronosSubInstantaneousCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Chronos"
