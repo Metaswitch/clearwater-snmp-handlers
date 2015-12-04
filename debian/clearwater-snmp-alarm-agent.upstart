@@ -26,7 +26,7 @@ script
     # Don't try and load MIBS at startup - we don't need them and this just causes lots of
     # "missing MIB" error logs.
     export MIBS=""
-    DAEMON_ARGS="--snmp-ips $snmp_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
+    DAEMON_ARGS="--snmp-ips $snmp_ip --local_ip $local_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
   }
 
   get_daemon_args

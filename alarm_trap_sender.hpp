@@ -39,8 +39,22 @@
 
 #include <string>
 #include <map>
+#include <cstdint>
 
 #include "alarm_table_defs.hpp"
+
+typedef struct SNMPDateTime {
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+    uint8_t decisecond;
+    uint8_t direction;
+    uint8_t timezone;
+    uint8_t mintimezone;
+} alarmActiveTable_SNMPDateTime;
 
 // Definition of an entry in the active alarm list. 
 
@@ -170,7 +184,7 @@ public:
   void sync_alarms(bool do_clear);
 
   static AlarmTrapSender& get_instance() {return _instance;}
-
+  alarmActiveTable_SNMPDateTime* alarm_time_issued(void);
 private:
   AlarmTrapSender() {}
 

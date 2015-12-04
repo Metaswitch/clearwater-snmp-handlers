@@ -37,10 +37,13 @@
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 
 #include <stdexcept>
+#include <time.h>
+#include <cmath>
 
 #include "log.h"
 #include "alarm_trap_sender.hpp"
 #include "itu_alarm_table.hpp"
+#include "alarm_active_table.hpp"
 
 AlarmFilter AlarmFilter::_instance;
 
@@ -138,6 +141,37 @@ unsigned long AlarmFilter::current_time_ms()
   return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
 }
 
+alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
+{
+  alarmActiveTable_SNMPDateTime* d_time = new alarmActiveTable_SNMPDateTime();
+  struct timespec ts;
+  struct tm *timing;
+  time_t rawtime;
+  char direction;
+  int daylight_savings;
+
+  clock_gettime(CLOCK_REALTIME, &ts);
+  rawtime = ts.tv_sec;
+  timing = gmtime(&rawtime);
+  // This updates the variable timezone declared within time.h which
+  // tells us how offset from UTC we are.
+  localtime(&rawtime);
+  direction = (timezone > 0) ? '+' : '-';
+  daylight_savings = abs(timezone);
+  d_time->year = 1990 + timing->tm_year;
+  d_time->month = 1 + timing->tm_mon;
+  d_time->day = timing->tm_mday;
+  d_time->hour = timing->tm_hour;
+  d_time->minute = timing->tm_min;
+  d_time->second = timing->tm_sec;
+  d_time->decisecond = 0;
+  d_time->direction = direction;
+  d_time->timezone = daylight_savings;
+  d_time->mintimezone = 0;
+
+  return d_time;
+}
+
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
   unsigned int index;
@@ -157,6 +191,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
     {
       if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
       {
+        alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), index);
         send_trap(alarm_table_def);
       }
     }
@@ -180,6 +215,7 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
 
       if (!AlarmFilter::get_instance().alarm_filtered(clear_def.index(), clear_def.severity()))
       {
+        alarmActiveTable_delete_row(it->alarm_table_def().index()); 
         send_trap(clear_def);
       }
 

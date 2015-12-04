@@ -49,11 +49,12 @@
 #include "alarm_req_listener.hpp"
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
+#include "alarm_active_table.hpp"
 
 static sem_t term_sem;
-
+std::string local_ip = "0.0.0.0";
 // Signal handler that triggers termination.
-void terminate_handler(int sig)
+void agent_terminate_handler(int sig)
 {
   sem_post(&term_sem);
 }
@@ -61,6 +62,7 @@ void terminate_handler(int sig)
 enum OptionTypes
 {
   OPT_COMMUNITY=256+1,
+  OPT_LOCAL_IP,
   OPT_SNMP_IPS,
   OPT_LOG_LEVEL,
   OPT_LOG_DIR
@@ -70,6 +72,7 @@ const static struct option long_opt[] =
 {
   { "community",                       required_argument, 0, OPT_COMMUNITY},
   { "snmp-ips",                        required_argument, 0, OPT_SNMP_IPS},
+  { "local_ip",                        required_argument, 0, OPT_LOCAL_IP},
   { "log-level",                       required_argument, 0, OPT_LOG_LEVEL},
   { "log-dir",                         required_argument, 0, OPT_LOG_DIR},
 };
@@ -106,6 +109,9 @@ int main (int argc, char **argv)
         break;
       case OPT_SNMP_IPS:
         Utils::split_string(optarg, ',', trap_ips);
+        break;
+      case OPT_LOCAL_IP:
+        local_ip = optarg;       
         break;
       case OPT_LOG_LEVEL:
         loglevel = atoi(optarg);
@@ -147,12 +153,13 @@ int main (int argc, char **argv)
 
   init_alarmModelTable();
   init_ituAlarmTable();
+  init_alarmActiveTable(local_ip);
 
   init_snmp_handler_threads("clearwater-alarms");
 
   TRC_STATUS("Alarm agent has started");
 
-  signal(SIGTERM, terminate_handler);
+  signal(SIGTERM, agent_terminate_handler);
   
   sem_wait(&term_sem);
   snmp_terminate("clearwater-alarms");
