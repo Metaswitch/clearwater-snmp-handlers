@@ -3,6 +3,7 @@
 modules/cpp-common/src/alarm.cpp
 modules/cpp-common/src/log.cpp
 modules/cpp-common/src/logger.cpp
+modules/cpp-common/src/fakelogger.cpp
 
 # The following files rely heavily on interactions with net-snmp. They
 # are tested manually by verifying table displays from a MIB browser. 
