@@ -1,1 +1,1 @@
-cdiv_handler.so /usr/lib/clearwater/
+build/bin/cdiv_handler.so /usr/lib/clearwater/

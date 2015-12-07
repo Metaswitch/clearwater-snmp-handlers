@@ -1,1 +1,1 @@
-astaire_handler.so /usr/lib/clearwater/
+build/bin/astaire_handler.so /usr/lib/clearwater/
