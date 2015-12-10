@@ -43,6 +43,7 @@
 #include "log.h"
 
 #include <string>
+
 using namespace std;
 
 static netsnmp_handler_registration* my_handler = NULL;
@@ -111,6 +112,7 @@ int init_alarmActiveTable(std::string ip)
   /*
    * registering the table with the master agent
    */
+  TRC_STATUS("!!!DEBUGGING!!! cb.get_value call");
   cb.get_value = alarmActiveTable_get_value;
   cb.container = netsnmp_container_find("alarmActiveTable_primary:"
                                         "alarmActiveTable:"
@@ -135,7 +137,7 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
 {
   netsnmp_variable_list* var = request->requestvb;
   alarmActiveTable_context* context = (alarmActiveTable_context*) item;
-
+  TRC_STATUS("!!!DEBUGGING!!! Entered get value function");
   switch(table_info->colnum)
   {
     case COLUMN_ALARMACTIVEENGINEID:
@@ -287,6 +289,7 @@ void alarmActiveTable_create_row(char* name,
                                  unsigned long index)
 {
   unsigned long* current_state;
+  TRC_STATUS("!!!DEBUGGING!!!Create row function has started");  
   alarmActiveTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmActiveTable_context);
   if (!ctx)
   {
@@ -319,8 +322,10 @@ void alarmActiveTable_create_row(char* name,
     }
   }
   *(ctx->_index.oids + ctx->_index.len -1) = *current_state;
+  TRC_STATUS("!!!DEBUGGING!!!Just before container insert if statement");
   if (ctx)
   {
+    TRC_STATUS("!!!DEBUGGING!!!Inserting container");
     CONTAINER_INSERT(cb.container, ctx);
   }
   return;

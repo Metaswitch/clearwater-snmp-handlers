@@ -129,7 +129,7 @@ int main (int argc, char **argv)
   Log::setLogger(new Logger(logdir, "clearwater-alarms"));
   snmp_setup("clearwater-alarms");
   sem_init(&term_sem, 0, 0);
-
+  TRC_STATUS("!!!DEBUGGING!!! Started ame2");
   // Connect to the informsinks
   for (std::vector<std::string>::iterator ii = trap_ips.begin();
        ii != trap_ips.end();
