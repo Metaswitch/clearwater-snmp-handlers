@@ -48,8 +48,7 @@ using namespace std;
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
 
-oid alarmModelTable_oid[] = { alarmModelTable_TABLE_OID };
-size_t alarmModelTable_oid_len = OID_LENGTH(alarmModelTable_oid);
+static oid alarmModelTable_oid[] = { alarmModelTable_TABLE_OID };
 
 oid alarmActiveTable_oid[] = { alarmActiveTable_TABLE_OID };
 size_t alarmActiveTable_oid_len = OID_LENGTH(alarmActiveTable_oid);
@@ -60,7 +59,7 @@ static oid alarm_clear_state_oid[] = { ALARM_CLEAR_STATE_OID };
 
 static oid entry_column_oid[] = { ENTRY_COLUMN_OID };
 
-std::string local_ip;
+std::string loc_ip;
 
 /************************************************************
  *
@@ -69,7 +68,7 @@ std::string local_ip;
  */
 int init_alarmActiveTable(std::string ip)
 {
-  local_ip = ip;
+  loc_ip = ip;
   netsnmp_table_registration_info *table_info;
 
   if (my_handler)
@@ -152,8 +151,8 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
     case COLUMN_ALARMACTIVEENGINEADDRESSTYPE:
     {
      snmp_set_var_typed_value(var, ASN_OCTET_STR,
-                               (u_char*) &local_ip,
-                               sizeof(local_ip));
+                               (u_char*) &loc_ip,
+                               sizeof(loc_ip));
     }
     break;
 
@@ -162,7 +161,7 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
       // This is of type InetAddressType and will either be
       // IPv4 or IPv6
       static std::string ip_type;
-      ip_type = (local_ip.length()==4) ? "ipV4" : "ipV6";
+      ip_type = (loc_ip.length()==4) ? "ipV4" : "ipV6";
       snmp_set_var_typed_value(var, ASN_OCTET_STR,
                                (u_char*) &ip_type,
                                sizeof(ip_type));
@@ -239,29 +238,30 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
 
     case COLUMN_ALARMACTIVEMODELPOINTER:
     {
+      oid* model_pointer;
       // Convert the index string OID
-      oid index_oid = context->_index.oids;
+      oid* index_oid = context->_index.oids;
 
       // Append the index array on to the Alarm Model Table OID, inserting
       // the OID ".1.3." for the entry in the first non index column
       model_pointer = new oid[sizeof(alarmModelTable_oid) + sizeof(entry_column_oid) + sizeof(index_oid)];
       copy(alarmModelTable_oid, alarmModelTable_oid + sizeof(alarmModelTable_oid), model_pointer);
       copy(entry_column_oid, entry_column_oid + sizeof(entry_column_oid), model_pointer + sizeof(alarmModelTable_oid));
-      copy(index_oid, index_oid + sizeof(index_oid), model_pointer + sizeof(alarmModelTable_oid) + sizeof(entry_column_oid);
+      copy(index_oid, index_oid + context->_index.len, model_pointer + sizeof(alarmModelTable_oid) + sizeof(entry_column_oid));
 
-      snmp_set_var_types_value(var, ASN_OBJECT_ID,
+      snmp_set_var_typed_value(var, ASN_OBJECT_ID,
                                (u_char*) model_pointer,
                                sizeof(model_pointer));
 
     }
     break;
     
-    case COLUMN_ALARMMODELSPECIFICPOINTER:
+    case COLUMN_ALARMACTIVESPECIFICPOINTER:
     {
       // This would point to the model-specific active alarm list
       // for this alarm. We do not support model-specific Alarm-MIB
       // and hence this will always be the 0.0 OID
-      snmp_set_var_types_value(var, ASN_OBJECT_ID,
+      snmp_set_var_typed_value(var, ASN_OBJECT_ID,
                                (u_char*) zero_dot_zero_oid,
                                sizeof(zero_dot_zero_oid));
     }
@@ -286,7 +286,7 @@ void alarmActiveTable_create_row(char* name,
                                  alarmActiveTable_SNMPDateTime* datetime,
                                  unsigned long index)
 {
-  int current_state;
+  unsigned long* current_state;
   alarmActiveTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmActiveTable_context);
   if (!ctx)
   {
@@ -306,23 +306,24 @@ void alarmActiveTable_create_row(char* name,
   }
   // If an instance of an alarm is raised that already exists within the Active
   // Alarm Table but with different severity we should remove the old alarm.
-  current_state = ctx->alarm_table_def.state();
-  if current_state != 1;
+  current_state = ctx->_index.oids + ctx->_index.len -1;
+  if (*current_state != 1);
   {
-    for (int i=2; i<=6; i++)
+    for (unsigned long i=2; i<=6; i++)
     {
-      (ctx->_index).back() = i;
-      if (CONTAINER_FIND(cb.container, ctx) != NULL && current_state != i)
+      *(ctx->_index.oids + ctx->_index.len - 1)=  i;
+      if (CONTAINER_FIND(cb.container, ctx) != NULL && *current_state != i)
       {
         CONTAINER_REMOVE(cb.container,ctx);
       }
     }
   }
-  (ctw->_index).back() = current_state;
+  *(ctx->_index.oids + ctx->_index.len -1) = *current_state;
   if (ctx)
   {
     CONTAINER_INSERT(cb.container, ctx);
   }
+  return;
 }
 
 /************************************************************
@@ -340,7 +341,7 @@ void alarmActiveTable_delete_row(unsigned long index)
   
   if (ctx)
   {
-    CONTAINER_REMOVE(cb.container, ctx)
+    CONTAINER_REMOVE(cb.container, ctx);
   }
 }
 /************************************************************
