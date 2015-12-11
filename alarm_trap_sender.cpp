@@ -39,6 +39,7 @@
 #include <stdexcept>
 #include <time.h>
 #include <cmath>
+#include <arpa/inet.h>
 
 #include "log.h"
 #include "alarm_trap_sender.hpp"
@@ -147,7 +148,7 @@ alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
   struct timespec ts;
   struct tm *timing;
   time_t rawtime;
-  char direction;
+  char plus_or_minus;
   int daylight_savings;
 
   clock_gettime(CLOCK_REALTIME, &ts);
@@ -156,17 +157,20 @@ alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
   // This updates the variable timezone declared within time.h which
   // tells us how offset from UTC we are.
   localtime(&rawtime);
-  direction = (timezone > 0) ? '+' : '-';
+  plus_or_minus = (timezone > 0) ? '+' : '-';
   daylight_savings = abs(timezone);
-  d_time->year = 1990 + timing->tm_year;
+  d_time->year = htons(1900 + timing->tm_year);
+  TRC_STATUS("!!!DEBUGGING!!! year = %d", d_time->year);
   d_time->month = 1 + timing->tm_mon;
+  TRC_STATUS("!!!DEBUGGING!!! month = %d", d_time->month);
   d_time->day = timing->tm_mday;
   d_time->hour = timing->tm_hour;
   d_time->minute = timing->tm_min;
   d_time->second = timing->tm_sec;
   d_time->decisecond = 0;
-  d_time->direction = direction;
-  d_time->timezone = daylight_savings;
+  d_time->direction = plus_or_minus;
+  TRC_STATUS("!!!DEBUGGING!!! direction = %d", d_time->direction);
+  d_time->timegeozone = daylight_savings;
   d_time->mintimezone = 0;
 
   return d_time;
@@ -191,7 +195,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
     {
       if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
       {
-        alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), index);
+        alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), index, alarm_table_def);
         send_trap(alarm_table_def);
       }
     }

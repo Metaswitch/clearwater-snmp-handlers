@@ -77,7 +77,7 @@ typedef struct alarmActiveTable_context_s {
 int init_alarmActiveTable(std::string);
 int alarmActiveTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
 
-void alarmActiveTable_create_row(char*, alarmActiveTable_SNMPDateTime*, unsigned long);
+void alarmActiveTable_create_row(char*, alarmActiveTable_SNMPDateTime*, unsigned long, AlarmTableDef&);
 void alarmActiveTable_delete_row(unsigned long);
 int alarmActiveTable_index_to_oid(char*, alarmActiveTable_SNMPDateTime*, unsigned long, netsnmp_index*);
 

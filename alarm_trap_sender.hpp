@@ -52,7 +52,7 @@ typedef struct SNMPDateTime {
     uint8_t second;
     uint8_t decisecond;
     uint8_t direction;
-    uint8_t timezone;
+    uint8_t timegeozone;
     uint8_t mintimezone;
 } alarmActiveTable_SNMPDateTime;
 

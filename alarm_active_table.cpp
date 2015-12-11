@@ -246,7 +246,7 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
 
       // Append the index array on to the Alarm Model Table OID, inserting
       // the OID ".1.3." for the entry in the first non index column
-      model_pointer = new oid[sizeof(alarmModelTable_oid) + sizeof(entry_column_oid) + sizeof(index_oid)];
+      model_pointer = new oid[sizeof(alarmModelTable_oid) + sizeof(entry_column_oid) + context->_index.len];
       copy(alarmModelTable_oid, alarmModelTable_oid + sizeof(alarmModelTable_oid), model_pointer);
       copy(entry_column_oid, entry_column_oid + sizeof(entry_column_oid), model_pointer + sizeof(alarmModelTable_oid));
       copy(index_oid, index_oid + context->_index.len, model_pointer + sizeof(alarmModelTable_oid) + sizeof(entry_column_oid));
@@ -286,7 +286,8 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
  */
 void alarmActiveTable_create_row(char* name,
                                  alarmActiveTable_SNMPDateTime* datetime,
-                                 unsigned long index)
+                                 unsigned long index,
+                                 AlarmTableDef& def)
 {
   unsigned long* current_state;
   TRC_STATUS("!!!DEBUGGING!!!Create row function has started");  
@@ -326,6 +327,7 @@ void alarmActiveTable_create_row(char* name,
   if (ctx)
   {
     TRC_STATUS("!!!DEBUGGING!!!Inserting container");
+    ctx->_alarm_table_def = &def;
     CONTAINER_INSERT(cb.container, ctx);
   }
   return;
@@ -360,6 +362,8 @@ int alarmActiveTable_index_to_oid(char* name,
 {
   int err = SNMP_ERR_NOERROR;
 
+  TRC_STATUS("!!!DEBUGGING!!! Days= %d", datetime->day);
+
   netsnmp_variable_list var_alarmListName;
   netsnmp_variable_list var_alarmActiveDateAndTime;
   netsnmp_variable_list var_alarmActiveIndex;
@@ -385,7 +389,7 @@ int alarmActiveTable_index_to_oid(char* name,
   DEBUGMSGTL(("verbose:alarmActiveTable:alarmActiveTable_index_to_oid", "called\n"));
 
   snmp_set_var_value(&var_alarmListName, (u_char*) name, strlen(name));
-  snmp_set_var_value(&var_alarmActiveDateAndTime, (u_char*) &datetime, sizeof(datetime));
+  snmp_set_var_value(&var_alarmActiveDateAndTime, (u_char*) datetime, sizeof(datetime));
   snmp_set_var_value(&var_alarmActiveIndex, (u_char*) &index, sizeof(index));
 
   err = build_oid(&oid_idx->oids, &oid_idx->len, NULL, 0, &var_alarmListName);
