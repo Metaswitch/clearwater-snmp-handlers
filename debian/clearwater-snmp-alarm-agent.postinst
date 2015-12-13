@@ -53,6 +53,8 @@ set -e
 
 case "$1" in
     configure)
+        mkdir -p /var/run/clearwater
+
         # Ensure monit isn't monitoring us - this should be done by upstart
         rm -f /etc/monit/conf.d/alarm_agent.monit
         # Force monit to reload its configuration
