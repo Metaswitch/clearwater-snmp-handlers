@@ -178,6 +178,7 @@ alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
 
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
+  static unsigned int alarm_counter = 1;
   unsigned int index;
   unsigned int severity;
 
@@ -195,8 +196,13 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
     {
       if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
       {
-        alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), index, alarm_table_def);
+        alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), alarm_counter, alarm_table_def);
         send_trap(alarm_table_def);
+        alarm_counter++;
+        if (alarm_counter == 4294967295)
+        {
+          alarm_counter = 1;
+        }
       }
     }
   }
@@ -219,7 +225,6 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
 
       if (!AlarmFilter::get_instance().alarm_filtered(clear_def.index(), clear_def.severity()))
       {
-        alarmActiveTable_delete_row(it->alarm_table_def().index()); 
         send_trap(clear_def);
       }
 

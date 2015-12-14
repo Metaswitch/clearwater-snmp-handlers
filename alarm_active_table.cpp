@@ -50,6 +50,7 @@ static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
 
 static oid alarmModelTable_oid[] = { alarmModelTable_TABLE_OID };
+static size_t alarmModelTable_oid_len = OID_LENGTH(alarmModelTable_oid);
 
 oid alarmActiveTable_oid[] = { alarmActiveTable_TABLE_OID };
 size_t alarmActiveTable_oid_len = OID_LENGTH(alarmActiveTable_oid);
@@ -59,7 +60,9 @@ static oid alarm_active_state_oid[] = { ALARM_ACTIVE_STATE_OID };
 static oid alarm_clear_state_oid[] = { ALARM_CLEAR_STATE_OID };
 
 static oid entry_column_oid[] = { ENTRY_COLUMN_OID };
+static size_t entry_column_oid_len = OID_LENGTH(entry_column_oid);
 
+std::map<unsigned long, alarmActiveTable_context*> pointers;
 std::string loc_ip;
 
 /************************************************************
@@ -112,7 +115,6 @@ int init_alarmActiveTable(std::string ip)
   /*
    * registering the table with the master agent
    */
-  TRC_STATUS("!!!DEBUGGING!!! cb.get_value call");
   cb.get_value = alarmActiveTable_get_value;
   cb.container = netsnmp_container_find("alarmActiveTable_primary:"
                                         "alarmActiveTable:"
@@ -137,7 +139,6 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
 {
   netsnmp_variable_list* var = request->requestvb;
   alarmActiveTable_context* context = (alarmActiveTable_context*) item;
-  TRC_STATUS("!!!DEBUGGING!!! Entered get value function");
   switch(table_info->colnum)
   {
     case COLUMN_ALARMACTIVEENGINEID:
@@ -146,27 +147,28 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
       static std::string empty_string  = "";
       snmp_set_var_typed_value(var, ASN_OCTET_STR,
                                (u_char*) &empty_string,
-                               sizeof(empty_string));
+                               empty_string.length());
     }
     break;
 
     case COLUMN_ALARMACTIVEENGINEADDRESSTYPE:
     {
-     snmp_set_var_typed_value(var, ASN_OCTET_STR,
-                               (u_char*) &loc_ip,
-                               sizeof(loc_ip));
+      // This is of type InetAddressType and will either be
+      // IPv4 or IPv6
+      int ip_type;
+      ip_type = (loc_ip.find(":") == std::string::npos) ? 1 : 2;
+      snmp_set_var_typed_value(var, ASN_INTEGER,
+                               (u_char*) &ip_type,
+                               sizeof(ip_type));
+  
     }
     break;
 
     case COLUMN_ALARMACTIVEENGINEADDRESS:
     {
-      // This is of type InetAddressType and will either be
-      // IPv4 or IPv6
-      static std::string ip_type;
-      ip_type = (loc_ip.length()==4) ? "ipV4" : "ipV6";
       snmp_set_var_typed_value(var, ASN_OCTET_STR,
-                               (u_char*) &ip_type,
-                               sizeof(ip_type));
+                               (u_char*) loc_ip.c_str(),
+                               strlen(loc_ip.c_str()));
     }
     break;
 
@@ -242,18 +244,21 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
     {
       oid* model_pointer;
       // Convert the index string OID
-      oid* index_oid = context->_index.oids;
-
+      int model_pointer_len = alarmModelTable_oid_len + entry_column_oid_len + 3;
       // Append the index array on to the Alarm Model Table OID, inserting
       // the OID ".1.3." for the entry in the first non index column
-      model_pointer = new oid[sizeof(alarmModelTable_oid) + sizeof(entry_column_oid) + context->_index.len];
-      copy(alarmModelTable_oid, alarmModelTable_oid + sizeof(alarmModelTable_oid), model_pointer);
-      copy(entry_column_oid, entry_column_oid + sizeof(entry_column_oid), model_pointer + sizeof(alarmModelTable_oid));
-      copy(index_oid, index_oid + context->_index.len, model_pointer + sizeof(alarmModelTable_oid) + sizeof(entry_column_oid));
+      model_pointer = new oid[model_pointer_len];
+      copy(alarmModelTable_oid, alarmModelTable_oid + alarmModelTable_oid_len, model_pointer);
 
+      copy(entry_column_oid, entry_column_oid + entry_column_oid_len, model_pointer + alarmModelTable_oid_len);
+      
+      model_pointer[alarmModelTable_oid_len + entry_column_oid_len] = 0;
+      model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 1] = context->_alarm_table_def->index(); 
+      model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 2] = context->_alarm_table_def->severity();      
+      
       snmp_set_var_typed_value(var, ASN_OBJECT_ID,
                                (u_char*) model_pointer,
-                               sizeof(model_pointer));
+                               model_pointer_len * sizeof(oid));
 
     }
     break;
@@ -289,9 +294,15 @@ void alarmActiveTable_create_row(char* name,
                                  unsigned long index,
                                  AlarmTableDef& def)
 {
-  unsigned long* current_state;
-  TRC_STATUS("!!!DEBUGGING!!!Create row function has started");  
   alarmActiveTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmActiveTable_context);
+  ctx->_alarm_table_def = &def;
+  if (pointers[ctx->_alarm_table_def->index()])
+  {
+    if (ctx->_alarm_table_def->severity() == pointers[ctx->_alarm_table_def->index()]->_alarm_table_def->severity())
+    {
+      return;
+    }
+  }
   if (!ctx)
   {
     TRC_ERROR("malloc failed: alarmActiveTable_create_row");
@@ -308,27 +319,22 @@ void alarmActiveTable_create_row(char* name,
     free(ctx);
     return;
   }
-  // If an instance of an alarm is raised that already exists within the Active
-  // Alarm Table but with different severity we should remove the old alarm.
-  current_state = ctx->_index.oids + ctx->_index.len -1;
-  if (*current_state != 1);
+  if (ctx->_alarm_table_def->severity() == 1)
   {
-    for (unsigned long i=2; i<=6; i++)
-    {
-      *(ctx->_index.oids + ctx->_index.len - 1)=  i;
-      if (CONTAINER_FIND(cb.container, ctx) != NULL && *current_state != i)
-      {
-        CONTAINER_REMOVE(cb.container,ctx);
-      }
-    }
+    alarmActiveTable_delete_row(def);
   }
-  *(ctx->_index.oids + ctx->_index.len -1) = *current_state;
-  TRC_STATUS("!!!DEBUGGING!!!Just before container insert if statement");
-  if (ctx)
+  else
   {
-    TRC_STATUS("!!!DEBUGGING!!!Inserting container");
-    ctx->_alarm_table_def = &def;
-    CONTAINER_INSERT(cb.container, ctx);
+    if (pointers[ctx->_alarm_table_def->index()])
+    {
+      CONTAINER_REMOVE(cb.container, pointers[ctx->_alarm_table_def->index()]);
+    }
+    
+    if (ctx)
+    {
+      CONTAINER_INSERT(cb.container, ctx);
+      pointers[ctx->_alarm_table_def->index()] = ctx;
+    }
   }
   return;
 }
@@ -337,9 +343,10 @@ void alarmActiveTable_create_row(char* name,
  *
  * Delete a row
  */
-void alarmActiveTable_delete_row(unsigned long index)
+void alarmActiveTable_delete_row(AlarmTableDef& def)
 {
   alarmActiveTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmActiveTable_context);
+  ctx->_alarm_table_def = &def;
   if (!ctx)
   {
     TRC_ERROR("malloc failed: alarmActiveTable_remove_row");
@@ -348,26 +355,26 @@ void alarmActiveTable_delete_row(unsigned long index)
   
   if (ctx)
   {
-    CONTAINER_REMOVE(cb.container, ctx);
+    CONTAINER_REMOVE(cb.container, pointers[ctx->_alarm_table_def->index()]);
+    pointers[ctx->_alarm_table_def->index()] = NULL;
   }
 }
+
 /************************************************************
  *
  *  Convert table index components to an oid.
  */
 int alarmActiveTable_index_to_oid(char* name,
                                  alarmActiveTable_SNMPDateTime* datetime,
-                                 unsigned long index,
+                                 unsigned long counter,
                                  netsnmp_index *oid_idx)
 {
   int err = SNMP_ERR_NOERROR;
 
-  TRC_STATUS("!!!DEBUGGING!!! Days= %d", datetime->day);
 
   netsnmp_variable_list var_alarmListName;
   netsnmp_variable_list var_alarmActiveDateAndTime;
   netsnmp_variable_list var_alarmActiveIndex;
-
   /*
    * set up varbinds
    */
@@ -389,8 +396,17 @@ int alarmActiveTable_index_to_oid(char* name,
   DEBUGMSGTL(("verbose:alarmActiveTable:alarmActiveTable_index_to_oid", "called\n"));
 
   snmp_set_var_value(&var_alarmListName, (u_char*) name, strlen(name));
-  snmp_set_var_value(&var_alarmActiveDateAndTime, (u_char*) datetime, sizeof(datetime));
-  snmp_set_var_value(&var_alarmActiveIndex, (u_char*) &index, sizeof(index));
+  //Here we use the value 11 as that is how many octets the datetime structure
+  //contains. We were not able to find the size of the structure using sizeof
+  //due to structure padding.
+  snmp_set_var_value(&var_alarmActiveDateAndTime, (u_char*) datetime, 11);
+  TRC_STATUS("Counter: %p, %d %d %d %d size %d", &counter,
+             ((u_char*)(&counter))[0],
+             ((u_char*)(&counter))[1],
+             ((u_char*)(&counter))[2],
+             ((u_char*)(&counter))[3],
+             sizeof(counter));
+  snmp_set_var_value(&var_alarmActiveIndex, (u_char*) &counter, sizeof(counter));
 
   err = build_oid(&oid_idx->oids, &oid_idx->len, NULL, 0, &var_alarmListName);
   if (err)

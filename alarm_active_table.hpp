@@ -64,8 +64,6 @@ using namespace std;
 typedef struct alarmActiveTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */
 
-    std::string _date_time;
-
     AlarmTableDef* _alarm_table_def;
 
 } alarmActiveTable_context;
@@ -78,7 +76,7 @@ int init_alarmActiveTable(std::string);
 int alarmActiveTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
 
 void alarmActiveTable_create_row(char*, alarmActiveTable_SNMPDateTime*, unsigned long, AlarmTableDef&);
-void alarmActiveTable_delete_row(unsigned long);
+void alarmActiveTable_delete_row(AlarmTableDef&);
 int alarmActiveTable_index_to_oid(char*, alarmActiveTable_SNMPDateTime*, unsigned long, netsnmp_index*);
 
 /*************************************************************
