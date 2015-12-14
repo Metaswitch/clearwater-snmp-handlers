@@ -253,7 +253,7 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
       copy(entry_column_oid, entry_column_oid + entry_column_oid_len, model_pointer + alarmModelTable_oid_len);
       
       model_pointer[alarmModelTable_oid_len + entry_column_oid_len] = 0;
-      model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 1] = context->_alarm_table_def->index(); 
+      model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 1] = context->_alarm_table_def->alarm_index(); 
       model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 2] = context->_alarm_table_def->severity();      
       
       snmp_set_var_typed_value(var, ASN_OBJECT_ID,
@@ -296,9 +296,9 @@ void alarmActiveTable_create_row(char* name,
 {
   alarmActiveTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmActiveTable_context);
   ctx->_alarm_table_def = &def;
-  if (pointers[ctx->_alarm_table_def->index()])
+  if (pointers[ctx->_alarm_table_def->alarm_index()])
   {
-    if (ctx->_alarm_table_def->severity() == pointers[ctx->_alarm_table_def->index()]->_alarm_table_def->severity())
+    if (ctx->_alarm_table_def->severity() == pointers[ctx->_alarm_table_def->alarm_index()]->_alarm_table_def->severity())
     {
       return;
     }
@@ -325,15 +325,15 @@ void alarmActiveTable_create_row(char* name,
   }
   else
   {
-    if (pointers[ctx->_alarm_table_def->index()])
+    if (pointers[ctx->_alarm_table_def->alarm_index()])
     {
-      CONTAINER_REMOVE(cb.container, pointers[ctx->_alarm_table_def->index()]);
+      CONTAINER_REMOVE(cb.container, pointers[ctx->_alarm_table_def->alarm_index()]);
     }
     
     if (ctx)
     {
       CONTAINER_INSERT(cb.container, ctx);
-      pointers[ctx->_alarm_table_def->index()] = ctx;
+      pointers[ctx->_alarm_table_def->alarm_index()] = ctx;
     }
   }
   return;
@@ -355,8 +355,8 @@ void alarmActiveTable_delete_row(AlarmTableDef& def)
   
   if (ctx)
   {
-    CONTAINER_REMOVE(cb.container, pointers[ctx->_alarm_table_def->index()]);
-    pointers[ctx->_alarm_table_def->index()] = NULL;
+    CONTAINER_REMOVE(cb.container, pointers[ctx->_alarm_table_def->alarm_index()]);
+    pointers[ctx->_alarm_table_def->alarm_index()] = NULL;
   }
 }
 

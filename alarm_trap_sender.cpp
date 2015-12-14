@@ -54,13 +54,13 @@ bool ActiveAlarmList::update(AlarmTableDef& alarm_table_def, const std::string& 
 {
   bool updated = false;
 
-  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.index());
+  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
 
   if (alarm_table_def.is_not_clear())
   {
     if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
     {
-      _index_to_entry[alarm_table_def.index()] = AlarmListEntry(alarm_table_def, issuer);
+      _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);
       updated = true;
     }
   }
@@ -155,7 +155,7 @@ alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
   rawtime = ts.tv_sec;
   timing = gmtime(&rawtime);
   // This updates the variable timezone declared within time.h which
-  // tells us how offset from UTC we are.
+  // tells us how offset (in seconds) from UTC we are.
   localtime(&rawtime);
   plus_or_minus = (timezone > 0) ? '+' : '-';
   daylight_savings = abs(timezone) / 3600;
@@ -196,6 +196,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
         alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), alarm_counter, alarm_table_def);
         send_trap(alarm_table_def);
         alarm_counter++;
+        //Reset the alarm counter incramentor if it reaches its max limit
         if (alarm_counter == 4294967295)
         {
           alarm_counter = 1;
@@ -218,9 +219,9 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
   {
     if (it->issuer() == issuer)
     {
-      AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().index(), AlarmDef::CLEARED);
+      AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().alarm_index(), AlarmDef::CLEARED);
 
-      if (!AlarmFilter::get_instance().alarm_filtered(clear_def.index(), clear_def.severity()))
+      if (!AlarmFilter::get_instance().alarm_filtered(clear_def.alarm_index(), clear_def.severity()))
       {
         send_trap(clear_def);
       }
@@ -261,7 +262,7 @@ void AlarmTrapSender::sync_alarms(bool do_clear)
 
 void AlarmTrapSender::send_trap(AlarmTableDef& alarm_table_def)
 {
-  TRC_WARNING("Trap with alarm ID %d.%d being sent", alarm_table_def.index(), alarm_table_def.state());
+  TRC_WARNING("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
@@ -298,7 +299,7 @@ void AlarmTrapSender::send_trap(AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_model_row, model_ptr_oid, OID_LENGTH(model_ptr_oid));
   snmp_set_var_typed_value(&var_model_row, ASN_OBJECT_ID, (u_char*) model_row_oid, sizeof(model_row_oid));
 
-  var_model_row.val.objid[ALARMMODELTABLEROW_INDEX] = alarm_table_def.index();
+  var_model_row.val.objid[ALARMMODELTABLEROW_INDEX] = alarm_table_def.alarm_index();
   var_model_row.val.objid[ALARMMODELTABLEROW_STATE] = alarm_table_def.state();
 
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));

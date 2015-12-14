@@ -66,7 +66,7 @@ void init_alarmModelTable(void)
     for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
     {
       alarmModelTable_context* ctx = alarmModelTable_create_row_context((char*) "", 
-                                                                        it->index(), 
+                                                                        it->alarm_index(), 
                                                                         it->state());
       if (ctx)
       {
@@ -203,7 +203,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
                                (u_char*) itu_alarm_table_row_oid,
                                sizeof(itu_alarm_table_row_oid));
 
-      var->val.objid[ITUALARMTABLEROW_INDEX] = context->_alarm_table_def->index();
+      var->val.objid[ITUALARMTABLEROW_INDEX] = context->_alarm_table_def->alarm_index();
       var->val.objid[ITUALARMTABLEROW_SEVERITY] = context->_alarm_table_def->severity();
     }
     break;

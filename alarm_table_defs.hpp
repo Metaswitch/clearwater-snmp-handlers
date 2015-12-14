@@ -62,7 +62,7 @@ public:
 
   unsigned int state();
 
-  unsigned int index()    {return _alarm_definition._index;} 
+  unsigned int alarm_index()    {return _alarm_definition._index;} 
   AlarmDef::Cause cause() {return _alarm_definition._cause;}
 
   AlarmDef::Severity severity()    {return _severity_details._severity;}
