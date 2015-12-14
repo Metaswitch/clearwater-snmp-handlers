@@ -158,20 +158,17 @@ alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
   // tells us how offset from UTC we are.
   localtime(&rawtime);
   plus_or_minus = (timezone > 0) ? '+' : '-';
-  daylight_savings = abs(timezone);
+  daylight_savings = abs(timezone) / 3600;
   d_time->year = htons(1900 + timing->tm_year);
-  TRC_STATUS("!!!DEBUGGING!!! year = %d", d_time->year);
   d_time->month = 1 + timing->tm_mon;
-  TRC_STATUS("!!!DEBUGGING!!! month = %d", d_time->month);
   d_time->day = timing->tm_mday;
   d_time->hour = timing->tm_hour;
   d_time->minute = timing->tm_min;
   d_time->second = timing->tm_sec;
   d_time->decisecond = 0;
   d_time->direction = plus_or_minus;
-  TRC_STATUS("!!!DEBUGGING!!! direction = %d", d_time->direction);
   d_time->timegeozone = daylight_savings;
-  d_time->mintimezone = 0;
+  d_time->mintimezone = (abs(timezone) % 3600) / 60;
 
   return d_time;
 }
