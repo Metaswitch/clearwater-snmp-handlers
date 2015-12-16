@@ -52,7 +52,6 @@
 #include "alarm_active_table.hpp"
 
 static sem_t term_sem;
-std::string local_ip = "0.0.0.0";
 // Signal handler that triggers termination.
 void agent_terminate_handler(int sig)
 {
@@ -93,6 +92,7 @@ int main (int argc, char **argv)
 {
   std::vector<std::string> trap_ips;
   char* community = NULL;
+  std::string local_ip = "0.0.0.0";
   std::string logdir = "";
   int loglevel = 4;
   int c;

@@ -44,19 +44,10 @@
 
 #include <alarm_table_defs.hpp>
 #include "alarm_trap_sender.hpp"
+#include "oid_definitions.hpp"
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <net-snmp/agent/net-snmp-agent-includes.h>
-
-#include <net-snmp/library/snmp_assert.h>
-    
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/library/container.h>
-#include <net-snmp/agent/table_array.h>
 
 #include <string>
 using namespace std;
@@ -68,36 +59,32 @@ typedef struct alarmActiveTable_context_s {
 
 } alarmActiveTable_context;
 
-/*************************************************************
- *
- *  function declarations
- */
+// This structure is defined to comply with the syntax as
+// outlined in RFC 2579 under DateAndTime
+typedef struct SNMPDateTime {
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+    uint8_t decisecond;
+    uint8_t direction;
+    uint8_t timegeozone;
+    uint8_t mintimezone;
+} alarmActiveTable_SNMPDateTime;
+
 int init_alarmActiveTable(std::string);
 int alarmActiveTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
-
-void alarmActiveTable_create_row(char*, alarmActiveTable_SNMPDateTime*, unsigned long, AlarmTableDef&);
+void alarmActiveTable_trap_handler(AlarmTableDef&);
+void alarmActiveTable_create_row(AlarmTableDef&);
 void alarmActiveTable_delete_row(AlarmTableDef&);
-int alarmActiveTable_index_to_oid(char*, alarmActiveTable_SNMPDateTime*, unsigned long, netsnmp_index*);
+int alarmActiveTable_index_to_oid(char*, alarmActiveTable_SNMPDateTime, unsigned long, netsnmp_index*);
+alarmActiveTable_SNMPDateTime alarm_time_issued(void);
 
 /*************************************************************
  *
- *  oid declarations
- */
-extern oid alarmActiveTable_oid[];
-extern size_t alarmActiveTable_oid_len;
-
-#define alarmModelTable_TABLE_OID 1,3,6,1,2,1,118,1,1,2
-#define alarmActiveTable_TABLE_OID 1,3,6,1,2,1,118,1,2,2
-    
-#define ZERO_DOT_ZERO_OID 0,0
-#define ALARM_ACTIVE_STATE_OID 1,3,6,1,2,1,118,0,2
-#define ALARM_CLEAR_STATE_OID 1,3,6,1,2,1,118,0,3
-
-#define ENTRY_COLUMN_OID 1,3
-
-/*************************************************************
- *
- *  column number definitions for table alarmModelTable
+ *  column number definitions for table alarmActiveTable
  */
 #define COLUMN_ALARMLISTNAME 1
 #define COLUMN_ALARMACTIVEDATEANDTIME 2
@@ -125,4 +112,4 @@ extern size_t alarmActiveTable_oid_len;
 }
 #endif
 
-#endif /** ALARMMODELTABLE_HPP */
+#endif /** ALARMACTIVETABLE_HPP */

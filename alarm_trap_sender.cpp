@@ -142,40 +142,8 @@ unsigned long AlarmFilter::current_time_ms()
   return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
 }
 
-alarmActiveTable_SNMPDateTime* AlarmTrapSender::alarm_time_issued(void)
-{
-  alarmActiveTable_SNMPDateTime* d_time = new alarmActiveTable_SNMPDateTime();
-  struct timespec ts;
-  struct tm *timing;
-  time_t rawtime;
-  char plus_or_minus;
-  int daylight_savings;
-
-  clock_gettime(CLOCK_REALTIME, &ts);
-  rawtime = ts.tv_sec;
-  timing = gmtime(&rawtime);
-  // This updates the variable timezone declared within time.h which
-  // tells us how offset (in seconds) from UTC we are.
-  localtime(&rawtime);
-  plus_or_minus = (timezone > 0) ? '+' : '-';
-  daylight_savings = abs(timezone) / 3600;
-  d_time->year = htons(1900 + timing->tm_year);
-  d_time->month = 1 + timing->tm_mon;
-  d_time->day = timing->tm_mday;
-  d_time->hour = timing->tm_hour;
-  d_time->minute = timing->tm_min;
-  d_time->second = timing->tm_sec;
-  d_time->decisecond = 0;
-  d_time->direction = plus_or_minus;
-  d_time->timegeozone = daylight_savings;
-  d_time->mintimezone = (abs(timezone) % 3600) / 60;
-
-  return d_time;
-}
-
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
-  static unsigned int alarm_counter = 1;
   unsigned int index;
   unsigned int severity;
 
@@ -193,14 +161,8 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
     {
       if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
       {
-        alarmActiveTable_create_row((char*) "", AlarmTrapSender::alarm_time_issued(), alarm_counter, alarm_table_def);
+        alarmActiveTable_trap_handler(alarm_table_def);
         send_trap(alarm_table_def);
-        alarm_counter++;
-        //Reset the alarm counter incramentor if it reaches its max limit
-        if (alarm_counter == 4294967295)
-        {
-          alarm_counter = 1;
-        }
       }
     }
   }

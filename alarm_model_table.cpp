@@ -44,15 +44,6 @@
 
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
-
-oid alarmModelTable_oid[] = { alarmModelTable_TABLE_OID };
-size_t alarmModelTable_oid_len = OID_LENGTH(alarmModelTable_oid);
-
-static oid zero_dot_zero_oid[] = { ZERO_DOT_ZERO_OID };
-static oid alarm_active_state_oid[] = { ALARM_ACTIVE_STATE_OID };
-static oid alarm_clear_state_oid[] = { ALARM_CLEAR_STATE_OID };
-static oid itu_alarm_table_row_oid[] = { ITU_ALARM_TABLE_ROW_OID };
-
 /************************************************************
  *
  *  Initializes the alarmModelTable module
