@@ -107,6 +107,7 @@ int init_alarmActiveTable(std::string ip)
   cb.container = netsnmp_container_find("alarmActiveTable_primary:"
                                         "alarmActiveTable:"
                                         "table_container");
+  printf("RKD: Value of cb.container %p\n", cb.container);
   cb.can_set = 0;
 
   TRC_DEBUG("initialize_table_alarmActiveTable", "Registering as table array\n");
@@ -307,32 +308,36 @@ alarmActiveTable_SNMPDateTime alarm_time_issued(void)
  */
 void alarmActiveTable_trap_handler(AlarmTableDef& def)
 {
-  alarmActiveTable_context* existing_row = alarm_indexes_to_rows[def.alarm_index()];
-  // 1) New alarm
-  if (existing_row == NULL && def.severity() != AlarmDef::CLEARED)
+  // This stops UTs from failing due to mocking up the cb object
+  if (my_handler)
   {
-    alarmActiveTable_create_row(def); 
-  }
-  // 2) Existing alarm with different severity
-  else if (existing_row != NULL && def.severity() != AlarmDef::CLEARED && def.severity() != existing_row->_alarm_table_def->severity())
-  {
-    alarmActiveTable_delete_row(def);
-    alarmActiveTable_create_row(def);
-  }
-  // 3) Existing alarm with same severity
-  else if (existing_row != NULL && def.severity() != AlarmDef::CLEARED && def.severity() == existing_row->_alarm_table_def->severity())
-  {
-    // No-op
-  }
-  // 4) Clearing a raised alarm
-  else if (existing_row != NULL && def.severity() == AlarmDef::CLEARED)
-  {
-    alarmActiveTable_delete_row(def);
-  }
-  // 5) Clearing an unraised alarm 
-  else if (existing_row == NULL && def.severity() == AlarmDef::CLEARED)
-  {
-    // No-op
+    alarmActiveTable_context* existing_row = alarm_indexes_to_rows[def.alarm_index()];
+    // 1) New alarm
+    if (existing_row == NULL && def.severity() != AlarmDef::CLEARED)
+    {
+      alarmActiveTable_create_row(def); 
+    }
+    // 2) Existing alarm with different severity
+    else if (existing_row != NULL && def.severity() != AlarmDef::CLEARED && def.severity() != existing_row->_alarm_table_def->severity())
+    {
+      alarmActiveTable_delete_row(def);
+      alarmActiveTable_create_row(def);
+    }
+    // 3) Existing alarm with same severity
+    else if (existing_row != NULL && def.severity() != AlarmDef::CLEARED && def.severity() == existing_row->_alarm_table_def->severity())
+    {
+      // No-op
+    }
+    // 4) Clearing a raised alarm
+    else if (existing_row != NULL && def.severity() == AlarmDef::CLEARED)
+    {
+      alarmActiveTable_delete_row(def);
+    }
+    // 5) Clearing an unraised alarm 
+    else if (existing_row == NULL && def.severity() == AlarmDef::CLEARED)
+    {
+      // No-op
+    }
   }
   return;
 }
@@ -364,6 +369,7 @@ void alarmActiveTable_create_row(AlarmTableDef& def)
   }
   if (ctx)
   {
+    printf("RKD: %p, %p\n", cb.container, ctx);
     CONTAINER_INSERT(cb.container, ctx);
     // This creates a mapping from the index of the current alarm raised
     // to a pointer which points to the row in Active Alarm Table corresponding

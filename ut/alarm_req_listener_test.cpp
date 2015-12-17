@@ -43,6 +43,7 @@
 #include "alarm.h"
 #include "alarmdefinition.h"
 
+#include "alarm_active_table.hpp"
 #include "alarm_model_table.hpp"
 #include "alarm_req_listener.hpp"
 #include "alarm_trap_sender.hpp"
