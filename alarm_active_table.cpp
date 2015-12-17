@@ -394,6 +394,7 @@ void alarmActiveTable_delete_row(AlarmTableDef& def)
   // pointing to it.
   free(existing_row->_index.oids);
   free(existing_row);
+  alarm_indexes_to_rows[def.alarm_index()] = NULL;
   return;
 }
 
