@@ -50,7 +50,6 @@ extern "C" {
 #endif
 
 #include <string>
-using namespace std;
 
 typedef struct alarmActiveTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */

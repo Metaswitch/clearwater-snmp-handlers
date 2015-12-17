@@ -109,7 +109,7 @@ int init_alarmActiveTable(std::string ip)
                                         "table_container");
   cb.can_set = 0;
 
-  DEBUGMSGTL(("initialize_table_alarmActiveTable", "Registering as table array\n"));
+  TRC_DEBUG("initialize_table_alarmActiveTable", "Registering as table array\n");
 
   netsnmp_table_container_register(my_handler, table_info, &cb, cb.container, 1);
 
@@ -229,8 +229,8 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
       // the OID ".1.3." for the entry in the first non index column and
       // inserting a leading "0" before the alarm's index.
       model_pointer = new oid[model_pointer_len];
-      copy(alarmModelTable_oid, alarmModelTable_oid + alarmModelTable_oid_len, model_pointer);
-      copy(entry_column_oid, entry_column_oid + entry_column_oid_len, model_pointer + alarmModelTable_oid_len);
+      std::copy(alarmModelTable_oid, alarmModelTable_oid + alarmModelTable_oid_len, model_pointer);
+      std::copy(entry_column_oid, entry_column_oid + entry_column_oid_len, model_pointer + alarmModelTable_oid_len);
       model_pointer[alarmModelTable_oid_len + entry_column_oid_len] = 0;
       model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 1] = context->_alarm_table_def->alarm_index(); 
       model_pointer[alarmModelTable_oid_len + entry_column_oid_len + 2] = context->_alarm_table_def->severity();      
@@ -273,32 +273,29 @@ alarmActiveTable_SNMPDateTime alarm_time_issued(void)
 {
   alarmActiveTable_SNMPDateTime d_time;
   struct timespec ts;
-  struct tm *timing = new tm;
+  struct tm timing;
   time_t rawtime;
   int UTC_offset;
 
   clock_gettime(CLOCK_REALTIME, &ts);
   rawtime = ts.tv_sec;
-  // localtime_r converts calendar time to a broken down representation
-  // to be stored in the stucture timing
-  localtime_r(&rawtime, timing);
   // This updates the variable timezone declared within time.h which
-  // tells us how offset (in seconds) from UTC we are.
-  localtime(&rawtime);
+  // tells us how offset (in seconds) from UTC we are and stores a 
+  // broken down time representation in the structure timing
+  timing = *localtime(&rawtime);
   UTC_offset = abs(timezone) / 3600;
   // htons converts the integer from host byte order to network
   // byte order as specified in RFC 2579.
-  d_time.year = htons(1900 + timing->tm_year);
-  d_time.month = 1 + timing->tm_mon;
-  d_time.day = timing->tm_mday;
-  d_time.hour = timing->tm_hour;
-  d_time.minute = timing->tm_min;
-  d_time.second = timing->tm_sec;
+  d_time.year = htons(1900 + timing.tm_year);
+  d_time.month = 1 + timing.tm_mon;
+  d_time.day = timing.tm_mday;
+  d_time.hour = timing.tm_hour;
+  d_time.minute = timing.tm_min;
+  d_time.second = timing.tm_sec;
   d_time.decisecond = 0;
   d_time.direction = (timezone > 0) ? '+' : '-';
   d_time.timegeozone = UTC_offset;
   d_time.mintimezone = (abs(timezone) % 3600) / 60;
-  delete(timing);
   return d_time;
 }
 
@@ -314,28 +311,28 @@ void alarmActiveTable_trap_handler(AlarmTableDef& def)
   // 1) New alarm
   if (existing_row == NULL && def.severity() != AlarmDef::CLEARED)
   {
-  alarmActiveTable_create_row(def); 
+    alarmActiveTable_create_row(def); 
   }
   // 2) Existing alarm with different severity
   else if (existing_row != NULL && def.severity() != AlarmDef::CLEARED && def.severity() != existing_row->_alarm_table_def->severity())
   {
-  alarmActiveTable_delete_row(def);
-  alarmActiveTable_create_row(def);
+    alarmActiveTable_delete_row(def);
+    alarmActiveTable_create_row(def);
   }
   // 3) Existing alarm with same severity
   else if (existing_row != NULL && def.severity() != AlarmDef::CLEARED && def.severity() == existing_row->_alarm_table_def->severity())
   {
-  return;
+    // No-op
   }
   // 4) Clearing a raised alarm
   else if (existing_row != NULL && def.severity() == AlarmDef::CLEARED)
   {
-  alarmActiveTable_delete_row(def);
+    alarmActiveTable_delete_row(def);
   }
   // 5) Clearing an unraised alarm 
   else if (existing_row == NULL && def.severity() == AlarmDef::CLEARED)
   {
-  return;
+    // No-op
   }
   return;
 }
@@ -429,8 +426,6 @@ int alarmActiveTable_index_to_oid(char* name,
   var_alarmActiveDateAndTime.next_variable = &var_alarmActiveIndex;
   var_alarmActiveIndex.next_variable =  NULL;
   
-  DEBUGMSGTL(("verbose:alarmActiveTable:alarmActiveTable_index_to_oid", "called\n"));
-
   snmp_set_var_value(&var_alarmListName, (u_char*) name, strlen(name));
   //Here we use the value 11 as that is how many octets the datetime structure
   //contains. We were not able to find the size of the structure using sizeof
