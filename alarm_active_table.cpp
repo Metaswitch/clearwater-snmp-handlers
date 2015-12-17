@@ -107,7 +107,6 @@ int init_alarmActiveTable(std::string ip)
   cb.container = netsnmp_container_find("alarmActiveTable_primary:"
                                         "alarmActiveTable:"
                                         "table_container");
-  printf("RKD: Value of cb.container %p\n", cb.container);
   cb.can_set = 0;
 
   TRC_DEBUG("initialize_table_alarmActiveTable", "Registering as table array\n");
@@ -308,7 +307,7 @@ alarmActiveTable_SNMPDateTime alarm_time_issued(void)
  */
 void alarmActiveTable_trap_handler(AlarmTableDef& def)
 {
-  // This stops UTs from failing due to mocking up the cb object
+  // This stops UTs from failing when the alarm table is uninitialized.
   if (my_handler)
   {
     alarmActiveTable_context* existing_row = alarm_indexes_to_rows[def.alarm_index()];
@@ -369,7 +368,6 @@ void alarmActiveTable_create_row(AlarmTableDef& def)
   }
   if (ctx)
   {
-    printf("RKD: %p, %p\n", cb.container, ctx);
     CONTAINER_INSERT(cb.container, ctx);
     // This creates a mapping from the index of the current alarm raised
     // to a pointer which points to the row in Active Alarm Table corresponding
