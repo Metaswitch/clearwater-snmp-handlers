@@ -1,1 +1,1 @@
-memento_handler.so /usr/lib/clearwater/
+build/bin/memento_handler.so /usr/lib/clearwater/
