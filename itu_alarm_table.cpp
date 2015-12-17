@@ -40,15 +40,10 @@
  */
 
 #include "itu_alarm_table.hpp"
+#include "log.h"
 
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
-
-oid ituAlarmTable_oid[] = { ituAlarmTable_TABLE_OID };
-size_t ituAlarmTable_oid_len = OID_LENGTH(ituAlarmTable_oid);
-
-static oid alarm_model_table_row_oid[] = { ALARM_MODEL_TABLE_ROW_OID };
-
 /************************************************************
  *
  *  Initializes the ituAlarmTable module
@@ -62,7 +57,7 @@ void init_ituAlarmTable(void)
     for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
     {
       ituAlarmTable_context* ctx = ituAlarmTable_create_row_context((char*) "", 
-                                                                    it->index(), 
+                                                                    it->alarm_index(), 
                                                                     it->severity());
       if (ctx)
       {
@@ -182,7 +177,7 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
                                (u_char*) alarm_model_table_row_oid,
                                sizeof(alarm_model_table_row_oid));
 
-      var->val.objid[ALARMMODELTABLEROW_INDEX] = context->_alarm_table_def->index();
+      var->val.objid[ALARMMODELTABLEROW_INDEX] = context->_alarm_table_def->alarm_index();
       var->val.objid[ALARMMODELTABLEROW_STATE] = context->_alarm_table_def->state();
     }
     break;

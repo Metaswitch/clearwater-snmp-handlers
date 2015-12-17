@@ -39,6 +39,7 @@
 
 #include <string>
 #include <map>
+#include <cstdint>
 
 #include "alarm_table_defs.hpp"
 
@@ -170,7 +171,6 @@ public:
   void sync_alarms(bool do_clear);
 
   static AlarmTrapSender& get_instance() {return _instance;}
-
 private:
   AlarmTrapSender() {}
 

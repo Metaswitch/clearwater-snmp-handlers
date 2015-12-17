@@ -44,15 +44,6 @@
 
 static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
-
-oid alarmModelTable_oid[] = { alarmModelTable_TABLE_OID };
-size_t alarmModelTable_oid_len = OID_LENGTH(alarmModelTable_oid);
-
-static oid zero_dot_zero_oid[] = { ZERO_DOT_ZERO_OID };
-static oid alarm_active_state_oid[] = { ALARM_ACTIVE_STATE_OID };
-static oid alarm_clear_state_oid[] = { ALARM_CLEAR_STATE_OID };
-static oid itu_alarm_table_row_oid[] = { ITU_ALARM_TABLE_ROW_OID };
-
 /************************************************************
  *
  *  Initializes the alarmModelTable module
@@ -66,7 +57,7 @@ void init_alarmModelTable(void)
     for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
     {
       alarmModelTable_context* ctx = alarmModelTable_create_row_context((char*) "", 
-                                                                        it->index(), 
+                                                                        it->alarm_index(), 
                                                                         it->state());
       if (ctx)
       {
@@ -203,7 +194,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
                                (u_char*) itu_alarm_table_row_oid,
                                sizeof(itu_alarm_table_row_oid));
 
-      var->val.objid[ITUALARMTABLEROW_INDEX] = context->_alarm_table_def->index();
+      var->val.objid[ITUALARMTABLEROW_INDEX] = context->_alarm_table_def->alarm_index();
       var->val.objid[ITUALARMTABLEROW_SEVERITY] = context->_alarm_table_def->severity();
     }
     break;

@@ -43,20 +43,11 @@
 #define ALARM_MODEL_TABLE_HPP
 
 #include <alarm_table_defs.hpp>
+#include "oid_definitions.hpp"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <net-snmp/agent/net-snmp-agent-includes.h>
-
-#include <net-snmp/library/snmp_assert.h>
-    
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/library/container.h>
-#include <net-snmp/agent/table_array.h>
 
 typedef struct alarmModelTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */
@@ -65,30 +56,12 @@ typedef struct alarmModelTable_context_s {
 
 } alarmModelTable_context;
 
-/*************************************************************
- *
- *  function declarations
- */
 void init_alarmModelTable(void);
 int initialize_table_alarmModelTable(void);
 int alarmModelTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
 
 alarmModelTable_context* alarmModelTable_create_row_context(char*, unsigned long, unsigned long);
 int alarmModelTable_index_to_oid(char*, unsigned long, unsigned long, netsnmp_index*);
-
-/*************************************************************
- *
- *  oid declarations
- */
-extern oid alarmModelTable_oid[];
-extern size_t alarmModelTable_oid_len;
-
-#define alarmModelTable_TABLE_OID 1,3,6,1,2,1,118,1,1,2
-    
-#define ZERO_DOT_ZERO_OID 0,0
-#define ALARM_ACTIVE_STATE_OID 1,3,6,1,2,1,118,0,2
-#define ALARM_CLEAR_STATE_OID 1,3,6,1,2,1,118,0,3
-#define ITU_ALARM_TABLE_ROW_OID 1,3,6,1,2,1,121,1,1,1,1,2,0,1,1
 
 /*************************************************************
  *

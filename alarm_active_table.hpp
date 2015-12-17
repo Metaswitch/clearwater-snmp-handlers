@@ -39,49 +39,76 @@
  *  $Id:$
  */
 
-#ifndef ITU_ALARM_TABLE_HPP
-#define ITU_ALARM_TABLE_HPP
+#ifndef ALARM_ACTIVE_TABLE_HPP
+#define ALARM_ACTIVE_TABLE_HPP
 
 #include <alarm_table_defs.hpp>
+#include "alarm_trap_sender.hpp"
 #include "oid_definitions.hpp"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct ituAlarmTable_context_s {
+#include <string>
+
+typedef struct alarmActiveTable_context_s {
     netsnmp_index _index; /** THIS MUST BE FIRST!!! */
 
     AlarmTableDef* _alarm_table_def;
 
-} ituAlarmTable_context;
+} alarmActiveTable_context;
 
-void init_ituAlarmTable(void);
-int initialize_table_ituAlarmTable(void);
-int ituAlarmTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
+// This structure is defined to comply with the syntax as
+// outlined in RFC 2579 under DateAndTime
+typedef struct SNMPDateTime {
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+    uint8_t decisecond;
+    uint8_t direction;
+    uint8_t timegeozone;
+    uint8_t mintimezone;
+} alarmActiveTable_SNMPDateTime;
 
-ituAlarmTable_context* ituAlarmTable_create_row_context(char*, unsigned long, long);
-int ituAlarmTable_index_to_oid(char*, unsigned long, long, netsnmp_index*);
+int init_alarmActiveTable(std::string);
+int alarmActiveTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
+void alarmActiveTable_trap_handler(AlarmTableDef&);
+void alarmActiveTable_create_row(AlarmTableDef&);
+void alarmActiveTable_delete_row(AlarmTableDef&);
+int alarmActiveTable_index_to_oid(char*, alarmActiveTable_SNMPDateTime, unsigned long, netsnmp_index*);
+alarmActiveTable_SNMPDateTime alarm_time_issued(void);
 
 /*************************************************************
  *
- *  column number definitions for table ituAlarmTable
+ *  column number definitions for table alarmActiveTable
  */
-#define COLUMN_ITUALARMPERCEIVEDSEVERITY 1
-#define COLUMN_ITUALARMEVENTTYPE 2
-#define COLUMN_ITUALARMPROBABLECAUSE 3
-#define COLUMN_ITUALARMADDITIONALTEXT 4
-#define COLUMN_ITUALARMGENERICMODEL 5
-#define ituAlarmTable_COL_MIN 2
-#define ituAlarmTable_COL_MAX 5
+#define COLUMN_ALARMLISTNAME 1
+#define COLUMN_ALARMACTIVEDATEANDTIME 2
+#define COLUMN_ALARMACTIVEINDEX 3
+#define COLUMN_ALARMACTIVEENGINEID 4
+#define COLUMN_ALARMACTIVEENGINEADDRESSTYPE 5
+#define COLUMN_ALARMACTIVEENGINEADDRESS 6
+#define COLUMN_ALARMACTIVECONTEXTNAME 7
+#define COLUMN_ALARMACTIVEVARIABLES 8
+#define COLUMN_ALARMACTIVENOTIFICATIONID 9
+#define COLUMN_ALARMACTIVERESOURCEID 10
+#define COLUMN_ALARMACTIVEDESCRIPTION 11
+#define COLUMN_ALARMACTIVELOGPOINTER 12
+#define COLUMN_ALARMACTIVEMODELPOINTER 13
+#define COLUMN_ALARMACTIVESPECIFICPOINTER 14
+#define alarmActiveTable_COL_MIN 4
+#define alarmActiveTable_COL_MAX 14
 
-#define IANAITUEVENTTYPE_OPERATIONALVIOLATION 8
+#define ROWSTATUS_ACTIVE 1
 
-#define ALARMMODELTABLEROW_INDEX 13
-#define ALARMMODELTABLEROW_STATE 14
+#define ITUALARMTABLEROW_INDEX 13
+#define ITUALARMTABLEROW_SEVERITY 14
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /** ALARMMODELTABLE_HPP */
+#endif /** ALARMACTIVETABLE_HPP */

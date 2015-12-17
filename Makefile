@@ -5,6 +5,7 @@ CPPFLAGS_TEST += -Imodules/cpp-common/test_utils
 
 AGENT_COMMON_SOURCES := alarmdefinition.cpp \
                         alarm_table_defs.cpp \
+                        alarm_active_table.cpp \
                         alarm_model_table.cpp \
                         alarm_req_listener.cpp \
                         alarm_trap_sender.cpp \

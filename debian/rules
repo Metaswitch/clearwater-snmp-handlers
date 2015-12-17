@@ -31,3 +31,6 @@ override_dh_installinit:
 	dh_installinit --no-start -u"defaults 60 40"
 
 override_dh_shlibdeps:
+
+override_dh_strip:
+	dh_strip -pclearwater-snmp-alarm-agent --dbg-package=clearwater-snmp-alarm-agent
