@@ -221,7 +221,12 @@ void AlarmReqListener::listener()
       zmq_clean_sck();
       return;
     }
-
+    // The ZMQ message read here contains the name of the alarm
+    // issuer e.g. "monit" and the alarm identifier e.g. "1000.3"
+    // Note the alarm identifier uses ituAlarmPerceivedSeverity. We can
+    // translate this to alarmModelState using the function 
+    // AlarmTableDef::state this mapping is described in RFC 3877
+    // section 5.4: https://tools.ietf.org/html/rfc3877#section-5.4
     if ((msg[0].compare("issue-alarm") == 0) && (msg.size() == 3))
     {
       AlarmTrapSender::get_instance().issue_alarm(msg[1], msg[2]);
