@@ -225,7 +225,7 @@ void AlarmReqListener::listener()
     // issuer e.g. "monit" and the alarm identifier e.g. "1000.3"
     // Note the alarm identifier uses ituAlarmPerceivedSeverity. We can
     // translate this to alarmModelState using the function 
-    // AlarmTableDef::state this mapping is described in RFC 3877
+    // AlarmTableDef::state - this mapping is described in RFC 3877
     // section 5.4: https://tools.ietf.org/html/rfc3877#section-5.4
     if ((msg[0].compare("issue-alarm") == 0) && (msg.size() == 3))
     {
