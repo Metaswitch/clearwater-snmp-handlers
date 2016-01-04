@@ -133,12 +133,23 @@ bool AlarmTableDefs::populate_map(std::string path,
     for (s_it = a_it->_severity_details.begin(); s_it != a_it->_severity_details.end(); s_it++)
     {
       AlarmTableDef def(*a_it, *s_it);
-      AlarmTableDefKey key(a_it->_index, s_it->_severity);
-      _key_to_def.emplace(key, def);
+      AlarmTableDefs::insert_def(def);
     }
   }
-
+  AlarmDef::SeverityDetails cleared(AlarmDef::CLEARED, "Test alarm cleared description", "Test alarm cleared details");
+  AlarmDef::SeverityDetails raised(AlarmDef::CRITICAL, "Test alarm raised description", "Test alarm raised details");
+  AlarmDef::AlarmDefinition example(6666, AlarmDef::SOFTWARE_ERROR, {cleared, raised});
+  AlarmTableDef def_cleared(example, cleared);
+  AlarmTableDef def_raised(example, raised);
+  insert_def(def_cleared);
+  insert_def(def_raised);
   return rc;
+}
+
+void AlarmTableDefs::insert_def(AlarmTableDef def)
+{
+  AlarmTableDefKey key(def.alarm_index(), def.severity());
+  _key_to_def.emplace(key, def);
 }
 
 AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index, 
