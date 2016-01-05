@@ -55,6 +55,7 @@ AlarmTableDefs AlarmTableDefs::_instance;
 
 // Translate ituAlarmPerceivedSeverity to alarmModelState based upon mapping
 // defined in section 5.4 of RFC 3877.
+// https://tools.ietf.org/html/rfc3877#section-5.4
 unsigned int AlarmTableDef::state()
 {
   static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};

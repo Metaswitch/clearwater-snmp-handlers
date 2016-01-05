@@ -39,22 +39,6 @@
 
 #include "alarmdefinition.h"
 
-// Unique key for alarm table definitions is comprised of alarm index and
-// alarm severity.
-
-class AlarmTableDefKey
-{
-public:
-  AlarmTableDefKey(unsigned int index, unsigned int severity) :
-    _index(index), _severity(severity) {}
-
-  bool operator<(const AlarmTableDefKey& rhs) const;
-
-private:
-  unsigned int _index;
-  unsigned int _severity;
-};
-
 // Container for data needed to generate entries of the Alarm Model Table
 // and ITU Alarm Table.
 
@@ -76,6 +60,8 @@ public:
     _alarm_definition(alarm_definition),
     _severity_details(severity_details) {}
 
+  unsigned int state();
+
   unsigned int alarm_index()    {return _alarm_definition._index;} 
   AlarmDef::Cause cause() {return _alarm_definition._cause;}
 
@@ -85,12 +71,30 @@ public:
 
   bool is_valid() {return _valid;}
   bool is_not_clear() {return severity() != AlarmDef::CLEARED;}
+
 private:
   bool _valid;
 
   const AlarmDef::AlarmDefinition _alarm_definition;
   const AlarmDef::SeverityDetails _severity_details;
 };
+
+// Unique key for alarm table definitions is comprised of alarm index and
+// alarm severity.
+
+class AlarmTableDefKey
+{
+public:
+  AlarmTableDefKey(unsigned int index, unsigned int severity) :
+    _index(index), _severity(severity) {}
+
+  bool operator<(const AlarmTableDefKey& rhs) const;
+
+private:
+  unsigned int _index;
+  unsigned int _severity;
+};
+
 // Iterator for enumerating all alarm table definitions. Subclassed from 
 // map's iterator to hide pair template. Only operations defined are
 // supported.
@@ -111,10 +115,12 @@ class AlarmTableDefs
 public:
   // Generate alarm table definitions based on JSON files on the node
   bool initialize(std::string& path);
-
-  //AlarmTableDef create_def();
-  // Retrieve alarm definition for specified index/severity
+  
+  // Insert an AlarmTableDef into the _key_to_def list, so that it cann
+  // later be retrieved with get_definition.
   void insert_def(AlarmTableDef);
+
+  // Retrieve alarm definition for specified index/severity
   AlarmTableDef& get_definition(unsigned int index,
                                 unsigned int severity);
 
