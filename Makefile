@@ -17,6 +17,7 @@ cw_alarm_agent_SOURCES := alarms_agent.cpp snmp_agent.cpp ${AGENT_COMMON_SOURCES
 cw_alarm_test_SOURCES := test_main.cpp \
                          alarm.cpp \
                          alarm_table_defs_test.cpp \
+                         alarm_tables_testing.cpp \
                          alarm_req_listener_test.cpp \
                          test_interposer.cpp \
                          fakenetsnmp.cpp \

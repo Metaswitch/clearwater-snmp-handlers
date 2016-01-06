@@ -137,13 +137,6 @@ bool AlarmTableDefs::populate_map(std::string path,
       AlarmTableDefs::insert_def(def);
     }
   }
-  AlarmDef::SeverityDetails cleared(AlarmDef::CLEARED, "Test alarm cleared description", "Test alarm cleared details");
-  AlarmDef::SeverityDetails raised(AlarmDef::CRITICAL, "Test alarm raised description", "Test alarm raised details");
-  AlarmDef::AlarmDefinition example(6666, AlarmDef::SOFTWARE_ERROR, {cleared, raised});
-  AlarmTableDef def_cleared(example, cleared);
-  AlarmTableDef def_raised(example, raised);
-  insert_def(def_cleared);
-  insert_def(def_raised);
   return rc;
 }
 
