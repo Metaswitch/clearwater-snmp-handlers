@@ -61,9 +61,6 @@ void init_alarmModelTable(void)
       if (ctx)
       {
         ctx->_alarm_table_def = &(*it);
-        printf("\nDEBUGGING");
-        printf("\n %d", ctx->_alarm_table_def->alarm_index());
-        std::printf("\n %s \n", ctx->_alarm_table_def->description().c_str());
         CONTAINER_INSERT(cb.container, ctx);
       }
     }
@@ -96,10 +93,6 @@ int initialize_table_alarmModelTable(void)
                                                    alarmModelTable_oid_len,
                                                    HANDLER_CAN_RONLY);
             
-  printf("oid: ");
-  for (unsigned int i = 0; i < alarmModelTable_oid_len; ++i) {
-    printf("%lu.", alarmModelTable_oid[i]);
-  } 
   if (!my_handler || !table_info)
   {
     TRC_ERROR("malloc failed: initialize_table_alarmModelTable");
