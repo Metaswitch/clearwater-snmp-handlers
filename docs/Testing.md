@@ -7,7 +7,8 @@ Unit Testing
 ------------
 
 To run the SNMP Alarm Agent unit test suite, change to the top-level
-clearwater-snmp-handlers directory and issue make test.
+clearwater-snmp-handlers directory and issue make test (this will also run the
+integration tests outlined below).
 
 SNMP Alarm Agent unit tests use the Google Test framework and are responsible
 for testing the following components of the SNMP Alarm Agent:
