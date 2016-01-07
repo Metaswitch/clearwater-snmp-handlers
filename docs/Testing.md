@@ -14,7 +14,7 @@ for testing the following components of the SNMP Alarm Agent:
 
 - The JSON Parser
   - Tests that any errors in the JSON alarm definitions files (for example the
-    alarm description being too long) will cause the tables to not initialie
+    alarm description being too long) will cause the tables to not initialise
     with an appropriate log error message.
 - The alarm req listener
   - Tests that appropriate traps are being sent whenever alarms are cleared or
@@ -25,7 +25,6 @@ include fake SNMP functions with no useful output. These functions are used in
 place of real SNMP commands  whenever make test is issued.
 
 The output from the unit test run will look like this:
-
 ```
 [==========] Running 31 tests from 3 test cases.
 [----------] Global test environment set-up.
@@ -49,8 +48,6 @@ The output from the unit test run will look like this:
 [  PASSED  ] 31 tests.
 ```
 
-
-
 Integration Testing
 -------------------
 
@@ -62,20 +59,19 @@ testing the following components of the SNMP Alarm Agent.
 
 - The Alarm Model Table
 - The itu Alarm Table
-  - Tests that when quieried, using snmp get commands, these tables will output the
+  - Tests that when quieried using snmp get commands these tables will output the
     data exactly as it appears in an alarm definition. 
 - The Alarm Active Table
-  - Tests the logic behind when this table adds a row and deleted a row. For
-    example this tests that when two alarms are raised (with the second having a
-    different severity) the table delete the entry for the first alarm and
+  - Tests the logic behind when this table adds a row and deletes a row. For
+    example this tests that when two alarms are raises (with the second having a
+    different severity) the table deletes the entry for the first alarm and
     creates and entry for the second.
 
 These tests (as opposed to the unit tests) do rely on using SNMP commands. As
 such we have included a minimal SNMP Alarm Agent, with snmp get and walk
-function, which are available to the integration testing suite.
+functions, which are available to the integration testing suite.
 
 The output from the integration test run will look like this:
-
 ```
 [==========] Running 7 tests from 1 test case.
 [----------] Global test environment set-up.
