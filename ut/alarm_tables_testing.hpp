@@ -112,12 +112,19 @@ void CustomDefs::TearDown()
 std::string get_index_from_row(std::string snmpwalk_row)
 {
   std::vector<std::string> index_fields;
+  printf("snmpwalk_row output: %s /n", snmpwalk_row.c_str());
   // This splits up each part of the index field for an alarm. The alarm's
   // index is the last element of the index field.
+  // For example snmpwalk_row =
+  // .1.3.6.1.2.1.118.1.2.2.1.8.0.11.7.224.1.11.11.22.19.0.45.0.0.14 = 0
+  // and from this we want the alarm's index (14). First we extract the data
+  // after the last decimal point '14 = 0'
   Utils::split_string(snmpwalk_row, '.', index_fields);
   std::vector<std::string> alarm_index;
   // As the alarm's index is immediately followed by a space, we can use this
-  // symbol as a delimiter to extra just the alarm's index.
+  // symbol as a delimiter to extract just the alarm's index.
+  // So in the above example the 25th chunk of the index field
+  // '14 = 0' becomes just '14' the alarm's index.
   Utils::split_string(index_fields[25], ' ', alarm_index);
   return alarm_index[0];
 }
