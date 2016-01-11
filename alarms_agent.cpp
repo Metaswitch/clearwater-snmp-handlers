@@ -153,11 +153,11 @@ int main (int argc, char **argv)
   init_alarmModelTable();
   init_ituAlarmTable();
   init_alarmActiveTable(local_ip);
-
+ 
   init_snmp_handler_threads("clearwater-alarms");
 
   TRC_STATUS("Alarm agent has started");
-
+ 
   signal(SIGTERM, agent_terminate_handler);
   
   sem_wait(&term_sem);

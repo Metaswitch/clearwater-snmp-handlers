@@ -55,6 +55,7 @@ AlarmTableDefs AlarmTableDefs::_instance;
 
 // Translate ituAlarmPerceivedSeverity to alarmModelState based upon mapping
 // defined in section 5.4 of RFC 3877.
+// https://tools.ietf.org/html/rfc3877#section-5.4
 unsigned int AlarmTableDef::state()
 {
   static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
@@ -68,6 +69,7 @@ bool AlarmTableDefKey::operator<(const AlarmTableDefKey& rhs) const
          ((_index == rhs._index) && (_severity < rhs._severity));
 }
 
+// LCOV_EXCL_START
 bool AlarmTableDefs::initialize(std::string& path)
 {
   std::map<unsigned int, unsigned int> dup_check;
@@ -133,14 +135,20 @@ bool AlarmTableDefs::populate_map(std::string path,
     for (s_it = a_it->_severity_details.begin(); s_it != a_it->_severity_details.end(); s_it++)
     {
       AlarmTableDef def(*a_it, *s_it);
-      AlarmTableDefKey key(a_it->_index, s_it->_severity);
-      _key_to_def.emplace(key, def);
+      AlarmTableDefs::insert_def(def);
     }
   }
-
   return rc;
 }
+// LCOV_EXCL_STOP
 
+void AlarmTableDefs::insert_def(AlarmTableDef def)
+{
+  AlarmTableDefKey key(def.alarm_index(), def.severity());
+  _key_to_def.emplace(key, def);
+}
+
+// LCOV_EXCL_START
 AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index, 
                                               unsigned int severity)
 {
@@ -150,3 +158,4 @@ AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index,
 
   return (it != _key_to_def.end()) ? it->second : _invalid_def;
 }
+// LCOV_EXCL_STOP

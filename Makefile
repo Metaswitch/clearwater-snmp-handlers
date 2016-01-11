@@ -1,5 +1,5 @@
 TARGETS := cw_alarm_agent cdiv_handler.so memento_as_handler.so memento_handler.so astaire_handler.so
-TEST_TARGETS := cw_alarm_test
+TEST_TARGETS := cw_alarm_test cw_alarm_fvtest
 
 CPPFLAGS_TEST += -Imodules/cpp-common/test_utils
 
@@ -23,14 +23,20 @@ cw_alarm_test_SOURCES := test_main.cpp \
                          fakelogger.cpp \
                          fakezmq.cpp \
                          ${AGENT_COMMON_SOURCES}
-
+cw_alarm_fvtest_SOURCES := test_main.cpp \
+                           alarm.cpp \
+                           alarm_tables_testing.cpp\
+                           ${AGENT_COMMON_SOURCES}
+fvtest: run_cw_alarm_fvtest
 AGENT_COMMON_CPPFLAGS := -I. \
                          -Imodules/cpp-common/include \
                          -Imodules/rapidjson/include
 cw_alarm_agent_CPPFLAGS := ${AGENT_COMMON_CPPFLAGS}
 cw_alarm_test_CPPFLAGS := ${AGENT_COMMON_CPPFLAGS}
+cw_alarm_fvtest_CPPFLAGS := ${AGENT_COMMON_CPPFLAGS}
 
-cw_alarm_test_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/test_utils|^modules/cpp-common/include
+cw_alarm_test_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/test_utils|^modules/cpp-common/include|^modules/cpp-common/src|alarm_active_table.cpp|alarm_model_table.cpp|itu_alarm_table.cpp
+cw_alarm_fvtest_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/test_utils|^modules/cpp-common/include|^modules/cpp-common/src|alarm_req_listener.cpp|alarm_trap_sender.cpp|alarm_trap_sender.hpp
 
 AGENT_COMMON_LDFLAGS := -lzmq \
                         -lpthread \
@@ -40,6 +46,7 @@ AGENT_COMMON_LDFLAGS := -lzmq \
                         `net-snmp-config --agent-libs`
 cw_alarm_agent_LDFLAGS := ${AGENT_COMMON_LDFLAGS}
 cw_alarm_test_LDFLAGS := ${AGENT_COMMON_LDFLAGS}
+cw_alarm_fvtest_LDFLAGS := ${AGENT_COMMON_LDFLAGS}
 
 PLUGINS_COMMON_SOURCES := custom_handler.cpp oid.cpp oidtree.cpp oid_inet_addr.cpp zmq_listener.cpp zmq_message_handler.cpp
 cdiv_handler.so_SOURCES := cdivdata.cpp ${PLUGINS_COMMON_SOURCES}
@@ -70,6 +77,7 @@ include build-infra/cpp.mk
 
 # As a special case, running the agent test needs /var/run/clearwater to exist on the local machine
 run_cw_alarm_test : | /var/run/clearwater
+run_cw_alarm_fvtest : | /var/run/clearwater
 /var/run/clearwater :
 	sudo mkdir -p $@
 	sudo chmod -R o+wr /var/run/clearwater

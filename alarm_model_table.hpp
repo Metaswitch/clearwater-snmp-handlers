@@ -62,6 +62,7 @@ int alarmModelTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_tab
 
 alarmModelTable_context* alarmModelTable_create_row_context(char*, unsigned long, unsigned long);
 int alarmModelTable_index_to_oid(char*, unsigned long, unsigned long, netsnmp_index*);
+void alarmModelTable_insert_defs(void);
 
 /*************************************************************
  *
