@@ -62,6 +62,7 @@ int ituAlarmTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table
 
 ituAlarmTable_context* ituAlarmTable_create_row_context(char*, unsigned long, long);
 int ituAlarmTable_index_to_oid(char*, unsigned long, long, netsnmp_index*);
+void ituAlarmTable_insert_defs(void);
 
 /*************************************************************
  *

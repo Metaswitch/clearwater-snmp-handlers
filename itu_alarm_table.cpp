@@ -46,29 +46,38 @@ static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
 /************************************************************
  *
- *  Initializes the ituAlarmTable module
+ *  Initializes the ituAlarmTable module (not used in testing)
  */
+// LCOV_EXCL_START
 void init_ituAlarmTable(void)
 {
-  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
-
   if (initialize_table_ituAlarmTable() == SNMP_ERR_NOERROR)
   {
-    for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
-    {
-      ituAlarmTable_context* ctx = ituAlarmTable_create_row_context((char*) "", 
-                                                                    it->alarm_index(), 
-                                                                    it->severity());
-      if (ctx)
-      {
-        ctx->_alarm_table_def = &(*it);
+    ituAlarmTable_insert_defs();
+  }
+}
+// LCOV_EXCL_STOP
 
-        CONTAINER_INSERT(cb.container, ctx);
-      }
+/************************************************************
+ *
+ * Inserts all of the alarm definitions
+ */
+void ituAlarmTable_insert_defs(void)
+{
+  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
+  for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
+  {
+    ituAlarmTable_context* ctx = ituAlarmTable_create_row_context((char*) "", 
+                                                                  it->alarm_index(), 
+                                                                  it->severity());
+    if (ctx)
+    {
+      ctx->_alarm_table_def = &(*it);
+
+      CONTAINER_INSERT(cb.container, ctx);
     }
   }
 }
-
 /************************************************************
  *
  *  Initialize the ituAlarmTable table by defining its contents
@@ -80,8 +89,10 @@ int initialize_table_ituAlarmTable(void)
 
   if (my_handler)
   {
+    // LCOV_EXCL_START
     snmp_log(LOG_ERR, "initialize_table_ituAlarmTable called again");
     return SNMP_ERR_NOERROR;
+    // LCOV_EXCL_STOP
   }
 
   memset(&cb, 0x00, sizeof(cb));
@@ -97,8 +108,10 @@ int initialize_table_ituAlarmTable(void)
             
   if (!my_handler || !table_info)
   {
+    // LCOV_EXCL_START
     snmp_log(LOG_ERR, "malloc failed: initialize_table_ituAlarmTable");
     return SNMP_ERR_GENERR;
+    // LCOV_EXCL_STOP
   }
 
   /*
@@ -170,7 +183,8 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
                                context->_alarm_table_def->details().length());
     }
     break;
-
+    
+    // LCOV_EXCL_START
     case COLUMN_ITUALARMGENERICMODEL:
     {
       snmp_set_var_typed_value(var, ASN_OBJECT_ID,
@@ -181,11 +195,14 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
       var->val.objid[ALARMMODELTABLEROW_STATE] = context->_alarm_table_def->state();
     }
     break;
-    
+    // LCOV_EXCL_STOP
+
     default: /** We shouldn't get here */
     {
+      // LCOV_EXCL_START
       snmp_log(LOG_ERR, "unknown column: ituAlarmTable_get_value");
       return SNMP_ERR_GENERR;
+      // LCOV_EXCL_STOP
     }
   }
 
@@ -203,12 +220,15 @@ ituAlarmTable_context* ituAlarmTable_create_row_context(char* name,
   ituAlarmTable_context* ctx = SNMP_MALLOC_TYPEDEF(ituAlarmTable_context);
   if (!ctx)
   {
+    // LCOV_EXCL_START    
     snmp_log(LOG_ERR, "malloc failed: ituAlarmTable_create_row_context");
     return NULL;
+    // LCOV_EXCL_STOP
   }
         
   if (ituAlarmTable_index_to_oid(name, index, severity, &ctx->_index) != SNMP_ERR_NOERROR)
   {
+    // LCOV_EXCL_START
     if (ctx->_index.oids != NULL)
     {
       free(ctx->_index.oids);
@@ -216,6 +236,7 @@ ituAlarmTable_context* ituAlarmTable_create_row_context(char* name,
 
     free(ctx);
     return NULL;
+    // LCOV_EXCL_STOP
   }
 
   return ctx;
@@ -263,7 +284,7 @@ int ituAlarmTable_index_to_oid(char* name,
   err = build_oid(&oid_idx->oids, &oid_idx->len, NULL, 0, &var_alarmListName);
   if (err)
   {
-    snmp_log(LOG_ERR, "error %d converting index to oid: ituAlarmTable_index_to_oid", err);
+    snmp_log(LOG_ERR, "error %d converting index to oid: ituAlarmTable_index_to_oid", err); // LCOV_EXCL_LINE
   }
 
   /*

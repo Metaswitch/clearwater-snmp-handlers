@@ -53,23 +53,23 @@ Integration Testing
 -------------------
 
 To run the SNMP Alarm Agent integration test suite, change to the top-level
-clearwater-snmp-handlers director and issue make fvtest.
+clearwater-snmp-handlers directory and issue make fvtest.
 
 The integration tests also use the Google Test framework and are responsible for
 testing the following components of the SNMP Alarm Agent.
 
 - The Alarm Model Table
 - The itu Alarm Table
-  - Tests that when quieried using snmp get commands these tables will output the
+  - Tests that when queried using snmp get commands these tables will output the
     data exactly as it appears in an alarm definition. 
 - The Alarm Active Table
   - Tests the logic behind when this table adds a row and deletes a row. For
-    example this tests that when two alarms are raises (with the second having a
+    example this tests that when two alarms are raised (with the second having a
     different severity) the table deletes the entry for the first alarm and
-    creates and entry for the second.
+    creates an entry for the second.
 
 These tests (as opposed to the unit tests) do rely on using SNMP commands. As
-such we have included a minimal SNMP Alarm Agent, with snmp get and walk
+such we have included a minimal SNMP Alarm Agent, with snmpget and walk
 functions, which are available to the integration testing suite.
 
 The output from the integration test run will look like this:

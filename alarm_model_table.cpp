@@ -46,23 +46,34 @@ static netsnmp_handler_registration* my_handler = NULL;
 static netsnmp_table_array_callbacks cb;
 /************************************************************
  *
- *  Initializes the alarmModelTable module
+ *  Initializes the alarmModelTable module (not used in tests)
  */
+// LCOV_EXCL_START
 void init_alarmModelTable(void)
 {
-  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
   if (initialize_table_alarmModelTable() == SNMP_ERR_NOERROR)
   {
-    for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
+    alarmModelTable_insert_defs();  
+  }
+}
+// LCOV_EXCL_STOP
+
+/************************************************************
+ *
+ * Retreives all the alarm definitions
+ */
+void alarmModelTable_insert_defs(void)
+{
+  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
+  for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
+  {
+    alarmModelTable_context* ctx = alarmModelTable_create_row_context((char*) "", 
+                                                                      it->alarm_index(), 
+                                                                      it->state());
+    if (ctx)
     {
-      alarmModelTable_context* ctx = alarmModelTable_create_row_context((char*) "", 
-                                                                        it->alarm_index(), 
-                                                                        it->state());
-      if (ctx)
-      {
-        ctx->_alarm_table_def = &(*it);
-        CONTAINER_INSERT(cb.container, ctx);
-      }
+      ctx->_alarm_table_def = &(*it);
+      CONTAINER_INSERT(cb.container, ctx);
     }
   }
 }
@@ -78,8 +89,10 @@ int initialize_table_alarmModelTable(void)
 
   if (my_handler)
   {
+    // LCOV_EXCL_START
     TRC_ERROR("initialize_table_alarmModelTable called again");
     return SNMP_ERR_NOERROR;
+    // LCOV_EXCL_STOP
   }
 
   memset(&cb, 0x00, sizeof(cb));
@@ -95,8 +108,10 @@ int initialize_table_alarmModelTable(void)
             
   if (!my_handler || !table_info)
   {
+    // LCOV_EXCL_START
     TRC_ERROR("malloc failed: initialize_table_alarmModelTable");
     return SNMP_ERR_GENERR;
+    // LCOV_EXCL_STOP
   }
 
   /*
@@ -159,7 +174,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
       }
     }
     break;
-    
+    // LCOV_EXCL_START 
     case COLUMN_ALARMMODELVARBINDINDEX:
     {
       static unsigned long var_bind_index = 0;
@@ -177,7 +192,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
                                sizeof(var_bind_value));
     }
     break;
-    
+    // LCOV_EXCL_STOP
     case COLUMN_ALARMMODELDESCRIPTION:
     {
       snmp_set_var_typed_value(var, ASN_OCTET_STR,
@@ -185,7 +200,7 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
                                context->_alarm_table_def->description().length());
     }
     break;
-    
+    // LCOV_EXCL_START
     case COLUMN_ALARMMODELSPECIFICPOINTER:
     {
       snmp_set_var_typed_value(var, ASN_OBJECT_ID,
@@ -221,11 +236,14 @@ int alarmModelTable_get_value(netsnmp_request_info* request,
                                sizeof(row_status));
     }
     break;
-    
+    // LCOV_EXCL_STOP
+
     default: /** We shouldn't get here */
     {
+      // LCOV_EXCL_START
       TRC_ERROR("unknown column: alarmModelTable_get_value");
       return SNMP_ERR_GENERR;
+      // LCOV_EXCL_STOP
     }
   }
 
@@ -243,12 +261,15 @@ alarmModelTable_context* alarmModelTable_create_row_context(char* name,
   alarmModelTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmModelTable_context);
   if (!ctx)
   {
+    // LCOV_EXCL_START
     TRC_ERROR("malloc failed: alarmModelTable_create_row_context");
     return NULL;
+    // LCOV_EXCL_STOP
   }
         
   if (alarmModelTable_index_to_oid(name, index, state, &ctx->_index) != SNMP_ERR_NOERROR)
   {
+    // LCOV_EXCL_START
     if (ctx->_index.oids != NULL)
     {
       free(ctx->_index.oids);
@@ -256,6 +277,7 @@ alarmModelTable_context* alarmModelTable_create_row_context(char* name,
 
     free(ctx);
     return NULL;
+    // LCOV_EXCL_STOP
   }
 
   return ctx;
@@ -303,7 +325,7 @@ int alarmModelTable_index_to_oid(char* name,
   err = build_oid(&oid_idx->oids, &oid_idx->len, NULL, 0, &var_alarmListName);
   if (err)
   {
-    TRC_ERROR("error %d converting index to oid: alarmModelTable_index_to_oid", err);
+    TRC_ERROR("error %d converting index to oid: alarmModelTable_index_to_oid", err); // LCOV_EXCL_LINE
   }
 
   /*

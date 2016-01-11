@@ -69,8 +69,10 @@ public:
   const std::string& description() {return _severity_details._description;}
   const std::string& details()     {return _severity_details._details;}
 
+  // LCOV_EXCL_START
   bool is_valid() {return _valid;}
   bool is_not_clear() {return severity() != AlarmDef::CLEARED;}
+  // LCOV_EXCL_STOP
 
 private:
   bool _valid;
@@ -116,7 +118,7 @@ public:
   // Generate alarm table definitions based on JSON files on the node
   bool initialize(std::string& path);
   
-  // Insert an AlarmTableDef into the _key_to_def list, so that it cann
+  // Insert an AlarmTableDef into the _key_to_def list, so that it can
   // later be retrieved with get_definition.
   void insert_def(AlarmTableDef);
 

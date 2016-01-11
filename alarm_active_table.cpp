@@ -65,8 +65,10 @@ int init_alarmActiveTable(std::string ip)
 
   if (my_handler)
   {
+    // LCOV_EXCL_START
     TRC_ERROR("initialize_table_alarmActiveTable called again");
     return SNMP_ERR_NOERROR;
+    // LCOV_EXCL_STOP
   }
 
   memset(&cb, 0x00, sizeof(cb));
@@ -82,8 +84,10 @@ int init_alarmActiveTable(std::string ip)
             
   if (!my_handler || !table_info)
   {
+    // LCOV_EXCL_START 
     TRC_ERROR("malloc failed: initialize_table_alarmActiveTable");
     return SNMP_ERR_GENERR;
+    // LCOV_EXCL_STOP
   }
 
   /*
@@ -257,8 +261,10 @@ int alarmActiveTable_get_value(netsnmp_request_info* request,
     
     default: /** We shouldn't get here */
     {
+      // LCOV_EXCL_START
       TRC_ERROR("unknown column: alarmActiveTable_get_value");
       return SNMP_ERR_GENERR;
+      // LCOV_EXCL_STOP
     }
   }
   return SNMP_ERR_NOERROR;
@@ -350,14 +356,17 @@ void alarmActiveTable_create_row(AlarmTableDef& def)
   alarmActiveTable_context* ctx = SNMP_MALLOC_TYPEDEF(alarmActiveTable_context);
   if (!ctx)
   {
+    // LCOV_EXCL_START
     TRC_ERROR("malloc failed: alarmActiveTable_create_row");
     return;
+    // LCOV_EXCL_STOP
   }
   ctx->_alarm_table_def = &def;
   alarmActiveTable_SNMPDateTime datetime = alarm_time_issued(); 
   alarm_counter++;      
   if (alarmActiveTable_index_to_oid((char*) "", datetime, alarm_counter, &ctx->_index) != SNMP_ERR_NOERROR)
   {
+    // LCOV_EXCL_START
     if (ctx->_index.oids != NULL)
     {
       free(ctx->_index.oids);
@@ -365,6 +374,7 @@ void alarmActiveTable_create_row(AlarmTableDef& def)
 
     free(ctx);
     return;
+    // LCOV_EXCL_STOP
   }
   if (ctx)
   {
@@ -378,7 +388,7 @@ void alarmActiveTable_create_row(AlarmTableDef& def)
   // Reset the alarm counter if it reaches its max limit.
   if (alarm_counter == UINT_MAX)
   {
-    alarm_counter = 0;
+    alarm_counter = 0;  // LCOV_EXCL_LINE
   }
   return;
 }
@@ -440,7 +450,7 @@ int alarmActiveTable_index_to_oid(char* name,
   err = build_oid(&oid_idx->oids, &oid_idx->len, NULL, 0, &var_alarmListName);
   if (err)
   {
-    TRC_ERROR("error %d converting index to oid: alarmActiveTable_index_to_oid", err);
+    TRC_ERROR("error %d converting index to oid: alarmActiveTable_index_to_oid", err); // LCOV_EXCL_LINE
   }
 
   /*
@@ -449,4 +459,4 @@ int alarmActiveTable_index_to_oid(char* name,
   snmp_reset_var_buffers(&var_alarmListName);
 
   return err;
-} 
+}
