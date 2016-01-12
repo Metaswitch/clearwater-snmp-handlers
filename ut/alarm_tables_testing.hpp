@@ -6,6 +6,8 @@
 class CustomDefs: public SNMPTest
 {
 public:
+  CustomDefs() {alarm_address = "16162";}
+  
   AlarmTableDef* def_cleared;
   AlarmTableDef* def_raised;
   AlarmTableDef* def1_cleared;
