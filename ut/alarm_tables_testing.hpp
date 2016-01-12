@@ -112,7 +112,6 @@ void CustomDefs::TearDown()
 std::string get_index_from_row(std::string snmpwalk_row)
 {
   std::vector<std::string> index_fields;
-  printf("snmpwalk_row output: %s /n", snmpwalk_row.c_str());
   // This splits up each part of the index field for an alarm. The alarm's
   // index is the last element of the index field.
   // For example snmpwalk_row =
