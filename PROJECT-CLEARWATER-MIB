@@ -5089,77 +5089,39 @@ chronosAllTimersActions OBJECT-TYPE
     DESCRIPTION "The number of actions made over the period."
     ::= { chronosAllTimersEntry 6 }
 
-chronosRegTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF ChronosRegEntry
-    MAX-ACCESS         not-accessible
-    STATUS             current
-    DESCRIPTION        "The total number of REG timers this Chronos node
-                       is managing. This includes REG timers for which this node
-                       is primary, and timers for which this node is a backup.
-                       These statistics are only valid on Chronos nodes in the
-                       Sprout cluster."
-    ::= { chronos 5 }
+chronosInstantaneousCounts OBJECT IDENTIFIER ::= { chronos 5 }
 
-chronosRegEntry OBJECT-TYPE
-    SYNTAX      ChronosRegEntry
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "The average, variance, HWM and LWM of
-                 the REG timers stored by this Chronos"
-    INDEX       { chronosRegScope }
-    ::= { chronosRegTable 1 }
-
-ChronosRegEntry ::= SEQUENCE
-{
-  chronosRegScope        INTEGER,
-  chronosRegAverage      Unsigned32,
-  chronosRegVariance     Unsigned32,
-  chronosRegHWM          Unsigned32,
-  chronosRegLWM          Unsigned32
-}
-
-chronosRegScope OBJECT-TYPE
-    SYNTAX      INTEGER {
-                  scopePrevious5SecondPeriod(1),
-                  scopeCurrent5MinutePeriod(2),
-                  scopePrevious5MinutePeriod(3)
-                }
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION "The period over which the statistics were collected."
-    ::= { chronosRegEntry 1 }
-
-chronosRegAverage OBJECT-TYPE
+chronosCallInstantaneousCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The average number of REG timers
-                 stored over the period."
-    ::= { chronosRegEntry 2 }
+    DESCRIPTION "The instantaneous number of CALL
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 1 }
 
-chronosRegVariance OBJECT-TYPE
+chronosSubInstantaneousCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The variance of REG timers
-                 stored over the period."
-    ::= { chronosRegEntry 3 }
+    DESCRIPTION "The instantaneous number of SUB
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 2 }
 
-chronosRegHWM OBJECT-TYPE
+chronosBindInstantaneousCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The highest number of REG timers stored
-                 over the period."
-    ::= { chronosRegEntry 4 }
+    DESCRIPTION "The instantaneous number of BIND
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 3 }
 
-chronosRegLWM OBJECT-TYPE
+chronosRegInstantaneousCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The lowest number of REG timers stored
-                 over the period."
-    ::= { chronosRegEntry 5 }
+    DESCRIPTION "The instantaneous number of REG
+                 timers stored by this Chronos."
+    ::= { chronosInstantaneousCounts 4 }
 
 chronosCallTable OBJECT-TYPE
     SYNTAX SEQUENCE OF ChronosCallEntry
@@ -5302,31 +5264,146 @@ chronosSubLWM OBJECT-TYPE
                  over the period."
     ::= { chronosSubEntry 5 }
 
-chronosInstantaneousCounts OBJECT IDENTIFIER ::= { chronos 8 }
+chronosBindTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosBindEntry
+    MAX-ACCESS         not-accessible
+    STATUS             current
+    DESCRIPTION        "The total number of BIND timers
+                        this Chronos node is managing."
+    ::= { chronos 8 }
 
-chronosRegInstantaneousCount OBJECT-TYPE
+chronosBindEntry OBJECT-TYPE
+    SYNTAX      ChronosBindEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, HWM and LWM of
+                 the Bind timers stored by this Chronos."
+    INDEX       { chronosBindScope }
+    ::= { chronosBindTable 1 }
+
+ChronosBindEntry ::= SEQUENCE
+{
+  chronosBindScope        INTEGER,
+  chronosBindAverage      Unsigned32,
+  chronosBindVariance     Unsigned32,
+  chronosBindHWM          Unsigned32,
+  chronosBindLWM          Unsigned32
+}
+
+chronosBindScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosBindEntry 1 }
+
+chronosBindAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The instantaneous number of REG
-                 timers stored by this Chronos."
-    ::= { chronosInstantaneousCounts 1 }
+    DESCRIPTION "The average number of BIND timers
+                 stored over the period."
+    ::= { chronosBindEntry 2 }
 
-chronosCallInstantaneousCount OBJECT-TYPE
+chronosBindVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The instantaneous number of CALL
-                 timers stored by this Chronos."
-    ::= { chronosInstantaneousCounts 2 }
+    DESCRIPTION "The variance of the BIND timers
+                 stored over the period."
+    ::= { chronosBindEntry 3 }
 
-chronosSubInstantaneousCount OBJECT-TYPE
+chronosBindHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The instantaneous number of SUB
-                 timers stored by this Chronos."
-    ::= { chronosInstantaneousCounts 3 }
+    DESCRIPTION "The highest number of BIND timers stored
+                 over the period."
+    ::= { chronosBindEntry 4 }
+
+chronosBindLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest number of Bind timers stored
+                 over the period."
+    ::= { chronosBindEntry 5 }
+
+chronosRegTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF ChronosRegEntry
+    MAX-ACCESS         not-accessible
+    STATUS             current
+    DESCRIPTION        "The total number of REG timers this Chronos node
+                       is managing. This includes REG timers for which this node
+                       is primary, and timers for which this node is a backup.
+                       These statistics are only valid on Chronos nodes in the
+                       Sprout cluster."
+    ::= { chronos 9 }
+
+chronosRegEntry OBJECT-TYPE
+    SYNTAX      ChronosRegEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, HWM and LWM of
+                 the REG timers stored by this Chronos"
+    INDEX       { chronosRegScope }
+    ::= { chronosRegTable 1 }
+
+ChronosRegEntry ::= SEQUENCE
+{
+  chronosRegScope        INTEGER,
+  chronosRegAverage      Unsigned32,
+  chronosRegVariance     Unsigned32,
+  chronosRegHWM          Unsigned32,
+  chronosRegLWM          Unsigned32
+}
+
+chronosRegScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { chronosRegEntry 1 }
+
+chronosRegAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average number of REG timers
+                 stored over the period."
+    ::= { chronosRegEntry 2 }
+
+chronosRegVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of REG timers
+                 stored over the period."
+    ::= { chronosRegEntry 3 }
+
+chronosRegHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest number of REG timers stored
+                 over the period."
+    ::= { chronosRegEntry 4 }
+
+chronosRegLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest number of REG timers stored
+                 over the period."
+    ::= { chronosRegEntry 5 }
 
 chronosGroup OBJECT-GROUP
     OBJECTS {
@@ -5338,10 +5415,6 @@ chronosGroup OBJECT-GROUP
         chronosAllTimersHWM,
         chronosAllTimersLWM,
         chronosAllTimersActions,
-        chronosRegAverage,
-        chronosRegVariance,
-        chronosRegHWM,
-        chronosRegLWM,
         chronosCallAverage,
         chronosCallVariance,
         chronosCallHWM,
@@ -5350,9 +5423,18 @@ chronosGroup OBJECT-GROUP
         chronosSubVariance,
         chronosSubHWM,
         chronosSubLWM,
-        chronosRegInstantaneousCount,
+        chronosBindAverage,
+        chronosBindVariance,
+        chronosBindHWM,
+        chronosBindLWM,
+        chronosRegAverage,
+        chronosRegVariance,
+        chronosRegHWM,
+        chronosRegLWM,
         chronosCallInstantaneousCount,
-        chronosSubInstantaneousCount
+        chronosSubInstantaneousCount,
+        chronosBindInstantaneousCount,
+        chronosRegInstantaneousCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Chronos"
