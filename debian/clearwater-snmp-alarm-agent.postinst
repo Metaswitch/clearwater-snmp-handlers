@@ -60,6 +60,12 @@ case "$1" in
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;
 
+    triggered)
+        # Restart the alarm agent. Use restart rather than stop
+        # as the alarm agent is covered by upstart not monit
+        service clearwater-snmp-alarm-agent restart || /bin/true
+    ;;
+
     *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 1
@@ -72,4 +78,3 @@ esac
 #DEBHELPER#
 
 exit 0
-
