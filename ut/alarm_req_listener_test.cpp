@@ -78,7 +78,7 @@ public:
 
     cwtest_intercept_netsnmp(&_ms);
 
-    AlarmReqListener::get_instance().start();
+    AlarmReqListener::get_instance().start(NULL);
     AlarmReqAgent::get_instance().start();
   }
 
@@ -451,7 +451,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, CreateContext)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(ReturnNull());
 
-  EXPECT_FALSE(AlarmReqListener::get_instance().start());
+  EXPECT_FALSE(AlarmReqListener::get_instance().start(NULL));
   EXPECT_TRUE(_log.contains("zmq_ctx_new failed:"));
 }
 
@@ -459,11 +459,8 @@ TEST_F(AlarmReqListenerZmqErrorTest, CreateSocket)
 {
   EXPECT_CALL(_mz, zmq_ctx_new()).WillOnce(Return(&_c));
   EXPECT_CALL(_mz, zmq_socket(_,_)) .WillOnce(ReturnNull());
-  EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
-
-  AlarmReqListener::get_instance().stop();
+  EXPECT_FALSE(AlarmReqListener::get_instance().start(NULL));
 
   EXPECT_TRUE(_log.contains("zmq_socket failed:"));
 }
@@ -474,11 +471,8 @@ TEST_F(AlarmReqListenerZmqErrorTest, BindSocket)
   EXPECT_CALL(_mz, zmq_socket(_,_)).WillOnce(Return(&_s));
   EXPECT_CALL(_mz, zmq_setsockopt(_,_,_,_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_bind(_,_)).WillOnce(Return(-1));
-  EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
-
-  AlarmReqListener::get_instance().stop();
+  EXPECT_FALSE(AlarmReqListener::get_instance().start(NULL));
 
   EXPECT_TRUE(_log.contains("zmq_bind failed:"));
 }
@@ -494,7 +488,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, MsgReceive)
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
+  EXPECT_TRUE(AlarmReqListener::get_instance().start(NULL));
 
   _mz.call_complete(ZmqInterface::ZMQ_CLOSE, 5);
 
@@ -515,7 +509,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, GetSockOpt)
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
+  EXPECT_TRUE(AlarmReqListener::get_instance().start(NULL));
 
   _mz.call_complete(ZmqInterface::ZMQ_CLOSE, 5);
 
@@ -537,7 +531,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, MsgClose)
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
+  EXPECT_TRUE(AlarmReqListener::get_instance().start(NULL));
 
   _mz.call_complete(ZmqInterface::ZMQ_CLOSE, 5);
 
@@ -565,7 +559,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, Send)
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
+  EXPECT_TRUE(AlarmReqListener::get_instance().start(NULL));
 
   _mz.call_complete(ZmqInterface::ZMQ_CLOSE, 5);
 
@@ -585,7 +579,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, CloseSocket)
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(-1));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(0));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
+  EXPECT_TRUE(AlarmReqListener::get_instance().start(NULL));
 
   _mz.call_complete(ZmqInterface::ZMQ_CLOSE, 5);
 
@@ -604,7 +598,7 @@ TEST_F(AlarmReqListenerZmqErrorTest, DestroyContext)
   EXPECT_CALL(_mz, zmq_close(_)).WillOnce(Return(0));
   EXPECT_CALL(_mz, zmq_ctx_destroy(_)).WillOnce(Return(-1));
 
-  EXPECT_TRUE(AlarmReqListener::get_instance().start());
+  EXPECT_TRUE(AlarmReqListener::get_instance().start(NULL));
 
   _mz.call_complete(ZmqInterface::ZMQ_CLOSE, 5);
 

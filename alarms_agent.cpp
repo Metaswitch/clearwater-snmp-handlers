@@ -98,7 +98,6 @@ int main (int argc, char **argv)
   int c;
   int optind;
 
-  printf("Helo world\n");
   opterr = 0;
   while ((c = getopt_long(argc, argv, "", long_opt, &optind)) != -1)
   {
@@ -144,7 +143,7 @@ int main (int argc, char **argv)
   AlarmTableDefs::get_instance().initialize(alarms_path);
 
   // Exit if the ReqListener wasn't able to fully start
-  if (!AlarmReqListener::get_instance().start())
+  if (!AlarmReqListener::get_instance().start(&term_sem))
   {
     TRC_ERROR("Hit error starting the listener - shutting down");
     return 0;

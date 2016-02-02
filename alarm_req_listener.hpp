@@ -37,6 +37,7 @@
 
 #include <vector>
 #include <string>
+#include <semaphore.h>
  
 // Singleton which provides a listener thead to accept alarm requests from
 // clients via ZMQ, then generates alarmActiveState/alarmClearState inform
@@ -48,7 +49,7 @@ public:
   static AlarmReqListener& get_instance() {return _instance;}
 
   // Initialize ZMQ context and start listener thread.
-  bool start();
+  bool start(sem_t* term_sem);
 
   // Gracefully stop the listener thread and remove ZMQ context.
   void stop();
@@ -81,6 +82,8 @@ private:
 
   void* _ctx;
   void* _sck;
+
+  sem_t* _term_sem;
 };
 
 #endif

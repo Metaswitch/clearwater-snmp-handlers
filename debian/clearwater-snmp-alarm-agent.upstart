@@ -29,6 +29,9 @@ script
     DAEMON_ARGS="--snmp-ips $snmp_ip --local_ip $local_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
   }
 
+  # /var/run/clearwater needs to exist so we can create a UNIX socket in it
+  mkdir -p /var/run/clearwater
+  
   get_daemon_args
   /usr/share/clearwater/bin/cw_alarm_agent $DAEMON_ARGS
 end script
