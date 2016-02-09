@@ -106,8 +106,9 @@ void* AlarmReqListener::listener_thread(void* alarm_req_listener)
   // If this thread exits, fire the termination semaphore to ensure the main thread shuts down.
   if (l->_term_sem)
   {
-    sem_post(l->_term_sem);
+    sem_post(l->_term_sem); // LCOV_EXCL_LINE
   }
+
   return NULL;
 }
 
