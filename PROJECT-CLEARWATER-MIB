@@ -5415,6 +5415,10 @@ chronosGroup OBJECT-GROUP
         chronosAllTimersHWM,
         chronosAllTimersLWM,
         chronosAllTimersActions,
+        chronosCallInstantaneousCount,
+        chronosSubInstantaneousCount,
+        chronosBindInstantaneousCount,
+        chronosRegInstantaneousCount,
         chronosCallAverage,
         chronosCallVariance,
         chronosCallHWM,
@@ -5430,11 +5434,7 @@ chronosGroup OBJECT-GROUP
         chronosRegAverage,
         chronosRegVariance,
         chronosRegHWM,
-        chronosRegLWM,
-        chronosCallInstantaneousCount,
-        chronosSubInstantaneousCount,
-        chronosBindInstantaneousCount,
-        chronosRegInstantaneousCount
+        chronosRegLWM
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Chronos"
