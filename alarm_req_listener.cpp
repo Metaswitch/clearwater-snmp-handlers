@@ -50,9 +50,15 @@
 
 AlarmReqListener AlarmReqListener::_instance;
 
-bool AlarmReqListener::start()
+bool AlarmReqListener::start(sem_t* term_sem)
 {
+  _term_sem = term_sem;
   if (!zmq_init_ctx())
+  {
+    return false;
+  }
+
+  if (!zmq_init_sck())
   {
     return false;
   }
@@ -94,7 +100,14 @@ void AlarmReqListener::stop()
 
 void* AlarmReqListener::listener_thread(void* alarm_req_listener)
 {
-  ((AlarmReqListener*) alarm_req_listener)->listener();
+  AlarmReqListener* l = (AlarmReqListener*)alarm_req_listener;
+  l->listener();
+
+  // If this thread exits, fire the termination semaphore to ensure the main thread shuts down.
+  if (l->_term_sem)
+  {
+    sem_post(l->_term_sem); // LCOV_EXCL_LINE
+  }
 
   return NULL;
 }
@@ -201,17 +214,9 @@ void AlarmReqListener::zmq_clean_sck()
 
 void AlarmReqListener::listener()
 {
-  bool sckOk = zmq_init_sck();
-
   pthread_mutex_lock(&_start_mutex);
   pthread_cond_signal(&_start_cond);
   pthread_mutex_unlock(&_start_mutex);
-
-  if (!sckOk)
-  {
-    return;
-  }
-
   while (1)
   {
     std::vector<std::string> msg;
@@ -242,6 +247,10 @@ void AlarmReqListener::listener()
     else if ((msg[0].compare("sync-alarms-no-clear") == 0) && (msg.size() == 1))
     {
       AlarmTrapSender::get_instance().sync_alarms(false);
+    }
+    else if ((msg[0].compare("poll") == 0) && (msg.size() == 1))
+    {
+      // do nothing, just reply "ok"
     }
     else
     {
