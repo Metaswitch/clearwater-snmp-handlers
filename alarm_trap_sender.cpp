@@ -55,6 +55,7 @@ bool ObservedAlarms::update(AlarmTableDef& alarm_table_def, const std::string& i
   bool send_trap = false;
 
   std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
+  
   // Enter this if statement if the alarm we are currently raising is being
   // raised with a non-CLEARED severity. 
   if (alarm_table_def.is_not_clear())
@@ -169,6 +170,7 @@ unsigned long AlarmFilter::current_time_ms()
 
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
+  
   unsigned int index;
   unsigned int severity;
   if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2)
