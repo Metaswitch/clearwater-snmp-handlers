@@ -50,35 +50,60 @@ AlarmFilter AlarmFilter::_instance;
 
 AlarmTrapSender AlarmTrapSender::_instance;
 
-bool ActiveAlarmList::update(AlarmTableDef& alarm_table_def, const std::string& issuer)
+bool ObservedAlarms::update(AlarmTableDef& alarm_table_def, const std::string& issuer)
 {
-  bool updated = false;
+  bool send_trap = false;
 
   std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
-
+  // Enter this if statement if the alarm we are currently raising is being
+  // raised with a non-CLEARED severity. 
   if (alarm_table_def.is_not_clear())
   {
+    // If either the current alarm doesn't exist in the ObservedAlarms mapping
+    // or there is an entry for the current alarm in the mapping but at a
+    // different severity to the one we are currently raising the alarm with, we
+    // want to update the mapping and send a trap for the alarm.
     if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
     {
       _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);
-      updated = true;
+      send_trap = true;
     }
+    // If the alarm we are currently trying to raise has an associated entry
+    // within the ObservedAlarms mapping at the same severity then we do not
+    // wish to send a trap for this alarm (as it would be a repeated message).
   }
   else
   {
-    if (it != _index_to_entry.end())
+    // If we are currently raising an alarm with CLEARED severity and it doesn't
+    // exist in the ObservedAlarms mapping we should send the trap for this
+    // alarm and add an entry to the mapping.
+    if (it == _index_to_entry.end())
     {
-      _index_to_entry.erase(it);
-      updated = true;
+      _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);;
+      send_trap = true;
+    }
+    else
+    {
+      // If the alarm does exist in the ObservedAlarms mapping but with a
+      // non-CLEARED severity then we want to send a trap clearing the alarm and
+      // update the mapping with the CLEARED severity.
+      if (it->second.alarm_table_def().severity() != AlarmDef::CLEARED)
+      {
+        _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);;
+        send_trap = true;
+      }
+      // If the alarm does exist in the ObservedAlarms mapping but with a
+      // CLEARED severity then we do not wish to send a trap for this alarm (as
+      // it would be a repeated message).
     }
   }
 
-  return updated;
+  return send_trap;
 }
 
-void ActiveAlarmList::remove(ActiveAlarmIterator& it)
+void ObservedAlarms::overwrite(ObservedAlarmsIterator& it, AlarmTableDef& alarm_table_def)
 {
-  _index_to_entry.erase(it++);
+  _index_to_entry[it->alarm_table_def().alarm_index()] = AlarmListEntry(alarm_table_def, it->issuer());
 }
 
 bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
@@ -146,7 +171,6 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 {
   unsigned int index;
   unsigned int severity;
-
   if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2)
   {
     TRC_ERROR("malformed alarm identifier: %s", identifier.c_str());
@@ -157,7 +181,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 
   if (alarm_table_def.is_valid())
   {
-    if (_active_alarms.update(alarm_table_def, issuer))
+    if (_observed_alarms.update(alarm_table_def, issuer))
     {
       if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
       {
@@ -176,24 +200,26 @@ void AlarmTrapSender::clear_alarms(const std::string& issuer)
 {
   AlarmTableDefs& defs = AlarmTableDefs::get_instance();
 
-  ActiveAlarmIterator it = _active_alarms.begin();
-  while (it != _active_alarms.end())
+  ObservedAlarmsIterator it = _observed_alarms.begin();
+  while (it != _observed_alarms.end())
   {
     if (it->issuer() == issuer)
     {
-      AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().alarm_index(), AlarmDef::CLEARED);
-
-      if (!AlarmFilter::get_instance().alarm_filtered(clear_def.alarm_index(), clear_def.severity()))
+      if (it->alarm_table_def().severity() != AlarmDef::CLEARED)
       {
-        send_trap(clear_def);
+        // For each alarm that is currently raised in a non-CLEARED raised
+        // state, we generate the corresponding CLEARED definition of that
+        // alarm. 
+        AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().alarm_index(), AlarmDef::CLEARED);
+      
+       if (!AlarmFilter::get_instance().alarm_filtered(clear_def.alarm_index(), clear_def.severity()))
+        {
+          send_trap(clear_def);
+          _observed_alarms.overwrite(it, clear_def);
+        }
       }
-
-      _active_alarms.remove(it);
     }
-    else
-    {
-      ++it;
-    }
+    ++it;
   }
 }
 
@@ -212,9 +238,12 @@ void AlarmTrapSender::sync_alarms(bool do_clear)
     }
   }
 
-  for (ActiveAlarmIterator it = _active_alarms.begin(); it != _active_alarms.end(); it++)
+  for (ObservedAlarmsIterator it = _observed_alarms.begin(); it != _observed_alarms.end(); it++)
   {
-    send_trap(it->alarm_table_def());
+    if (it->alarm_table_def().severity() != AlarmDef::CLEARED)
+    {
+      send_trap(it->alarm_table_def());
+    }
   }
 }
 

@@ -43,7 +43,7 @@
 
 #include "alarm_table_defs.hpp"
 
-// Definition of an entry in the active alarm list. 
+// Definition of an entry in the ObservedAlarms mapping. 
 
 class AlarmListEntry
 {
@@ -61,40 +61,43 @@ private:
   std::string _issuer;
 };
 
-// Iterator for enumerating entries in the active alarm list. Subclassed
+// Iterator for enumerating entries in the ObservedAlarms mapping. Subclassed
 // from map iterator to hide pair template. Only operations defined are
 // supported.
 
-class ActiveAlarmIterator : public std::map<unsigned int, AlarmListEntry>::iterator
+class ObservedAlarmsIterator : public std::map<unsigned int, AlarmListEntry>::iterator
 {
 public:
-  ActiveAlarmIterator(std::map<unsigned int, AlarmListEntry>::iterator iter) : std::map<unsigned int, AlarmListEntry>::iterator(iter) {}
+  ObservedAlarmsIterator(std::map<unsigned int, AlarmListEntry>::iterator iter) : std::map<unsigned int, AlarmListEntry>::iterator(iter) {}
 
   AlarmListEntry& operator*()  {return  (std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
   AlarmListEntry* operator->() {return &(std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
 };
 
-// Container for all currently active alarms. Currently indexed by alarm
-// model index (may need to be extended to include a resource id going
-// forward). 
+// Container for all alarms we have seen being raised (either at CLEARED or
+// non-CLEARED severity). Maps the index of an alarms to the latest severity
+// with which it was raised. Currently indexed by alarm model index (may need 
+// to be extended to include a resource id going forward). 
 
-class ActiveAlarmList
+class ObservedAlarms
 {
 public:
-  ActiveAlarmList() {}
+  ObservedAlarms() {}
 
-  // Adds a non CLEARED severity alarm to the list if it does not already
-  // exist. For a CLEARED severity update, removes an associated alarm of
-  // the same alarm model index if one exists. Returns true if a change
-  // was made to the list.
+  // Adds a non-CLEARED severity alarm to the mapping if it does not already
+  // exist and returns true. If an entry does exist but at a different severity
+  // then we update the mapping and return true. For a CLEARED severity update,
+  // if the alarm doesn't exist in the mapping or if it does exist but at a
+  // non-CLEARED severity, we update the mapping and return true.
   bool update(AlarmTableDef& alarm_table_def, const std::string& issuer);
 
-  // Removes an entry from the list obtained via iteration over the list.
-  // The iterator is advanced to the next valid element.
-  void remove(ActiveAlarmIterator& it);
+  // Overwrites the current entry for an alarm's index within the mapping with a
+  // new AlarmListEntry that will contain an AlarmTableDef object with an
+  // updated severity.
+  void overwrite(ObservedAlarmsIterator& it, AlarmTableDef& alarm_table_def);
 
-  ActiveAlarmIterator begin() {return _index_to_entry.begin();}
-  ActiveAlarmIterator end() {return _index_to_entry.end();}
+  ObservedAlarmsIterator begin() {return _index_to_entry.begin();}
+  ObservedAlarmsIterator end() {return _index_to_entry.end();}
 
 private:
   std::map<unsigned int, AlarmListEntry> _index_to_entry;
@@ -176,7 +179,7 @@ private:
 
   void send_trap(AlarmTableDef& alarm_table_def);
 
-  ActiveAlarmList _active_alarms;
+  ObservedAlarms _observed_alarms;
 
   static AlarmTrapSender _instance;
 };

@@ -249,8 +249,18 @@ inline Matcher<netsnmp_variable_list*> TrapVars(TrapVarsMatcher::TrapType trap_t
   return MakeMatcher(new TrapVarsMatcher(trap_type, alarm_index));
 }
 
+TEST_F(AlarmReqListenerTest, ClearAlarmNoSet)
+{
+  EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1000)));
+
+  _alarm_1._clear_state.issue();
+  _ms.trap_complete(1, 5);
+}
+
 TEST_F(AlarmReqListenerTest, SetAlarm)
 {
+  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                         1000)));
 
@@ -260,6 +270,7 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
 
 TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
+  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                         1000)));
 
