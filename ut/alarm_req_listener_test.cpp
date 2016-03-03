@@ -84,6 +84,9 @@ public:
 
   virtual ~AlarmReqListenerTest()
   {
+    AlarmFilter::get_instance().delete_issue_times();
+    AlarmTrapSender::get_instance().delete_observed_alarms();
+    AlarmManager::get_instance().alarm_list_clear();
     AlarmReqAgent::get_instance().stop();
     AlarmReqListener::get_instance().stop();
 
@@ -267,25 +270,20 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
   _ms.trap_complete(1, 5);
 }
 
-// The class responsible for generating alarm inform notifications
-// (AlarmTrapSender) is a singleton and hence we have to use the same instance 
-// for each test. As such when we set an alarm in the previous test, it still exists 
-// within ObservedAlarms mapping for the next test and hence we have to expect 
-// that alarm be filtered out. We also have to advance time here so that our alarms 
-// are not filtered out by the alarm_filtered function with the alarm trap sender. 
-// This filters out any alarms raised in a repeated state during five seconds of 
-// each other (the value of ALARM_FILTER_TIME), even if the state of the alarm 
-// changes with that five seconds.
 TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-  EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        1000)));
+  {
+    InSequence s;
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
+                                          1000)));
 
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1000)));
+  }
   _alarm_1.set();
 
   _alarm_1.clear();
-  _ms.trap_complete(1, 5);
+  _ms.trap_complete(2, 5);
 }
 
 // Raises an alarm, waits thirty seconds, raises the same alarm in the
@@ -294,8 +292,6 @@ TEST_F(AlarmReqListenerTest, ClearAlarm)
 // should not cause a trap to be sent.
 TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-  
   {
     InSequence s;
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
@@ -312,8 +308,6 @@ TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
 
 TEST_F(AlarmReqListenerTest, ClearAlarms)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
   {
     InSequence s;
 
@@ -342,8 +336,6 @@ TEST_F(AlarmReqListenerTest, ClearAlarms)
 
 TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
   int alarm_count = 3;
 
   {
@@ -368,8 +360,6 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
 
 TEST_F(AlarmReqListenerTest, SyncAlarmsNoClear)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
   {
     InSequence s;
 
@@ -390,8 +380,6 @@ TEST_F(AlarmReqListenerTest, SyncAlarmsNoClear)
 
 TEST_F(AlarmReqListenerTest, AlarmFilter)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
   {
     InSequence s;
 
@@ -422,8 +410,6 @@ TEST_F(AlarmReqListenerTest, AlarmFilter)
 
 TEST_F(AlarmReqListenerTest, AlarmFilterClean)
 {
-  advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME + 1);
-
   {
     InSequence s;
 
@@ -457,6 +443,7 @@ TEST_F(AlarmReqListenerTest, AlarmFilterClean)
 
 TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 {
+  AlarmManager::get_instance().alarm_list_clear();
   EXPECT_CALL(_ms, send_v2trap(_)).
     Times(0);
 
@@ -468,6 +455,7 @@ TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 
 TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
 {
+  AlarmManager::get_instance().alarm_list_clear();
   EXPECT_CALL(_ms, send_v2trap(_)).
     Times(0);
 
@@ -479,6 +467,7 @@ TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
 
 TEST_F(AlarmReqListenerTest, UnknownAlarmIdentifier)
 {
+  AlarmManager::get_instance().alarm_list_clear();
   EXPECT_CALL(_ms, send_v2trap(_)).
     Times(0);
 

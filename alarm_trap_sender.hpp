@@ -92,6 +92,10 @@ public:
   ObservedAlarmsIterator begin() {return _index_to_entry.begin();}
   ObservedAlarmsIterator end() {return _index_to_entry.end();}
 
+  // When Unit Testing we should empty the mapping of observed alarms at the end
+  // of each test
+  void delete_index_to_entry(void) {_index_to_entry.clear();}
+
 private:
   std::map<unsigned int, AlarmListEntry> _index_to_entry;
 };
@@ -108,13 +112,17 @@ public:
     CLEAN_FILTER_TIME = 60000
   };
 
-  // Intened to be called before generating an inform notification to
+  // Intended to be called before generating an inform notification to
   // determine if the inform should be filtered (i.e. dropped because
   // it has already been issued within the filter period). This must
   // be tracked based on a <alarm model index, severity> basis.
   bool alarm_filtered(unsigned int index, unsigned int severity);
 
   static AlarmFilter& get_instance() {return _instance;}
+
+  // When Unit Testing we should empty the mapping of issue times at the end of
+  // each test.
+  void delete_issue_times(void) {_issue_times.clear();}
 
 private:
   class AlarmFilterKey
@@ -165,6 +173,10 @@ public:
   // the alarms defined for this node; followed by alarmActiveState informs
   // for each currently active alarm.
   void sync_alarms(bool do_clear);
+
+  // When Unit Testing we should empty the mapping of observed alarms at the end
+  // of each test.
+  void delete_observed_alarms(void) {_observed_alarms.delete_index_to_entry();}
 
   static AlarmTrapSender& get_instance() {return _instance;}
 private:
