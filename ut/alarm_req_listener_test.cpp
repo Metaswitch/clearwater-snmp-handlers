@@ -260,7 +260,6 @@ TEST_F(AlarmReqListenerTest, ClearAlarmNoSet)
 
 TEST_F(AlarmReqListenerTest, SetAlarm)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                         1000)));
 
@@ -278,6 +277,28 @@ TEST_F(AlarmReqListenerTest, ClearAlarm)
 
   _alarm_1.clear();
   _ms.trap_complete(1, 5);
+}
+
+// Raises an alarm, waits thirty seconds, raises the same alarm in the
+// same state and then clears the alarm. We should only expect two traps, for
+// the initial raising and the clearing, raising the alarm in a repeated state
+// should not cause a trap to be sent.
+TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
+{
+  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
+  
+  {
+    InSequence s;
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
+                                          1000)));
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1000)));
+  }
+  _alarm_1.set();
+  advance_time_ms(30);
+  _alarm_1.set();
+  _alarm_1.clear();
+  _ms.trap_complete(2, 5);
 }
 
 TEST_F(AlarmReqListenerTest, ClearAlarms)

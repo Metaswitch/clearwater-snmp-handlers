@@ -75,7 +75,7 @@ public:
 };
 
 // Container for all alarms we have seen being raised (either at CLEARED or
-// non-CLEARED severity). Maps the index of an alarms to the latest severity
+// non-CLEARED severity). Maps the index of an alarm to the latest severity
 // with which it was raised. Currently indexed by alarm model index (may need 
 // to be extended to include a resource id going forward). 
 
@@ -84,17 +84,10 @@ class ObservedAlarms
 public:
   ObservedAlarms() {}
 
-  // Adds a non-CLEARED severity alarm to the mapping if it does not already
-  // exist and returns true. If an entry does exist but at a different severity
-  // then we update the mapping and return true. For a CLEARED severity update,
-  // if the alarm doesn't exist in the mapping or if it does exist but at a
-  // non-CLEARED severity, we update the mapping and return true.
+  // Adds any alarm to the mapping if it does not already exist and returns 
+  // true. If an entry does exist but at a different severity then we 
+  // update the mapping and return true.
   bool update(AlarmTableDef& alarm_table_def, const std::string& issuer);
-
-  // Overwrites the current entry for an alarm's index within the mapping with a
-  // new AlarmListEntry that will contain an AlarmTableDef object with an
-  // updated severity.
-  void overwrite(ObservedAlarmsIterator& it, AlarmTableDef& alarm_table_def);
 
   ObservedAlarmsIterator begin() {return _index_to_entry.begin();}
   ObservedAlarmsIterator end() {return _index_to_entry.end();}
