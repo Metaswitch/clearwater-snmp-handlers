@@ -59,16 +59,12 @@ bool ObservedAlarms::update(AlarmTableDef& alarm_table_def, const std::string& i
   // If either the current alarm doesn't exist in the ObservedAlarms mapping
   // or there is an entry for the current alarm in the mapping but at a
   // different severity to the one we are currently raising the alarm with, we
-  // want to update the mapping and send a trap for the alarm.
+  // want to update the mapping.
   if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
   {
     _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);
     updated = true;
   }
-  // If the alarm we are currently trying to raise has an associated entry
-  // within the ObservedAlarms mapping at the same severity then we do not
-  // wish to send a trap for this alarm (as it would be a repeated message).
-
   return updated;
 }
 
@@ -148,6 +144,8 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 
   if (alarm_table_def.is_valid())
   {
+    // If the alarm to be issued exists in the ObservedAlarms mapping at the
+    // same severity then we disregard the alarm as it has not changed state.
     if (_observed_alarms.update(alarm_table_def, issuer))
     {
       if (!AlarmFilter::get_instance().alarm_filtered(index, severity))

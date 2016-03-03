@@ -144,7 +144,7 @@ private:
 };
 
 // Singleton class providing methods for generating alarmActiveState and
-// alarmClearState inform notifications. It maintains an active alarm 
+// alarmClearState inform notifications. It maintains an observed alarm 
 // list to support filtering and synchronization. 
 
 class AlarmTrapSender

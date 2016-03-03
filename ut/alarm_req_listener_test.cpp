@@ -267,11 +267,15 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
   _ms.trap_complete(1, 5);
 }
 
-// We have to advance time here so that our alarms are not filtered out by the
-// alarm_filtered function with the alarm trap sender. This filters out any
-// alarms raised in a repeated state during five seconds of each other (the
-// value of ALARM_FILTER_TIME), even if the state of the alarm changes with that
-// five seconds.
+// The class responsible for generating alarm inform notifications
+// (AlarmTrapSender) is a singleton and hence we have to use the same instance 
+// for each test. As such when we set an alarm in the previous test, it still exists 
+// within ObservedAlarms mapping for the next test and hence we have to expect 
+// that alarm be filtered out. We also have to advance time here so that our alarms 
+// are not filtered out by the alarm_filtered function with the alarm trap sender. 
+// This filters out any alarms raised in a repeated state during five seconds of 
+// each other (the value of ALARM_FILTER_TIME), even if the state of the alarm 
+// changes with that five seconds.
 TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
   advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
