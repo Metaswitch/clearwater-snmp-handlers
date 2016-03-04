@@ -84,9 +84,9 @@ public:
 
   virtual ~AlarmReqListenerTest()
   {
-    AlarmFilter::get_instance().delete_issue_times();
-    AlarmTrapSender::get_instance().delete_observed_alarms();
-    AlarmManager::get_instance().alarm_list_clear();
+    AlarmFilter::get_instance().forget_issue_times();
+    AlarmTrapSender::get_instance().forget_observed_alarms();
+    AlarmManager::get_instance().forget_alarm_list();
     AlarmReqAgent::get_instance().stop();
     AlarmReqListener::get_instance().stop();
 
@@ -443,7 +443,7 @@ TEST_F(AlarmReqListenerTest, AlarmFilterClean)
 
 TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 {
-  AlarmManager::get_instance().alarm_list_clear();
+  AlarmManager::get_instance().forget_alarm_list();
   EXPECT_CALL(_ms, send_v2trap(_)).
     Times(0);
 
@@ -455,7 +455,7 @@ TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 
 TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
 {
-  AlarmManager::get_instance().alarm_list_clear();
+  AlarmManager::get_instance().forget_alarm_list();
   EXPECT_CALL(_ms, send_v2trap(_)).
     Times(0);
 
@@ -467,7 +467,7 @@ TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
 
 TEST_F(AlarmReqListenerTest, UnknownAlarmIdentifier)
 {
-  AlarmManager::get_instance().alarm_list_clear();
+  AlarmManager::get_instance().forget_alarm_list();
   EXPECT_CALL(_ms, send_v2trap(_)).
     Times(0);
 

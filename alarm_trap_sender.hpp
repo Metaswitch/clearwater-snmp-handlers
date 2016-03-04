@@ -94,7 +94,7 @@ public:
 
   // When Unit Testing we should empty the mapping of observed alarms at the end
   // of each test
-  void delete_index_to_entry(void) {_index_to_entry.clear();}
+  void forget_alarms(void) {_index_to_entry.clear();}
 
 private:
   std::map<unsigned int, AlarmListEntry> _index_to_entry;
@@ -122,7 +122,7 @@ public:
 
   // When Unit Testing we should empty the mapping of issue times at the end of
   // each test.
-  void delete_issue_times(void) {_issue_times.clear();}
+  void forget_issue_times(void) {_issue_times.clear();}
 
 private:
   class AlarmFilterKey
@@ -176,7 +176,7 @@ public:
 
   // When Unit Testing we should empty the mapping of observed alarms at the end
   // of each test.
-  void delete_observed_alarms(void) {_observed_alarms.delete_index_to_entry();}
+  void forget_observed_alarms(void) {_observed_alarms.forget_alarms();}
 
   static AlarmTrapSender& get_instance() {return _instance;}
 private:
