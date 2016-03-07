@@ -249,6 +249,15 @@ inline Matcher<netsnmp_variable_list*> TrapVars(TrapVarsMatcher::TrapType trap_t
   return MakeMatcher(new TrapVarsMatcher(trap_type, alarm_index));
 }
 
+TEST_F(AlarmReqListenerTest, ClearAlarmNoSet)
+{
+  EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1000)));
+
+  _alarm_1._clear_state.issue();
+  _ms.trap_complete(1, 5);
+}
+
 TEST_F(AlarmReqListenerTest, SetAlarm)
 {
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
@@ -258,8 +267,18 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
   _ms.trap_complete(1, 5);
 }
 
+// The class responsible for generating alarm inform notifications
+// (AlarmTrapSender) is a singleton and hence we have to use the same instance 
+// for each test. As such when we set an alarm in the previous test, it still exists 
+// within ObservedAlarms mapping for the next test and hence we have to expect 
+// that alarm be filtered out. We also have to advance time here so that our alarms 
+// are not filtered out by the alarm_filtered function with the alarm trap sender. 
+// This filters out any alarms raised in a repeated state during five seconds of 
+// each other (the value of ALARM_FILTER_TIME), even if the state of the alarm 
+// changes with that five seconds.
 TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
+  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
   EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                         1000)));
 
@@ -267,6 +286,28 @@ TEST_F(AlarmReqListenerTest, ClearAlarm)
 
   _alarm_1.clear();
   _ms.trap_complete(1, 5);
+}
+
+// Raises an alarm, waits thirty seconds, raises the same alarm in the
+// same state and then clears the alarm. We should only expect two traps, for
+// the initial raising and the clearing, raising the alarm in a repeated state
+// should not cause a trap to be sent.
+TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
+{
+  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
+  
+  {
+    InSequence s;
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
+                                          1000)));
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1000)));
+  }
+  _alarm_1.set();
+  advance_time_ms(30);
+  _alarm_1.set();
+  _alarm_1.clear();
+  _ms.trap_complete(2, 5);
 }
 
 TEST_F(AlarmReqListenerTest, ClearAlarms)
