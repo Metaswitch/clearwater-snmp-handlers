@@ -69,7 +69,6 @@ bool AlarmTableDefKey::operator<(const AlarmTableDefKey& rhs) const
          ((_index == rhs._index) && (_severity < rhs._severity));
 }
 
-// LCOV_EXCL_START
 bool AlarmTableDefs::initialize(std::string& path)
 {
   std::map<unsigned int, unsigned int> dup_check;
@@ -140,7 +139,6 @@ bool AlarmTableDefs::populate_map(std::string path,
   }
   return rc;
 }
-// LCOV_EXCL_STOP
 
 void AlarmTableDefs::insert_def(AlarmTableDef def)
 {
@@ -148,7 +146,6 @@ void AlarmTableDefs::insert_def(AlarmTableDef def)
   _key_to_def.emplace(key, def);
 }
 
-// LCOV_EXCL_START
 AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index, 
                                               unsigned int severity)
 {
@@ -158,4 +155,3 @@ AlarmTableDef& AlarmTableDefs::get_definition(unsigned int index,
 
   return (it != _key_to_def.end()) ? it->second : _invalid_def;
 }
-// LCOV_EXCL_STOP
