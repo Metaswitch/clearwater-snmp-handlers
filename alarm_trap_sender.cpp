@@ -161,33 +161,6 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
   }
 }
 
-void AlarmTrapSender::clear_alarms(const std::string& issuer)
-{
-  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
-
-  ObservedAlarmsIterator it = _observed_alarms.begin();
-  while (it != _observed_alarms.end())
-  {
-    if (it->issuer() == issuer)
-    {
-      if (it->alarm_table_def().severity() != AlarmDef::CLEARED)
-      {
-        // For each alarm that is currently raised in a non-CLEARED raised
-        // state, we generate the corresponding CLEARED definition of that
-        // alarm. 
-        AlarmTableDef& clear_def = defs.get_definition(it->alarm_table_def().alarm_index(), AlarmDef::CLEARED);
-      
-       if (!AlarmFilter::get_instance().alarm_filtered(clear_def.alarm_index(), clear_def.severity()))
-        {
-          send_trap(clear_def);
-          _observed_alarms.update(clear_def, issuer);
-        }
-      }
-    }
-    ++it;
-  }
-}
-
 void AlarmTrapSender::sync_alarms(bool do_clear)
 {
   AlarmTableDefs& defs = AlarmTableDefs::get_instance();
