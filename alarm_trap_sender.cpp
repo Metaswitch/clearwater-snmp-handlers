@@ -205,10 +205,7 @@ void AlarmTrapSender::sync_alarms(bool do_clear)
 
   for (ObservedAlarmsIterator it = _observed_alarms.begin(); it != _observed_alarms.end(); it++)
   {
-    if (it->alarm_table_def().severity() != AlarmDef::CLEARED)
-    {
-      send_trap(it->alarm_table_def());
-    }
+    send_trap(it->alarm_table_def());
   }
 }
 
