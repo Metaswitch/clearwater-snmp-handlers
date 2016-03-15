@@ -310,36 +310,6 @@ TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
   _ms.trap_complete(2, 5);
 }
 
-TEST_F(AlarmReqListenerTest, ClearAlarms)
-{
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
-  {
-    InSequence s;
-
-    EXPECT_CALL(_ms, send_v2trap(_)).
-      Times(3);
-
-    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1000)));
-
-    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1001)));
-
-    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1002)));
-  }
-
-  _alarm_1.set();
-  _alarm_2.set();
-  _alarm_3.set();
-
-  AlarmState::clear_all(issuer1);
-  AlarmState::clear_all(issuer2);
-
-  _ms.trap_complete(6, 5);
-}
-
 TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
   advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
