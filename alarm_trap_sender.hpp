@@ -157,10 +157,6 @@ public:
   // to filtering).
   void issue_alarm(const std::string& issuer, const std::string& identifier);
 
-  // Generates alarmClearState informs corresponding to each of the active 
-  // alarms previously initiated by issuer. 
-  void clear_alarms(const std::string& issuer);
-
   // Optionally generates alarmClearState informs corresponding to each of
   // the alarms defined for this node; followed by alarmActiveState informs
   // for each currently active alarm.

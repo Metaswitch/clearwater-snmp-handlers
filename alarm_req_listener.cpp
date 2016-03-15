@@ -236,10 +236,6 @@ void AlarmReqListener::listener()
     {
       AlarmTrapSender::get_instance().issue_alarm(msg[1], msg[2]);
     }
-    else if ((msg[0].compare("clear-alarms") == 0) && (msg.size() == 2))
-    {
-      AlarmTrapSender::get_instance().clear_alarms(msg[1]);
-    }
     else if ((msg[0].compare("sync-alarms") == 0) && (msg.size() == 1))
     {
       AlarmTrapSender::get_instance().sync_alarms(true);
