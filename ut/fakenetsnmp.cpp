@@ -141,11 +141,11 @@ int netsnmp_table_container_register(netsnmp_handler_registration *reginfo,
   return 0;
 }
 
-void send_v2trap(netsnmp_variable_list *variable_list)
+void send_v2trap(netsnmp_variable_list *variable_list, snmp_callback callback, void* correlator)
 {
   if (netsnmp_intf_p)
   {
-    netsnmp_intf_p->send_v2trap(variable_list);
+    netsnmp_intf_p->send_v2trap(variable_list, callback, correlator);
 
     netsnmp_intf_p->trap_signal();
   }

@@ -60,25 +60,25 @@ public:
     _alarm_definition(alarm_definition),
     _severity_details(severity_details) {}
 
-  unsigned int state();
+  unsigned int state() const;
 
-  unsigned int alarm_index()    {return _alarm_definition._index;} 
-  AlarmDef::Cause cause() {return _alarm_definition._cause;}
+  unsigned int alarm_index() const   {return _alarm_definition._index;} 
+  AlarmDef::Cause cause() const      {return _alarm_definition._cause;}
 
-  AlarmDef::Severity severity()    {return _severity_details._severity;}
-  const std::string& description() {return _severity_details._description;}
-  const std::string& details()     {return _severity_details._details;}
+  AlarmDef::Severity severity() const    {return _severity_details._severity;}
+  const std::string& description() const {return _severity_details._description;}
+  const std::string& details() const     {return _severity_details._details;}
 
   // LCOV_EXCL_START
-  bool is_valid() {return _valid;}
-  bool is_not_clear() {return severity() != AlarmDef::CLEARED;}
+  bool is_valid() const     {return _valid;}
+  bool is_not_clear() const {return severity() != AlarmDef::CLEARED;}
   // LCOV_EXCL_STOP
 
 private:
   bool _valid;
 
-  const AlarmDef::AlarmDefinition _alarm_definition;
-  const AlarmDef::SeverityDetails _severity_details;
+  AlarmDef::AlarmDefinition _alarm_definition;
+  AlarmDef::SeverityDetails _severity_details;
 };
 
 // Unique key for alarm table definitions is comprised of alarm index and

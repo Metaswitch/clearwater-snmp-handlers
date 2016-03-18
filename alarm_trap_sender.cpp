@@ -50,22 +50,36 @@ AlarmFilter AlarmFilter::_instance;
 
 AlarmTrapSender AlarmTrapSender::_instance;
 
-bool ObservedAlarms::update(AlarmTableDef& alarm_table_def, const std::string& issuer)
+bool ObservedAlarms::update(const AlarmTableDef& alarm_table_def, const std::string& issuer)
 {
-  bool updated = false;
-
-  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
-  
-  // If either the current alarm doesn't exist in the ObservedAlarms mapping
-  // or there is an entry for the current alarm in the mapping but at a
-  // different severity to the one we are currently raising the alarm with, we
-  // want to update the mapping.
-  if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
+  if (!is_active(alarm_table_def))
   {
     _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);
-    updated = true;
+    return true;
   }
-  return updated;
+  else
+  {
+    return false;
+  }
+}
+
+bool ObservedAlarms::is_active(const AlarmTableDef& alarm_table_def)
+{
+  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
+
+  if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
+  {
+    // Either the current alarm doesn't exist in the ObservedAlarms mapping
+    // or there is an entry for the current alarm in the mapping but at a
+    // different severity to the one we are currently raising the alarm with.
+    TRC_DEBUG("Alarm is not active at this severity");
+    return false;
+  }
+  else
+  {
+    TRC_DEBUG("Alarm is active at this severity");
+    return true;
+  }
 }
 
 bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
@@ -169,11 +183,52 @@ void AlarmTrapSender::sync_alarms()
   }
 }
 
+static int alarm_trap_send_callback(int op,
+                                    snmp_session* session,
+                                    int req_id,
+                                    snmp_pdu* pdu,
+                                    void* correlator)
+{
+  AlarmTableDef* alarm_table_def = (AlarmTableDef *)correlator; correlator = NULL;
+  AlarmTrapSender::get_instance().alarm_trap_send_callback(op,
+                                                           *alarm_table_def);
+  delete alarm_table_def; alarm_table_def = NULL;
+  return 1;
+}
+
+void AlarmTrapSender::alarm_trap_send_callback(int op,
+                                               const AlarmTableDef& alarm_table_def)
+{
+  switch (op)
+  {
+  case NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE:
+    TRC_DEBUG("Alarm successfully delivered");
+    break;
+  case NETSNMP_CALLBACK_OP_SEND_FAILED:
+    // This can happen pretty fast, so don't spin
+    sleep(1);
+    // Fall through to...
+  case NETSNMP_CALLBACK_OP_TIMED_OUT:
+    TRC_DEBUG("Failed to deliver alarm");
+    if (_observed_alarms.is_active(alarm_table_def))
+    {
+      // Alarm is still active, attempt to re-transmit
+      send_trap(alarm_table_def);
+    }
+    break;
+  default:
+    // LCOV_EXCL_START - Logical error
+    TRC_DEBUG("Ignoring uninteresting alarm delivery callback (%d)", op);
+    break;
+    // LCOV_EXCL_STOP
+  }
+}
+
+
 // Sends an alarmActiveState or alarmClearState inform notification based
 // upon the specified alarm definition. net-snmp will handle the required
 // retires if needed.
-
-void AlarmTrapSender::send_trap(AlarmTableDef& alarm_table_def)
+void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
   TRC_WARNING("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
@@ -218,7 +273,8 @@ void AlarmTrapSender::send_trap(AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
-  send_v2trap(&var_trap);
+  void* alarm_correlator = new AlarmTableDef(alarm_table_def);
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, alarm_correlator);
 
   snmp_reset_var_buffers(&var_trap);
 }

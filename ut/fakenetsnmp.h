@@ -49,7 +49,7 @@ class NetSnmpInterface
 public:
   NetSnmpInterface();
 
-  virtual void send_v2trap(netsnmp_variable_list *) = 0;
+  virtual void send_v2trap(netsnmp_variable_list *, snmp_callback, void*) = 0;
 
   bool trap_complete(int count, int timeout);
   void trap_signal();
@@ -69,7 +69,7 @@ private:
 class MockNetSnmpInterface : public NetSnmpInterface
 {
 public:
-  MOCK_METHOD1(send_v2trap, void(netsnmp_variable_list *));
+  MOCK_METHOD3(send_v2trap, void(netsnmp_variable_list *, snmp_callback, void*));
 };
 
 void cwtest_intercept_netsnmp(NetSnmpInterface* intf);

@@ -48,16 +48,16 @@
 class AlarmListEntry
 {
 public:
-  AlarmListEntry() : _alarm_table_def(NULL) {}
+  AlarmListEntry() {}
 
-  AlarmListEntry(AlarmTableDef& alarm_table_def, const std::string& issuer) :
-    _alarm_table_def(&alarm_table_def), _issuer(issuer) {}
+  AlarmListEntry(const AlarmTableDef& alarm_table_def, const std::string& issuer) :
+    _alarm_table_def(alarm_table_def), _issuer(issuer) {}
 
-  AlarmTableDef& alarm_table_def() {return *_alarm_table_def;}
+  const AlarmTableDef& alarm_table_def() {return _alarm_table_def;}
   std::string& issuer() {return _issuer;}
 
 private:
-  AlarmTableDef* _alarm_table_def;
+  AlarmTableDef _alarm_table_def;
   std::string _issuer;
 };
 
@@ -87,7 +87,8 @@ public:
   // Adds any alarm to the mapping if it does not already exist and returns 
   // true. If an entry does exist but at a different severity then we 
   // update the mapping and return true.
-  bool update(AlarmTableDef& alarm_table_def, const std::string& issuer);
+  bool update(const AlarmTableDef& alarm_table_def, const std::string& issuer);
+  bool is_active(const AlarmTableDef& alarm_table_def);
 
   ObservedAlarmsIterator begin() {return _index_to_entry.begin();}
   ObservedAlarmsIterator end() {return _index_to_entry.end();}
@@ -162,11 +163,18 @@ public:
   // alarm.
   void sync_alarms();
 
+  // Callback triggered when an alarm send completes (either successfully
+  // or not).
+  //
+  // @param op - NETSNMP operation code
+  // @param alarm_table_def - The alarm entry that was being raised
+  void alarm_trap_send_callback(int op, const AlarmTableDef& alarm_table_def);
+
   static AlarmTrapSender& get_instance() {return _instance;}
 private:
   AlarmTrapSender() {}
 
-  void send_trap(AlarmTableDef& alarm_table_def);
+  void send_trap(const AlarmTableDef& alarm_table_def);
 
   ObservedAlarms _observed_alarms;
 
