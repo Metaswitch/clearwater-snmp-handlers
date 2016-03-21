@@ -129,13 +129,17 @@ class SNMPCallbackCollector
 public:
   void call_all_callbacks()
   {
+    snmp_session session;
+    session.peername = strdup("peer");
+
     for (auto ii = _callbacks.begin();
          ii != _callbacks.end();
          ++ii)
     {
-      ii->first(NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE, NULL, 0, NULL, ii->second);
+      ii->first(NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE, &session, 0, NULL, ii->second);
     }
     _callbacks.clear();
+    free(session.peername);
   }
 
   void collect_callback(netsnmp_variable_list* ignored, snmp_callback callback, void* correlator)
@@ -462,7 +466,10 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
 
   // Now report the send as failed
   COLLECT_CALL(send_v2trap(_, _, _));
-  callback(NETSNMP_CALLBACK_OP_SEND_FAILED, NULL, 2, NULL, correlator);
+  snmp_session session;
+  session.peername = strdup("peer");
+  callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
+  free(session.peername);
   _ms.trap_complete(1, 5);
 
   COLLECT_CALL(send_v2trap(_, _, _));
@@ -489,7 +496,10 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
 
   // Now report the send as failed which will not attempt to resend the
   // alarm.
-  callback(NETSNMP_CALLBACK_OP_SEND_FAILED, NULL, 2, NULL, correlator);
+  snmp_session session;
+  session.peername = strdup("peer");
+  callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
+  free(session.peername);
 }
 
 TEST_F(AlarmReqListenerTest, InvalidZmqRequest)

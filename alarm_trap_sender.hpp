@@ -167,8 +167,11 @@ public:
   // or not).
   //
   // @param op - NETSNMP operation code
+  // @param peer - The SNMP peer that failed
   // @param alarm_table_def - The alarm entry that was being raised
-  void alarm_trap_send_callback(int op, const AlarmTableDef& alarm_table_def);
+  void alarm_trap_send_callback(int op,
+                                const std::string& peer,
+                                const AlarmTableDef& alarm_table_def);
 
   static AlarmTrapSender& get_instance() {return _instance;}
 private:
