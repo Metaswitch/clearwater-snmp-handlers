@@ -157,10 +157,10 @@ public:
   // to filtering).
   void issue_alarm(const std::string& issuer, const std::string& identifier);
 
-  // Optionally generates alarmClearState informs corresponding to each of
-  // the alarms defined for this node; followed by alarmActiveState informs
-  // for each currently active alarm.
-  void sync_alarms(bool do_clear);
+  // Generates alarmClearState INFORMs corresponding to each of the currently
+  // cleared alarms and alarmActiveState informs for each currently active
+  // alarm.
+  void sync_alarms();
 
   static AlarmTrapSender& get_instance() {return _instance;}
 private:

@@ -238,11 +238,7 @@ void AlarmReqListener::listener()
     }
     else if ((msg[0].compare("sync-alarms") == 0) && (msg.size() == 1))
     {
-      AlarmTrapSender::get_instance().sync_alarms(true);
-    }
-    else if ((msg[0].compare("sync-alarms-no-clear") == 0) && (msg.size() == 1))
-    {
-      AlarmTrapSender::get_instance().sync_alarms(false);
+      AlarmTrapSender::get_instance().sync_alarms();
     }
     else if ((msg[0].compare("poll") == 0) && (msg.size() == 1))
     {
