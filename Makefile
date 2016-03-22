@@ -78,6 +78,12 @@ include build-infra/cpp.mk
 # As a special case, running the agent test needs /var/run/clearwater to exist on the local machine
 run_cw_alarm_test : | /var/run/clearwater
 run_cw_alarm_fvtest : | /var/run/clearwater
+debug_cw_alarm_test : | /var/run/clearwater
+debug_cw_alarm_fvtest : | /var/run/clearwater
+valgrind_cw_alarm_test : | /var/run/clearwater
+valgrind_cw_alarm_fvtest : | /var/run/clearwater
+valgrind_check_cw_alarm_test : | /var/run/clearwater
+valgrind_check_cw_alarm_fvtest : | /var/run/clearwater
 /var/run/clearwater :
 	sudo mkdir -p $@
 	sudo chmod -R o+wr /var/run/clearwater
