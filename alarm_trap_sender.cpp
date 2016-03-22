@@ -70,9 +70,16 @@ bool ObservedAlarms::is_active(const AlarmTableDef& alarm_table_def)
     // Either the current alarm doesn't exist in the ObservedAlarms mapping
     // or there is an entry for the current alarm in the mapping but at a
     // different severity to the one we are currently raising the alarm with.
-    TRC_DEBUG("Alarm is active at %d severity which does not match the given severity (%d)",
-              it->second.alarm_table_def().severity(),
-              alarm_table_def.severity());
+    if (it == _index_to_entry.end())
+    {
+      TRC_DEBUG("Alarm was not known at any severity");
+    }
+    else
+    {
+      TRC_DEBUG("Alarm is active at %d severity which does not match the given severity (%d)",
+                it->second.alarm_table_def().severity(),
+                alarm_table_def.severity());
+    }
     return false;
   }
   else
@@ -146,7 +153,6 @@ unsigned long AlarmFilter::current_time_ms()
 
 void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
-  
   unsigned int index;
   unsigned int severity;
   if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2)
@@ -214,7 +220,7 @@ void AlarmTrapSender::alarm_trap_send_callback(int op,
     // with the current architecture.  For now, if this OP occurs, we'll treat
     // it as a successful send.
     // LCOV_EXCL_START - Unhittable
-    TRC_DEBUG("Ignoring failed alarm send to peer %s", peer.c_str());
+    TRC_WARNING("Ignoring failed alarm send to peer %s", peer.c_str());
     break;
     // LCOV_EXCL_STOP
   case NETSNMP_CALLBACK_OP_TIMED_OUT:
