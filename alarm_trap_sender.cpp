@@ -163,8 +163,6 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
 
 void AlarmTrapSender::sync_alarms()
 {
-  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
-
   for (ObservedAlarmsIterator it = _observed_alarms.begin(); it != _observed_alarms.end(); it++)
   {
     send_trap(it->alarm_table_def());

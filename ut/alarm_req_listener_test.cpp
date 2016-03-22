@@ -105,15 +105,6 @@ public:
     AlarmReqAgent::get_instance().alarm_request(req);
   }
 
-  void sync_alarms_no_clear()
-  {
-    std::vector<std::string> req;
-
-    req.push_back("sync-alarms-no-clear");
-
-    AlarmReqAgent::get_instance().alarm_request(req);
-  }
-
   void issue_malformed_alarm()
   {
     std::vector<std::string> req;
@@ -313,33 +304,8 @@ TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
 TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
   advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
-  int alarm_count = 3;
-
-  {
-    InSequence s;
-
-    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          1000)));
-
-    EXPECT_CALL(_ms, send_v2trap(_)).
-      Times(alarm_count);
-
-    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          1000)));
-  }
-
-  _alarm_1.set();
-
-  sync_alarms();
-
-  _ms.trap_complete(alarm_count + 2, 5);
-}
-
-TEST_F(AlarmReqListenerTest, SyncAlarmsNoClear)
-{
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
+  
+  // Put our three alarms into a state we expect
   {
     InSequence s;
 
@@ -347,15 +313,41 @@ TEST_F(AlarmReqListenerTest, SyncAlarmsNoClear)
                                           1000)));
 
     EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1001)));
+
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1002))); 
+  }
+  
+  _alarm_1.set();
+  _alarm_2.clear();
+  _alarm_3.clear();
+  
+  _ms.trap_complete(3, 5);
+
+  // Now call sync_alarms and expect those states to be retransmitted
+  {
+    InSequence s;
+
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                           1000)));
+
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1001)));
+
+    EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                          1002))); 
   }
 
-  sync_alarms_no_clear();
+  sync_alarms();
 
-  _alarm_1.set();
+  _ms.trap_complete(3, 5);
+
+  // Clear the alarm to put us back into a good state
+  EXPECT_CALL(_ms, send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1000))); 
   _alarm_1.clear();
-
-  _ms.trap_complete(2, 5);
+  _ms.trap_complete(1, 5);
 }
 
 TEST_F(AlarmReqListenerTest, AlarmFilter)
