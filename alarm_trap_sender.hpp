@@ -158,7 +158,7 @@ public:
   void issue_alarm(const std::string& issuer, const std::string& identifier);
 
   // Generates alarmClearState INFORMs corresponding to each of the currently
-  // cleared alarms and alarmActiveState informs for each currently active
+  // cleared alarms and alarmActiveState INFORMs for each currently active
   // alarm.
   void sync_alarms();
 
