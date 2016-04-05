@@ -97,8 +97,8 @@ TEST_F(CustomDefs, ituAlarmTable)
   //details of the mapping to AlarmModelState see
   //https://tools.ietf.org/html/rfc3877#section-5.4
   ASSERT_STREQ("\"Test alarm raised details\"\n", snmp_get_raw(ituAlarmTable_entry + "." + itu_details + ".0.6666." + str_severity_raised, buf, sizeof(buf)));
-  ASSERT_EQ(163, snmp_get(ituAlarmTable_entry + "." + itu_cause + ".0.6666." + str_cleared));
-  ASSERT_EQ(163, snmp_get(ituAlarmTable_entry + "." + itu_cause + ".0.6666." + str_severity_raised));
+  ASSERT_EQ(163u, snmp_get(ituAlarmTable_entry + "." + itu_cause + ".0.6666." + str_cleared));
+  ASSERT_EQ(163u, snmp_get(ituAlarmTable_entry + "." + itu_cause + ".0.6666." + str_severity_raised));
 }
 
 TEST_F(CustomDefs, ActiveTableMultipleAlarms)
@@ -128,7 +128,7 @@ TEST_F(CustomDefs, ActiveTableMultipleAlarms)
 
   // Checks that the table has the right number of entries. Each alarm has 11
   // columns and there should be 2 alarms raised.
-  ASSERT_EQ(22, entries.size());
+  ASSERT_EQ(22u, entries.size());
   
   // Clears remaining alarms.
   alarmActiveTable_trap_handler(*def3_cleared);
@@ -136,7 +136,7 @@ TEST_F(CustomDefs, ActiveTableMultipleAlarms)
 
   // Checks there are now no entries in the table
   std::vector<std::string> entries_update = snmp_walk(alarmActiveTable_table);
-  ASSERT_EQ(0, entries_update.size());
+  ASSERT_EQ(0u, entries_update.size());
 }
 
 TEST_F(CustomDefs, ActiveTableRepeatAlarm)
@@ -153,14 +153,14 @@ TEST_F(CustomDefs, ActiveTableRepeatAlarm)
   // Checks that the table has the right number of entries. The second alarm
   // raised was identical to the first and hence there should only be one entry
   // which has 11 columns.
-  ASSERT_EQ(11, entries.size());
+  ASSERT_EQ(11u, entries.size());
 
   // Clears the alarm.
   alarmActiveTable_trap_handler(*def_cleared);
 
   // Checks there are now no entries in the table
   std::vector<std::string> entries_update = snmp_walk(alarmActiveTable_table);
-  ASSERT_EQ(0, entries_update.size());
+  ASSERT_EQ(0u, entries_update.size());
 }
 
 TEST_F(CustomDefs, ActiveTableClearingUnraisedAlarm)
@@ -170,7 +170,7 @@ TEST_F(CustomDefs, ActiveTableClearingUnraisedAlarm)
 
   // Checks there are no entries in the table
   std::vector<std::string> entries_update = snmp_walk(alarmActiveTable_table);
-  ASSERT_EQ(0, entries_update.size());
+  ASSERT_EQ(0u, entries_update.size());
 }
 
 TEST_F(CustomDefs, ActiveTableSameAlarmDifferentSeverities)
@@ -186,7 +186,7 @@ TEST_F(CustomDefs, ActiveTableSameAlarmDifferentSeverities)
   // Checks that the table has the right number of entries. The second alarm
   // should have overwritten the first and hence there should only be one entry
   // with 11 columns.
-  ASSERT_EQ(11, entries.size()); 
+  ASSERT_EQ(11u, entries.size()); 
 
   // Calculates which column should contain the alarm description based off the
   // column number definitions within alarm_active_table.hpp  
@@ -198,7 +198,7 @@ TEST_F(CustomDefs, ActiveTableSameAlarmDifferentSeverities)
   // Clears the alarm and checks there are now no entries in the table.
   alarmActiveTable_trap_handler(*def_cleared);
   std::vector<std::string> entries_update = snmp_walk(alarmActiveTable_table);
-  ASSERT_EQ(0, entries_update.size());
+  ASSERT_EQ(0u, entries_update.size());
 }
 
 TEST_F(CustomDefs, ActiveTableIndexTimeStamp)
@@ -245,7 +245,7 @@ TEST_F(CustomDefs, AlarmTableIndexSize)
   
   // Checks the index of the first alarm contains 26 elements as defined
   // in RFC 3877.
-  ASSERT_EQ(26, index_fields.size());
+  ASSERT_EQ(26u, index_fields.size());
 }
 
 TEST_F(CustomDefs, AlarmTableAlarmsIndex)
