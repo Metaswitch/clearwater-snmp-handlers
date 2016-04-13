@@ -289,7 +289,7 @@ alarmActiveTable_SNMPDateTime alarm_time_issued(void)
   // tells us how offset (in seconds) from UTC we are and stores a 
   // broken down time representation in the structure timing
   timing = *localtime(&rawtime);
-  UTC_offset = abs(timezone) / 3600;
+  UTC_offset = std::abs(timezone) / 3600;
   // htons converts the integer from host byte order to network
   // byte order as specified in RFC 2579.
   d_time.year = htons(1900 + timing.tm_year);
@@ -301,7 +301,7 @@ alarmActiveTable_SNMPDateTime alarm_time_issued(void)
   d_time.decisecond = 0;
   d_time.direction = (timezone > 0) ? '+' : '-';
   d_time.timegeozone = UTC_offset;
-  d_time.mintimezone = (abs(timezone) % 3600) / 60;
+  d_time.mintimezone = (std::abs(timezone) % 3600) / 60;
   return d_time;
 }
 
