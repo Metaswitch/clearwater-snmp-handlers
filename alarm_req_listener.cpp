@@ -142,7 +142,11 @@ bool AlarmReqListener::zmq_init_sck()
   int linger = 0;
   zmq_setsockopt(_sck, ZMQ_LINGER, &linger, sizeof(linger));
 
+#ifdef UNIT_TEST
+  std::string sck_file = std::string("/tmp/ut-alarms-socket-" + std::to_string(getpid()));
+#else
   std::string sck_file = std::string("/var/run/clearwater/alarms");
+#endif
   std::string sck_url = std::string("ipc://" + sck_file);
   TRC_INFO("AlarmReqListener: ss='%s'", sck_url.c_str());
 
