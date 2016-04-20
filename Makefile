@@ -25,7 +25,7 @@ CW_ALARM_AGENT_DIR := ${ROOT}/src
 CW_ALARM_AGENT_TEST_DIR := ${ROOT}/tests
 
 cw_alarm_agent:
-	${MAKE} -C ${CW_ALARM_AGENT_DIR}
+	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
 
 cw_alarm_agent_test:
 	${MAKE} -C ${CW_ALARM_AGENT_DIR} test
@@ -38,7 +38,19 @@ cw_alarm_agent_clean:
 
 cw_alarm_agent_distclean: CW_ALARM_AGENT_clean
 
-.PHONY: cw_alarm_agent CW_ALARM_AGENT_test cw_alarm_agent_clean cw_alarm_agent_distclean
+cdiv_handler.so:
+	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
+
+memento_handler.so:
+	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
+
+memento_as_handler.so:
+	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
+
+astaire_handler.so:
+	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
+
+.PHONY: cw_alarm_agent CW_ALARM_AGENT_test cw_alarm_agent_clean cw_alarm_agent_distclean cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so
 build: ${SUBMODULES} cw_alarm_agent
 
 test: ${SUBMODULES} cw_alarm_agent_test
