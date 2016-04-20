@@ -68,17 +68,5 @@ astaire_handler.so_LDFLAGS := ${PLUGINS_COMMON_LDFLAGS}
 
 VPATH := ../modules/cpp-common/src ../modules/cpp-common/test_utils ut
 
-GMOCK_DIR := ../modules/gmock
-GCOVR_DIR := ../modules/gcovr
-CPP_COMMON_DIR := ../modules/cpp-common
-BUILD_DIR := ../build
-
 include ../build-infra/cpp.mk
-
-# As a special case, running the agent test needs /var/run/clearwater to exist on the local machine
-run_cw_alarm_test : | /var/run/clearwater
-run_cw_alarm_fvtest : | /var/run/clearwater
-/var/run/clearwater :
-	sudo mkdir -p $@
-	sudo chmod -R o+wr /var/run/clearwater
 
