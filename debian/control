@@ -21,6 +21,13 @@ Replaces: clearwater-snmp-handler-alarm
 Depends: clearwater-snmpd, libboost-filesystem1.54.0
 Description: The SNMP subagent for Clearwater alarm reporting
 
+Package: clearwater-snmp-alarm-agent-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: clearwater-snmp-alarm-agent (= ${binary:Version}), gdb
+Description: Debugging symbols for the alarm agent
+
 Package: clearwater-snmp-handler-memento-as
 Architecture: any
 Depends: clearwater-snmpd

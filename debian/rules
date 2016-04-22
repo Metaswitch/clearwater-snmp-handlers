@@ -27,3 +27,6 @@ override_dh_auto_install:
 	mkdir debian/tmp
 
 override_dh_shlibdeps:
+
+override_dh_strip:
+	dh_strip -pclearwater-snmp-alarm-agent --dbg-package=clearwater-snmp-alarm-agent-dbg
