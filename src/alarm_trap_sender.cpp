@@ -197,22 +197,18 @@ static int alarm_trap_send_callback(int op,
                                     void* correlator)
 {
   AlarmTableDef* alarm_table_def = (AlarmTableDef *)correlator; correlator = NULL;
-  std::string peer(session->peername);
   AlarmTrapSender::get_instance().alarm_trap_send_callback(op,
-                                                           peer,
                                                            *alarm_table_def);
-  delete alarm_table_def; alarm_table_def = NULL;
   return 1;
 }
 
 void AlarmTrapSender::alarm_trap_send_callback(int op,
-                                               const std::string& peer,
                                                const AlarmTableDef& alarm_table_def)
 {
   switch (op)
   {
   case NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE:
-    TRC_DEBUG("Alarm successfully delivered to %s", peer.c_str());
+    TRC_DEBUG("Alarm successfully delivered");
     break;
   case NETSNMP_CALLBACK_OP_SEND_FAILED:
     // There is no path through NETSNMP that uses this OP.  If there were, we'd
@@ -220,11 +216,11 @@ void AlarmTrapSender::alarm_trap_send_callback(int op,
     // with the current architecture.  For now, if this OP occurs, we'll treat
     // it as a successful send.
     // LCOV_EXCL_START - Unhittable
-    TRC_WARNING("Ignoring failed alarm send to peer %s", peer.c_str());
+    TRC_WARNING("Ignoring failed alarm send");
     break;
     // LCOV_EXCL_STOP
   case NETSNMP_CALLBACK_OP_TIMED_OUT:
-    TRC_DEBUG("Failed to deliver alarm to %s", peer.c_str());
+    TRC_DEBUG("Failed to deliver alarm");
     if (_observed_alarms.is_active(alarm_table_def))
     {
       // Alarm is still active, attempt to re-transmit
@@ -288,8 +284,7 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
-  void* alarm_correlator = new AlarmTableDef(alarm_table_def);
-  send_v2trap(&var_trap, ::alarm_trap_send_callback, alarm_correlator);
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def);
 
   snmp_reset_var_buffers(&var_trap);
 }
