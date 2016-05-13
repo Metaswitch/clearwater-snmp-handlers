@@ -39,7 +39,7 @@
 
 rm -f /etc/monit/conf.d/alarm_agent.monit
 # Force monit to reload its configuration
-reload clearwater-monit || true
+pkill -HUP monit || true
 
 # Trigger an snmpd restart to unload the sub-agent
 service snmpd stop || true
