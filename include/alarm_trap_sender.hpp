@@ -44,7 +44,6 @@
 #include "alarm_table_defs.hpp"
 
 // Definition of an entry in the ObservedAlarms mapping. 
-
 class AlarmListEntry
 {
 public:
@@ -151,6 +150,10 @@ private:
 class AlarmTrapSender
 {
 public:
+  AlarmTrapSender(AlarmTableDefs* alarm_table_defs) :
+    _alarm_table_defs(alarm_table_defs)
+  {}
+
   // Generates an alarmActiveState inform if the identified alarm is not 
   // of CLEARED severity and not already active (or subject to filtering).
   // Generates an alarmClearState inform if the identified alarm is of a
@@ -172,15 +175,25 @@ public:
   void alarm_trap_send_callback(int op,
                                 const AlarmTableDef& alarm_table_def);
 
-  static AlarmTrapSender& get_instance() {return _instance;}
 private:
-  AlarmTrapSender() {}
-
   void send_trap(const AlarmTableDef& alarm_table_def);
 
+  AlarmTableDefs* _alarm_table_defs;
   ObservedAlarms _observed_alarms;
+};
 
-  static AlarmTrapSender _instance;
+// CallbackInfo struct. This holds a pointer to the underlying Alarm Trap
+// Sender and a reference to the alarm definition we just send an INFORM
+// for. This is passed on the SNMP callback function
+struct SNMPCallbackAlarmInfo
+{
+  SNMPCallbackAlarmInfo(AlarmTrapSender* ats, AlarmTableDef& atd) :
+    _ats(ats),
+    _atd(atd)
+  {}
+
+  AlarmTrapSender* _ats;
+  AlarmTableDef& _atd;
 };
 
 #endif

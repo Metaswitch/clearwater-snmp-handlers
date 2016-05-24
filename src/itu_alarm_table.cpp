@@ -49,11 +49,11 @@ static netsnmp_table_array_callbacks cb;
  *  Initializes the ituAlarmTable module (not used in testing)
  */
 // LCOV_EXCL_START
-void init_ituAlarmTable(void)
+void init_ituAlarmTable(AlarmTableDefs& defs)
 {
   if (initialize_table_ituAlarmTable() == SNMP_ERR_NOERROR)
   {
-    ituAlarmTable_insert_defs();
+    ituAlarmTable_insert_defs(defs);
   }
 }
 // LCOV_EXCL_STOP
@@ -62,9 +62,8 @@ void init_ituAlarmTable(void)
  *
  * Inserts all of the alarm definitions
  */
-void ituAlarmTable_insert_defs(void)
+void ituAlarmTable_insert_defs(AlarmTableDefs& defs)
 {
-  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
   for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
   {
     ituAlarmTable_context* ctx = ituAlarmTable_create_row_context((char*) "", 

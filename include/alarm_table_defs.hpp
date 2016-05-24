@@ -115,35 +115,32 @@ public:
 class AlarmTableDefs
 {
 public:
+  // Constructor
+  AlarmTableDefs() {}
+
   // Generate alarm table definitions based on JSON files on the node
   bool initialize(std::string& path);
-  
-  // Insert an AlarmTableDef into the _key_to_def list, so that it can
-  // later be retrieved with get_definition.
-  void insert_def(AlarmTableDef);
 
   // Retrieve alarm definition for specified index/severity
   AlarmTableDef& get_definition(unsigned int index,
                                 unsigned int severity);
 
-  // Populate the map of alarm definitions
-  bool populate_map(std::string path,
-                    std::map<unsigned int, unsigned int>& dup_check);
-
   // Iterator helpers for enumerating alarm table definitions.
   AlarmTableDefsIterator begin() {return _key_to_def.begin();}
   AlarmTableDefsIterator end()   {return _key_to_def.end();}
 
-  static AlarmTableDefs& get_instance() {return _instance;}
-
 private:
-  AlarmTableDefs() {}
+  // Insert an AlarmTableDef into the _key_to_def list, so that it can
+  // later be retrieved with get_definition.
+  void insert_def(AlarmTableDef);
+
+  // Populate the map of alarm definitions
+  bool populate_map(std::string path,
+                    std::map<unsigned int, unsigned int>& dup_check);
 
   std::map<AlarmTableDefKey, AlarmTableDef> _key_to_def;
 
   AlarmTableDef _invalid_def;
-
-  static AlarmTableDefs _instance;
 };
 
 #endif

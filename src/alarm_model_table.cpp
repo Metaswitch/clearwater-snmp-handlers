@@ -49,11 +49,11 @@ static netsnmp_table_array_callbacks cb;
  *  Initializes the alarmModelTable module (not used in tests)
  */
 // LCOV_EXCL_START
-void init_alarmModelTable(void)
+void init_alarmModelTable(AlarmTableDefs& defs)
 {
   if (initialize_table_alarmModelTable() == SNMP_ERR_NOERROR)
   {
-    alarmModelTable_insert_defs();  
+    alarmModelTable_insert_defs(defs);
   }
 }
 // LCOV_EXCL_STOP
@@ -62,9 +62,8 @@ void init_alarmModelTable(void)
  *
  * Retreives all the alarm definitions
  */
-void alarmModelTable_insert_defs(void)
+void alarmModelTable_insert_defs(AlarmTableDefs& defs)
 {
-  AlarmTableDefs& defs = AlarmTableDefs::get_instance();
   for (AlarmTableDefsIterator it = defs.begin(); it != defs.end(); it++)
   {
     alarmModelTable_context* ctx = alarmModelTable_create_row_context((char*) "", 

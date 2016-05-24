@@ -53,7 +53,7 @@ class AlarmTableDefsTest : public ::testing::Test
 {
 public:
   AlarmTableDefsTest() :
-    _defs(AlarmTableDefs::get_instance())
+    _defs(new AlarmTableDefs())
   {
     cwtest_intercept_netsnmp(&_ms);
   }
@@ -61,36 +61,37 @@ public:
   virtual ~AlarmTableDefsTest()
   {
     cwtest_restore_netsnmp();
+    delete _defs; _defs = NULL;
   }
 
 private:
-  AlarmTableDefs& _defs;
+  AlarmTableDefs* _defs;
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
 };
 
 TEST_F(AlarmTableDefsTest, InitializationNoFiles)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("NOT_A_REAL_PATH")));
+  EXPECT_FALSE(_defs->initialize(std::string(UT_DIR).append("NOT_A_REAL_PATH")));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationMultiDef)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/multi_definition/")));
+  EXPECT_FALSE(_defs->initialize(std::string(UT_DIR).append("/multi_definition/")));
   EXPECT_TRUE(_log.contains("multiply defined"));
 }
 
 TEST_F(AlarmTableDefsTest, InitializationInvalidJson)
 {
-  EXPECT_FALSE(_defs.initialize(std::string(UT_DIR).append("/invalid_json/")));
+  EXPECT_FALSE(_defs->initialize(std::string(UT_DIR).append("/invalid_json/")));
   EXPECT_TRUE(_log.contains("Invalid JSON file"));
 }
 
 TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
 {
-  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append("/valid_alarms/")));
+  EXPECT_TRUE(_defs->initialize(std::string(UT_DIR).append("/valid_alarms/")));
 
-  AlarmTableDef& _def = _defs.get_definition(1000,
+  AlarmTableDef& _def = _defs->get_definition(1000,
                                              AlarmDef::CRITICAL);
 
   EXPECT_TRUE(_def.is_valid());
@@ -102,9 +103,9 @@ TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
 
 TEST_F(AlarmTableDefsTest, InvalidTableDefLookup) 
 {
-  EXPECT_TRUE(_defs.initialize(std::string(UT_DIR).append("/valid_alarms/")));
+  EXPECT_TRUE(_defs->initialize(std::string(UT_DIR).append("/valid_alarms/")));
 
-  AlarmTableDef& _def = _defs.get_definition(0, 0);
+  AlarmTableDef& _def = _defs->get_definition(0, 0);
 
   EXPECT_FALSE(_def.is_valid());
 }

@@ -48,8 +48,6 @@
 
 AlarmFilter AlarmFilter::_instance;
 
-AlarmTrapSender AlarmTrapSender::_instance;
-
 bool ObservedAlarms::update(const AlarmTableDef& alarm_table_def, const std::string& issuer)
 {
   bool updated = false;
@@ -161,7 +159,7 @@ void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& 
     return;
   }
 
-  AlarmTableDef& alarm_table_def = AlarmTableDefs::get_instance().get_definition(index, severity);
+  AlarmTableDef& alarm_table_def = _alarm_table_defs->get_definition(index, severity);
 
   if (alarm_table_def.is_valid())
   {
@@ -196,9 +194,9 @@ static int alarm_trap_send_callback(int op,
                                     snmp_pdu* pdu,
                                     void* correlator)
 {
-  AlarmTableDef* alarm_table_def = (AlarmTableDef *)correlator; correlator = NULL;
-  AlarmTrapSender::get_instance().alarm_trap_send_callback(op,
-                                                           *alarm_table_def);
+  ((SNMPCallbackAlarmInfo*)correlator)->_ats->alarm_trap_send_callback(
+                                op, ((SNMPCallbackAlarmInfo*)correlator)->_atd);
+  delete (SNMPCallbackAlarmInfo*)correlator;
   return 1;
 }
 
@@ -241,7 +239,7 @@ void AlarmTrapSender::alarm_trap_send_callback(int op,
 // retires if needed.
 void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
-  TRC_WARNING("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
+  TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
@@ -284,7 +282,9 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
-  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def);
+  SNMPCallbackAlarmInfo* cbi = new SNMPCallbackAlarmInfo(this, (AlarmTableDef&)alarm_table_def);
+
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)cbi);
 
   snmp_reset_var_buffers(&var_trap);
 }

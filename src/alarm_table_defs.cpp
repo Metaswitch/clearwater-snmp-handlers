@@ -51,8 +51,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
-AlarmTableDefs AlarmTableDefs::_instance;
-
 // Translate ituAlarmPerceivedSeverity to alarmModelState based upon mapping
 // defined in section 5.4 of RFC 3877.
 // https://tools.ietf.org/html/rfc3877#section-5.4

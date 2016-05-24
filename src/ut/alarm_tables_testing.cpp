@@ -63,10 +63,11 @@ char buf[1024];
 
 TEST_F(CustomDefs, ModelTable)
 { 
-  AlarmTableDefs::get_instance().insert_def(*def_cleared);
-  AlarmTableDefs::get_instance().insert_def(*def_raised);
+  AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
+  alarm_table_defs->insert_def(*def_cleared);
+  alarm_table_defs->insert_def(*def_raised);
   
-  alarmModelTable_insert_defs();
+  alarmModelTable_insert_defs(*alarm_table_defs);
 
   // Verifies the custom alarm data (contained in the header file) is exactly what
   // is stored in the table. We use the index of the alarm "0.6666" in the 
@@ -83,14 +84,17 @@ TEST_F(CustomDefs, ModelTable)
   // alarm respectively.
   ASSERT_STREQ("iso.3.6.1.2.1.118.0.3\n", snmp_get_raw(alarmModelTable_entry + "." + model_notification + ".0.6666." + str_cleared, buf, sizeof(buf)));
   ASSERT_STREQ("iso.3.6.1.2.1.118.0.2\n", snmp_get_raw(alarmModelTable_entry + "." + model_notification + ".0.6666." + str_state_raised, buf, sizeof(buf)));
+
+  delete alarm_table_defs; alarm_table_defs = NULL;
 }
 
 TEST_F(CustomDefs, ituAlarmTable)
 {
-  AlarmTableDefs::get_instance().insert_def(*def_cleared);
-  AlarmTableDefs::get_instance().insert_def(*def_raised);
+  AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
+  alarm_table_defs->insert_def(*def_cleared);
+  alarm_table_defs->insert_def(*def_raised);
   
-  ituAlarmTable_insert_defs();
+  ituAlarmTable_insert_defs(*alarm_table_defs);
 
   ASSERT_STREQ("\"Test alarm cleared details\"\n", snmp_get_raw(ituAlarmTable_entry + "." + itu_details + ".0.6666." +str_cleared, buf, sizeof(buf)));
   //Here we use ituAlarmPerceivedSeverity to query ituAlarmTable, for
@@ -99,6 +103,8 @@ TEST_F(CustomDefs, ituAlarmTable)
   ASSERT_STREQ("\"Test alarm raised details\"\n", snmp_get_raw(ituAlarmTable_entry + "." + itu_details + ".0.6666." + str_severity_raised, buf, sizeof(buf)));
   ASSERT_EQ(163u, snmp_get(ituAlarmTable_entry + "." + itu_cause + ".0.6666." + str_cleared));
   ASSERT_EQ(163u, snmp_get(ituAlarmTable_entry + "." + itu_cause + ".0.6666." + str_severity_raised));
+
+  delete alarm_table_defs; alarm_table_defs = NULL;
 }
 
 TEST_F(CustomDefs, ActiveTableMultipleAlarms)
