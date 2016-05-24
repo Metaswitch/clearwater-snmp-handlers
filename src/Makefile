@@ -10,10 +10,15 @@ AGENT_COMMON_SOURCES := alarmdefinition.cpp \
                         alarm_req_listener.cpp \
                         alarm_trap_sender.cpp \
                         itu_alarm_table.cpp \
+                        alarm_heap.cpp \
                         json_alarms.cpp \
                         log.cpp \
-                        logger.cpp
-cw_alarm_agent_SOURCES := alarms_agent.cpp snmp_agent.cpp ${AGENT_COMMON_SOURCES}
+                        logger.cpp \
+                        timer_heap.cpp \
+                        utils.cpp
+cw_alarm_agent_SOURCES := alarms_agent.cpp \
+                          snmp_agent.cpp \
+                          ${AGENT_COMMON_SOURCES}
 cw_alarm_test_SOURCES := test_main.cpp \
                          alarm.cpp \
                          alarm_table_defs_test.cpp \
@@ -25,7 +30,7 @@ cw_alarm_test_SOURCES := test_main.cpp \
                          ${AGENT_COMMON_SOURCES}
 cw_alarm_fvtest_SOURCES := test_main.cpp \
                            alarm.cpp \
-                           alarm_tables_testing.cpp\
+                           alarm_tables_testing.cpp \
                            ${AGENT_COMMON_SOURCES}
 fvtest: run_cw_alarm_fvtest
 AGENT_COMMON_CPPFLAGS := -I../include \
@@ -36,7 +41,7 @@ cw_alarm_test_CPPFLAGS := ${AGENT_COMMON_CPPFLAGS}
 cw_alarm_fvtest_CPPFLAGS := ${AGENT_COMMON_CPPFLAGS}
 
 cw_alarm_test_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/test_utils|^modules/cpp-common/include|^modules/cpp-common/src|alarm_active_table.cpp|alarm_model_table.cpp|itu_alarm_table.cpp
-cw_alarm_fvtest_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/test_utils|^modules/cpp-common/include|^modules/cpp-common/src|alarm_req_listener.cpp|alarm_trap_sender.cpp|alarm_trap_sender.hpp|alarm_table_defs.cpp
+cw_alarm_fvtest_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/test_utils|^modules/cpp-common/include|^modules/cpp-common/src|alarm_req_listener.cpp|alarm_trap_sender.cpp|alarm_trap_sender.hpp|alarm_table_defs.cpp|alarm_heap.cpp
 
 AGENT_COMMON_LDFLAGS := -lzmq \
                         -lpthread \

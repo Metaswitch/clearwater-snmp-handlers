@@ -230,11 +230,11 @@ void AlarmReqListener::listener()
     // section 5.4: https://tools.ietf.org/html/rfc3877#section-5.4
     if ((msg[0].compare("issue-alarm") == 0) && (msg.size() == 3))
     {
-      _alarm_trap_sender->issue_alarm(msg[1], msg[2]);
+      _alarm_heap->issue_alarm(msg[1], msg[2]);
     }
     else if ((msg[0].compare("sync-alarms") == 0) && (msg.size() == 1))
     {
-      _alarm_trap_sender->sync_alarms();
+      _alarm_heap->sync_alarms();
     }
     else if ((msg[0].compare("poll") == 0) && (msg.size() == 1))
     {

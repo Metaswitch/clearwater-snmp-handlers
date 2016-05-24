@@ -50,6 +50,7 @@
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
+#include "alarm_heap.hpp"
 
 static sem_t term_sem;
 // Signal handler that triggers termination.
@@ -148,8 +149,9 @@ int main (int argc, char **argv)
     return 0;
   }
 
-  AlarmTrapSender* alarm_trap_sender = new AlarmTrapSender(alarm_table_defs);
-  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_trap_sender);
+  AlarmTrapSender* alarm_trap_sender = new AlarmTrapSender();
+  AlarmHeap* alarm_heap = new AlarmHeap(alarm_table_defs, alarm_trap_sender);
+  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_heap);
   init_alarmModelTable(*alarm_table_defs);
   init_ituAlarmTable(*alarm_table_defs);
   init_alarmActiveTable(local_ip);
@@ -171,6 +173,7 @@ int main (int argc, char **argv)
   snmp_terminate("clearwater-alarms");
 
   delete alarm_req_listener; alarm_req_listener = NULL;
+  delete alarm_heap; alarm_heap = NULL;
   delete alarm_trap_sender; alarm_trap_sender = NULL;
   delete alarm_table_defs; alarm_table_defs = NULL;
 }
