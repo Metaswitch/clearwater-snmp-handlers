@@ -43,6 +43,7 @@
 
 #include "log.h"
 #include "alarm_trap_sender.hpp"
+#include "alarm_heap.hpp"
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
 
@@ -58,8 +59,9 @@ static int alarm_trap_send_callback(int op,
   return 1;
 }
 
-void AlarmTrapSender::alarm_trap_send_callback(int op,
-                                               const AlarmTableDef& alarm_table_def)
+void AlarmTrapSender::alarm_trap_send_callback(
+                                           int op,
+                                           const AlarmTableDef& alarm_table_def)
 {
   switch (op)
   {
@@ -77,11 +79,7 @@ void AlarmTrapSender::alarm_trap_send_callback(int op,
     // LCOV_EXCL_STOP
   case NETSNMP_CALLBACK_OP_TIMED_OUT:
     TRC_DEBUG("Failed to deliver alarm");
-    if (true) // TODO _observed_alarms.is_active(alarm_table_def))
-    {
-      // Alarm is still active, attempt to re-transmit
-      send_trap(alarm_table_def);
-    }
+    _alarm_heap->handle_failed_alarm((AlarmTableDef&)alarm_table_def);
     break;
   default:
     // LCOV_EXCL_START - logic error
@@ -146,4 +144,3 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 
   snmp_reset_var_buffers(&var_trap);
 }
-

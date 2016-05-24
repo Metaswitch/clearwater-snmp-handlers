@@ -145,6 +145,15 @@ unsigned long AlarmFilter::current_time_ms()
   return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
 }
 
+void AlarmHeap::handle_failed_alarm(AlarmTableDef& alarm_table_def)
+{
+  if (_observed_alarms.is_active(alarm_table_def))
+  {
+    // Alarm is still active, attempt to re-transmit
+    _alarm_trap_sender->send_trap(alarm_table_def);
+  }
+}
+
 void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identifier)
 {
   unsigned int index;

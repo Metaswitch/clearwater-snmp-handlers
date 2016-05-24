@@ -149,8 +149,7 @@ int main (int argc, char **argv)
     return 0;
   }
 
-  AlarmTrapSender* alarm_trap_sender = new AlarmTrapSender();
-  AlarmHeap* alarm_heap = new AlarmHeap(alarm_table_defs, alarm_trap_sender);
+  AlarmHeap* alarm_heap = new AlarmHeap(alarm_table_defs);
   AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_heap);
   init_alarmModelTable(*alarm_table_defs);
   init_ituAlarmTable(*alarm_table_defs);
@@ -174,6 +173,5 @@ int main (int argc, char **argv)
 
   delete alarm_req_listener; alarm_req_listener = NULL;
   delete alarm_heap; alarm_heap = NULL;
-  delete alarm_trap_sender; alarm_trap_sender = NULL;
   delete alarm_table_defs; alarm_table_defs = NULL;
 }

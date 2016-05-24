@@ -42,8 +42,8 @@
 #include <cstdint>
 
 #include "alarm_table_defs.hpp"
-#include "timer_heap.h"
 #include "alarm_trap_sender.hpp"
+#include "timer_heap.h"
 
 // Definition of an entry in the ObservedAlarms mapping.
 class AlarmListEntry
@@ -151,18 +151,25 @@ private:
 class AlarmHeap
 {
 public:
-  AlarmHeap(AlarmTableDefs* alarm_table_defs,
-            AlarmTrapSender* alarm_trap_sender) :
+  AlarmHeap(AlarmTableDefs* alarm_table_defs) :
     _alarm_table_defs(alarm_table_defs),
-    _alarm_trap_sender(alarm_trap_sender)
+    _alarm_trap_sender(new AlarmTrapSender(this))
   {}
+
+  ~AlarmHeap()
+  {
+    delete _alarm_trap_sender; _alarm_trap_sender = NULL;
+  }
 
   // Generates an alarmActiveState inform if the identified alarm is not 
   // of CLEARED severity and not already active (or subject to filtering).
   // Generates an alarmClearState inform if the identified alarm is of a
   // CLEARED severity and an associated alarm is active (unless subject
   // to filtering).
-  void issue_alarm(const std::string& issuer, const std::string& identifier);
+  void issue_alarm(const std::string& issuer,
+                   const std::string& identifier);
+
+  void handle_failed_alarm(AlarmTableDef& alarm_table_def);
 
   // Generates alarmClearState INFORMs corresponding to each of the currently
   // cleared alarms and alarmActiveState INFORMs for each currently active
@@ -172,7 +179,6 @@ public:
 private:
   AlarmTableDefs* _alarm_table_defs;
   AlarmTrapSender* _alarm_trap_sender;
-
   ObservedAlarms _observed_alarms;
 };
 

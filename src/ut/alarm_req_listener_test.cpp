@@ -166,8 +166,7 @@ public:
 
     _alarm_table_defs = new AlarmTableDefs();
     _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_trap_sender = new AlarmTrapSender();
-    _alarm_heap = new AlarmHeap(_alarm_table_defs, _alarm_trap_sender);
+    _alarm_heap = new AlarmHeap(_alarm_table_defs);
     _alarm_req_listener = new AlarmReqListener(_alarm_heap);
     _alarm_req_listener->start(NULL);
     AlarmReqAgent::get_instance().start();
@@ -180,7 +179,6 @@ public:
 
     delete _alarm_req_listener; _alarm_req_listener = NULL;
     delete _alarm_heap; _alarm_heap = NULL;
-    delete _alarm_trap_sender; _alarm_trap_sender = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
 
     cwtest_restore_netsnmp();
@@ -244,7 +242,6 @@ private:
   CapturingTestLogger _log;
   SNMPCallbackCollector _collector;
   AlarmTableDefs* _alarm_table_defs;
-  AlarmTrapSender* _alarm_trap_sender;
   AlarmHeap* _alarm_heap;
   AlarmReqListener* _alarm_req_listener;
   Alarm _alarm_1;
@@ -267,8 +264,7 @@ public:
 
     _alarm_table_defs = new AlarmTableDefs();
     _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_trap_sender = new AlarmTrapSender();
-    _alarm_heap = new AlarmHeap(_alarm_table_defs, _alarm_trap_sender);
+    _alarm_heap = new AlarmHeap(_alarm_table_defs);
     _alarm_req_listener = new AlarmReqListener(_alarm_heap);
   }
 
@@ -276,7 +272,6 @@ public:
   {
     delete _alarm_req_listener; _alarm_req_listener = NULL;
     delete _alarm_heap; _alarm_heap = NULL;
-    delete _alarm_trap_sender; _alarm_trap_sender = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
 
     cwtest_restore_zmq();
@@ -290,7 +285,6 @@ private:
   int _c;
   int _s;
   AlarmTableDefs* _alarm_table_defs;
-  AlarmTrapSender* _alarm_trap_sender;
   AlarmHeap* _alarm_heap;
   AlarmReqListener* _alarm_req_listener;
 };
@@ -491,7 +485,7 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
   _ms.trap_complete(1, 5);
 }
 
-/* TODO - temp disabled - TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
+TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
 {
   advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME + 1);
 
@@ -514,7 +508,7 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
   session.peername = strdup("peer");
   callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
   free(session.peername);
-}*/
+}
 
 TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 {
