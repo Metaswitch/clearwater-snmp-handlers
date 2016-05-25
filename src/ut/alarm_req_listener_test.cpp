@@ -350,18 +350,14 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
   advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
 
   // Put our three alarms into a state we expect
-  {
-    InSequence s;
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
+                                        1000), _, _));
 
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          1000), _, _));
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1001), _, _));
 
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1001), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1002), _, _));
-  }
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1002), _, _));
 
   _alarm_1.set();
   _alarm_2.clear();
@@ -370,27 +366,18 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
   _ms.trap_complete(3, 5);
 
   // Now call sync_alarms and expect those states to be retransmitted
-  {
-    InSequence s;
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                          1000), _, _));
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
+                                        1000), _, _));
 
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1001), _, _));
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1001), _, _));
 
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                          1002), _, _));
-  }
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                        1002), _, _));
 
   sync_alarms();
 
   _ms.trap_complete(3, 5);
-
-  // Clear the alarm to put us back into a good state
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        1000), _, _));
-  _alarm_1.clear();
-  _ms.trap_complete(1, 5);
 }
 
 TEST_F(AlarmReqListenerTest, AlarmFilter)

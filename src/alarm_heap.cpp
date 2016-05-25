@@ -111,9 +111,13 @@ bool AlarmInfo::add_alarm_to_heap(AlarmDef::Severity severity)
 }
 
 AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
+  _terminated(false),
   _alarm_table_defs(alarm_table_defs),
   _alarm_trap_sender(new AlarmTrapSender(this))
 {
+  pthread_mutex_init(&_lock, NULL);
+  _cond = new CondVar(&_lock);
+
   for (AlarmTableDefsIterator it = _alarm_table_defs->begin();
                               it != _alarm_table_defs->end();
                               it++)
@@ -122,23 +126,39 @@ AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
 
     if (index == _alarm_state.end())
     {
-      AlarmInHeap* alarm_in_heap = new AlarmInHeap(*it);
+      AlarmInHeap* alarm_in_heap = new AlarmInHeap(it->alarm_index());
       _alarm_heap.insert(alarm_in_heap);
       AlarmInfo* alarm_info = new AlarmInfo(alarm_in_heap,
-                                            AlarmDef::Severity::UNDEFINED_SEVERITY,
                                             AlarmDef::Severity::UNDEFINED_SEVERITY);
       _alarm_state.insert(std::pair<unsigned int, AlarmInfo*>(it->alarm_index(),
                                                               alarm_info));
     }
   }
 
-  // TODO - Create heap thread
+  int rc = pthread_create(&_heap_pop_thread, NULL, heap_pop_function, this);
+
+  if (rc < 0)
+  {
+    // LCOV_EXCL_START
+    printf("Failed to start heap pop thread: %s", strerror(errno));
+    exit(2);
+    // LCOV_EXCL_STOP
+  }
 }
 
 AlarmHeap::~AlarmHeap()
 {
+  pthread_mutex_lock(&_lock);
+  _terminated = true;
+  _cond->signal();
+  pthread_mutex_unlock(&_lock);
+  pthread_join(_heap_pop_thread, NULL);
+  delete _cond; _cond = NULL;
+  pthread_mutex_destroy(&_lock);
+
   delete _alarm_trap_sender; _alarm_trap_sender = NULL;
   _alarm_heap.clear();
+
   for (AlarmStateMap::iterator it = _alarm_state.begin();
                                it != _alarm_state.end();
                                it++)
@@ -147,16 +167,67 @@ AlarmHeap::~AlarmHeap()
   }
 }
 
+void* AlarmHeap::heap_pop_function(void* data)
+{
+  ((AlarmHeap*)data)->heap_pop();
+  return NULL;
+}
+
+void AlarmHeap::heap_pop()
+{
+  pthread_mutex_lock(&_lock);
+
+  while (!_terminated)
+  {
+    uint64_t time_now_in_ms = Utils::get_time();
+    AlarmInHeap* alarm_in_heap = (AlarmInHeap*)_alarm_heap.get_next_timer();
+
+    while (alarm_in_heap->get_pop_time() <= time_now_in_ms)
+    {
+      AlarmTableDef& alarm_table_def =
+              _alarm_table_defs->get_definition(alarm_in_heap->index(),
+                                                alarm_in_heap->severity());
+
+      if (alarm_table_def.is_valid())
+      {
+        _alarm_trap_sender->send_trap(alarm_table_def);
+
+        AlarmStateMap::iterator alarm = _alarm_state.find(alarm_in_heap->index());
+        if (alarm != _alarm_state.end())
+        {
+          // Update the alarm state map
+          (*alarm).second->set_state(alarm_in_heap->severity());
+        }
+      }
+
+      // Now set the alarm in the heap to ages away, and rebalance the heap
+      alarm_in_heap->set_pop_time_to_max();
+      alarm_in_heap = (AlarmInHeap*)_alarm_heap.get_next_timer();
+    }
+
+    struct timespec time;
+    time.tv_sec = time_now_in_ms / 1000;
+    time.tv_nsec = (time_now_in_ms % 1000) * 1000000;
+    _cond->timedwait(&time);
+  }
+
+  pthread_mutex_unlock(&_lock);
+}
+
 void AlarmHeap::handle_failed_alarm(AlarmTableDef& alarm_table_def)
 {
+  pthread_mutex_lock(&_lock);
   AlarmStateMap::iterator alarm = _alarm_state.find(alarm_table_def.alarm_index());
   if (alarm != _alarm_state.end())
   {
     if ((*alarm).second->get_state() == alarm_table_def.severity())
     {
-      _alarm_trap_sender->send_trap(alarm_table_def);
+      (*alarm).second->alarm_in_heap()->set_severity(alarm_table_def.severity()); // TODO this needs more checking
+      (*alarm).second->alarm_in_heap()->update_pop_time(0);
+      _cond->signal();
     }
   }
+  pthread_mutex_unlock(&_lock);
 }
 
 void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identifier)
@@ -174,25 +245,26 @@ void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identi
   if (alarm_table_def.is_valid())
   {
     AlarmDef::Severity severity_as_enum = (AlarmDef::Severity)severity;
-
     // If the alarm to be issued exists in the ObservedAlarms mapping at the
     // same severity then we disregard the alarm as it has not changed state.
+    pthread_mutex_lock(&_lock);
     AlarmStateMap::iterator alarm = _alarm_state.find(index);
+
     if (alarm != _alarm_state.end())
     {
       if ((*alarm).second->add_alarm_to_heap(severity_as_enum))
       {
-        // TODO - move this to the heap thread
-        // Update the alarm state map
-        (*alarm).second->set_state(severity_as_enum);
-
         if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
         {
-          alarmActiveTable_trap_handler(alarm_table_def);
-          _alarm_trap_sender->send_trap(alarm_table_def);
+          alarmActiveTable_trap_handler(alarm_table_def); // TODO - move to alarm_state_map
+          (*alarm).second->alarm_in_heap()->set_severity(severity_as_enum);
+          (*alarm).second->alarm_in_heap()->update_pop_time(0);
+          _cond->signal();
         }
       }
     }
+
+    pthread_mutex_unlock(&_lock);
   }
   else
   {
@@ -202,6 +274,7 @@ void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identi
 
 void AlarmHeap::sync_alarms()
 {
+  pthread_mutex_lock(&_lock);
   TRC_STATUS("Resyncing alarms");
 
   for (AlarmStateMap::iterator it = _alarm_state.begin();
@@ -212,8 +285,10 @@ void AlarmHeap::sync_alarms()
 
     if (current_state != AlarmDef::Severity::UNDEFINED_SEVERITY)
     {
-      AlarmTableDef& alarm_table_def = _alarm_table_defs->get_definition((*it).first, current_state);
-      _alarm_trap_sender->send_trap(alarm_table_def);
+      (*it).second->alarm_in_heap()->update_pop_time(0);
     }
   }
+
+  _cond->signal();
+  pthread_mutex_unlock(&_lock);
 }

@@ -44,6 +44,8 @@
 #include "alarm_table_defs.hpp"
 #include "alarm_trap_sender.hpp"
 #include "timer_heap.h"
+#include "utils.h"
+#include "cond_var.h"
 
 // Container for all alarms we have seen being raised (either at CLEARED or
 // non-CLEARED severity). Maps the index of an alarm to the latest severity
@@ -100,19 +102,25 @@ private:
 class AlarmInHeap : public HeapableTimer
 {
 public:
-  AlarmInHeap(AlarmTableDef& alarm_table_def) :
+  AlarmInHeap(unsigned int index) :
     _pop_time(UINT_MAX),
-    _alarm_table_def(alarm_table_def)
+    _severity(AlarmDef::Severity::UNDEFINED_SEVERITY),
+    _index(index)
  {}
 
-  const AlarmTableDef& alarm_table_def() { return _alarm_table_def; }
+  const unsigned int index() { return _index; }
+  void set_severity(AlarmDef::Severity severity) { _severity = severity; }
+  AlarmDef::Severity severity() { return _severity; }
 
-  void update_pop_time(uint64_t new_pop_time)
+  void update_pop_time(uint64_t time_to_add)
   {
-    _pop_time = new_pop_time;
+    _pop_time = Utils::get_time() + time_to_add;
+    _heap->rebalance(this);
+  }
 
-    // This timer probably isn't in the right place in the heap any more, so
-    // fix that.
+  void set_pop_time_to_max()
+  {
+    _pop_time = UINT_MAX;
     _heap->rebalance(this);
   }
 
@@ -120,18 +128,17 @@ public:
 
 private:
   uint64_t _pop_time;
-  AlarmTableDef _alarm_table_def;
+  AlarmDef::Severity _severity;
+  unsigned int _index;
 };
 
 class AlarmInfo
 {
 public:
   AlarmInfo(AlarmInHeap* alarm_in_heap,
-            AlarmDef::Severity state,
-            AlarmDef::Severity state_in_alarm_heap) :
+            AlarmDef::Severity state) :
     _alarm_in_heap(alarm_in_heap),
-    _state(state),
-    _state_in_alarm_heap(state_in_alarm_heap)
+    _state(state)
   {}
 
   ~AlarmInfo()
@@ -139,14 +146,15 @@ public:
     delete _alarm_in_heap; _alarm_in_heap = NULL;
   }
 
+  AlarmInHeap* alarm_in_heap() { return _alarm_in_heap; }
   bool add_alarm_to_heap(AlarmDef::Severity severity);
   AlarmDef::Severity get_state() { return _state; }
   void set_state(AlarmDef::Severity state) { _state = state; }
+  void set_alarm_in_heap(AlarmDef::Severity severity, uint64_t time_to_send) { _alarm_in_heap->set_severity(severity); _alarm_in_heap->update_pop_time(time_to_send); }
 
 private:
   AlarmInHeap* _alarm_in_heap;
   AlarmDef::Severity _state;
-  AlarmDef::Severity _state_in_alarm_heap;
 };
 
 typedef std::map<unsigned int, AlarmInfo*> AlarmStateMap;
@@ -157,6 +165,7 @@ typedef std::map<unsigned int, AlarmInfo*> AlarmStateMap;
 class AlarmHeap
 {
 public:
+  // Constructor/Destructor
   AlarmHeap(AlarmTableDefs* alarm_table_defs);
   ~AlarmHeap();
 
@@ -170,16 +179,27 @@ public:
 
   void handle_failed_alarm(AlarmTableDef& alarm_table_def);
 
+  static void* heap_pop_function(void* data);
+
+  void heap_pop();
+
   // Generates alarmClearState INFORMs corresponding to each of the currently
   // cleared alarms and alarmActiveState INFORMs for each currently active
   // alarm.
   void sync_alarms();
+
+  // Whether the program has terminated
+  volatile bool _terminated;
 
 private:
   AlarmTableDefs* _alarm_table_defs;
   AlarmTrapSender* _alarm_trap_sender;
   TimerHeap _alarm_heap;
   AlarmStateMap _alarm_state;
+
+  pthread_mutex_t _lock;
+  CondVar* _cond;
+  pthread_t _heap_pop_thread;
 };
 
 #endif
