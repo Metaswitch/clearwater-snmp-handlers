@@ -540,7 +540,7 @@ TEST_F(AlarmReqListenerTest, UnknownAlarmIdentifier)
   issue_unknown_alarm();
   usleep(100000);
 
-  EXPECT_TRUE(_log.contains("unknown alarm definition"));
+  EXPECT_TRUE(_log.contains("Unknown alarm definition"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, CreateContext)

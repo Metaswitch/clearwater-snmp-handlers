@@ -45,58 +45,10 @@
 #include "alarm_trap_sender.hpp"
 #include "timer_heap.h"
 
-// Definition of an entry in the ObservedAlarms mapping.
-class AlarmListEntry
-{
-public:
-  AlarmListEntry() {}
-
-  AlarmListEntry(const AlarmTableDef& alarm_table_def, const std::string& issuer) :
-    _alarm_table_def(alarm_table_def), _issuer(issuer) {}
-
-  const AlarmTableDef& alarm_table_def() {return _alarm_table_def;}
-  std::string& issuer() {return _issuer;}
-
-private:
-  AlarmTableDef _alarm_table_def;
-  std::string _issuer;
-};
-
-// Iterator for enumerating entries in the ObservedAlarms mapping. Subclassed
-// from map iterator to hide pair template. Only operations defined are
-// supported.
-
-class ObservedAlarmsIterator : public std::map<unsigned int, AlarmListEntry>::iterator
-{
-public:
-  ObservedAlarmsIterator(std::map<unsigned int, AlarmListEntry>::iterator iter) : std::map<unsigned int, AlarmListEntry>::iterator(iter) {}
-
-  AlarmListEntry& operator*()  {return  (std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
-  AlarmListEntry* operator->() {return &(std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
-};
-
 // Container for all alarms we have seen being raised (either at CLEARED or
 // non-CLEARED severity). Maps the index of an alarm to the latest severity
 // with which it was raised. Currently indexed by alarm model index (may need
 // to be extended to include a resource id going forward).
-
-class ObservedAlarms
-{
-public:
-  ObservedAlarms() {}
-
-  // Adds any alarm to the mapping if it does not already exist and returns
-  // true. If an entry does exist but at a different severity then we
-  // update the mapping and return true.
-  bool update(const AlarmTableDef& alarm_table_def, const std::string& issuer);
-  bool is_active(const AlarmTableDef& alarm_table_def);
-
-  ObservedAlarmsIterator begin() {return _index_to_entry.begin();}
-  ObservedAlarmsIterator end() {return _index_to_entry.end();}
-
-private:
-  std::map<unsigned int, AlarmListEntry> _index_to_entry;
-};
 
 // Singleton helper used to filter inform notifications (as per their
 // descriptions in section 4.2 of RFC 3877).
@@ -145,23 +97,70 @@ private:
   static AlarmFilter _instance;
 };
 
+class AlarmInHeap : public HeapableTimer
+{
+public:
+  AlarmInHeap(AlarmTableDef& alarm_table_def) :
+    _pop_time(UINT_MAX),
+    _alarm_table_def(alarm_table_def)
+ {}
+
+  const AlarmTableDef& alarm_table_def() { return _alarm_table_def; }
+
+  void update_pop_time(uint64_t new_pop_time)
+  {
+    _pop_time = new_pop_time;
+
+    // This timer probably isn't in the right place in the heap any more, so
+    // fix that.
+    _heap->rebalance(this);
+  }
+
+  uint64_t get_pop_time() const { return _pop_time; }
+
+private:
+  uint64_t _pop_time;
+  AlarmTableDef _alarm_table_def;
+};
+
+class AlarmInfo
+{
+public:
+  AlarmInfo(AlarmInHeap* alarm_in_heap,
+            AlarmDef::Severity state,
+            AlarmDef::Severity state_in_alarm_heap) :
+    _alarm_in_heap(alarm_in_heap),
+    _state(state),
+    _state_in_alarm_heap(state_in_alarm_heap)
+  {}
+
+  ~AlarmInfo()
+  {
+    delete _alarm_in_heap; _alarm_in_heap = NULL;
+  }
+
+  bool add_alarm_to_heap(AlarmDef::Severity severity);
+  AlarmDef::Severity get_state() { return _state; }
+  void set_state(AlarmDef::Severity state) { _state = state; }
+
+private:
+  AlarmInHeap* _alarm_in_heap;
+  AlarmDef::Severity _state;
+  AlarmDef::Severity _state_in_alarm_heap;
+};
+
+typedef std::map<unsigned int, AlarmInfo*> AlarmStateMap;
+
 // Singleton class providing methods for generating alarmActiveState and
-// alarmClearState inform notifications. It maintains an observed alarm 
-// list to support filtering and synchronization. 
+// alarmClearState inform notifications. It maintains an observed alarm
+// list to support filtering and synchronization.
 class AlarmHeap
 {
 public:
-  AlarmHeap(AlarmTableDefs* alarm_table_defs) :
-    _alarm_table_defs(alarm_table_defs),
-    _alarm_trap_sender(new AlarmTrapSender(this))
-  {}
+  AlarmHeap(AlarmTableDefs* alarm_table_defs);
+  ~AlarmHeap();
 
-  ~AlarmHeap()
-  {
-    delete _alarm_trap_sender; _alarm_trap_sender = NULL;
-  }
-
-  // Generates an alarmActiveState inform if the identified alarm is not 
+  // Generates an alarmActiveState inform if the identified alarm is not
   // of CLEARED severity and not already active (or subject to filtering).
   // Generates an alarmClearState inform if the identified alarm is of a
   // CLEARED severity and an associated alarm is active (unless subject
@@ -179,8 +178,8 @@ public:
 private:
   AlarmTableDefs* _alarm_table_defs;
   AlarmTrapSender* _alarm_trap_sender;
-  ObservedAlarms _observed_alarms;
+  TimerHeap _alarm_heap;
+  AlarmStateMap _alarm_state;
 };
 
 #endif
-

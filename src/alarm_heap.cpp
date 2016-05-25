@@ -44,46 +44,6 @@
 
 AlarmFilter AlarmFilter::_instance;
 
-bool ObservedAlarms::update(const AlarmTableDef& alarm_table_def, const std::string& issuer)
-{
-  bool updated = false;
-  if (!is_active(alarm_table_def))
-  {
-    _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);
-    updated = true;
-  }
-  return updated;
-}
-
-bool ObservedAlarms::is_active(const AlarmTableDef& alarm_table_def)
-{
-  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
-
-  if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
-  {
-    // Either the current alarm doesn't exist in the ObservedAlarms mapping
-    // or there is an entry for the current alarm in the mapping but at a
-    // different severity to the one we are currently raising the alarm with.
-    if (it == _index_to_entry.end())
-    {
-      TRC_DEBUG("Alarm was not known at any severity");
-    }
-    else
-    {
-      TRC_DEBUG("Alarm is active at %d severity which does not match the given severity (%d)",
-                it->second.alarm_table_def().severity(),
-                alarm_table_def.severity());
-    }
-    return false;
-  }
-  else
-  {
-    TRC_DEBUG("Alarm is active at the given severity (%d)",
-              alarm_table_def.severity());
-    return true;
-  }
-}
-
 bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
 {
   unsigned long now = current_time_ms();
@@ -145,12 +105,57 @@ unsigned long AlarmFilter::current_time_ms()
   return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
 }
 
+bool AlarmInfo::add_alarm_to_heap(AlarmDef::Severity severity)
+{
+  return (severity != _state);
+}
+
+AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
+  _alarm_table_defs(alarm_table_defs),
+  _alarm_trap_sender(new AlarmTrapSender(this))
+{
+  for (AlarmTableDefsIterator it = _alarm_table_defs->begin();
+                              it != _alarm_table_defs->end();
+                              it++)
+  {
+    AlarmStateMap::iterator index = _alarm_state.find(it->alarm_index());
+
+    if (index == _alarm_state.end())
+    {
+      AlarmInHeap* alarm_in_heap = new AlarmInHeap(*it);
+      _alarm_heap.insert(alarm_in_heap);
+      AlarmInfo* alarm_info = new AlarmInfo(alarm_in_heap,
+                                            AlarmDef::Severity::UNDEFINED_SEVERITY,
+                                            AlarmDef::Severity::UNDEFINED_SEVERITY);
+      _alarm_state.insert(std::pair<unsigned int, AlarmInfo*>(it->alarm_index(),
+                                                              alarm_info));
+    }
+  }
+
+  // TODO - Create heap thread
+}
+
+AlarmHeap::~AlarmHeap()
+{
+  delete _alarm_trap_sender; _alarm_trap_sender = NULL;
+  _alarm_heap.clear();
+  for (AlarmStateMap::iterator it = _alarm_state.begin();
+                               it != _alarm_state.end();
+                               it++)
+  {
+    delete (*it).second;
+  }
+}
+
 void AlarmHeap::handle_failed_alarm(AlarmTableDef& alarm_table_def)
 {
-  if (_observed_alarms.is_active(alarm_table_def))
+  AlarmStateMap::iterator alarm = _alarm_state.find(alarm_table_def.alarm_index());
+  if (alarm != _alarm_state.end())
   {
-    // Alarm is still active, attempt to re-transmit
-    _alarm_trap_sender->send_trap(alarm_table_def);
+    if ((*alarm).second->get_state() == alarm_table_def.severity())
+    {
+      _alarm_trap_sender->send_trap(alarm_table_def);
+    }
   }
 }
 
@@ -168,27 +173,47 @@ void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identi
 
   if (alarm_table_def.is_valid())
   {
+    AlarmDef::Severity severity_as_enum = (AlarmDef::Severity)severity;
+
     // If the alarm to be issued exists in the ObservedAlarms mapping at the
     // same severity then we disregard the alarm as it has not changed state.
-    if (_observed_alarms.update(alarm_table_def, issuer))
+    AlarmStateMap::iterator alarm = _alarm_state.find(index);
+    if (alarm != _alarm_state.end())
     {
-      if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
+      if ((*alarm).second->add_alarm_to_heap(severity_as_enum))
       {
-        alarmActiveTable_trap_handler(alarm_table_def);
-        _alarm_trap_sender->send_trap(alarm_table_def);
+        // TODO - move this to the heap thread
+        // Update the alarm state map
+        (*alarm).second->set_state(severity_as_enum);
+
+        if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
+        {
+          alarmActiveTable_trap_handler(alarm_table_def);
+          _alarm_trap_sender->send_trap(alarm_table_def);
+        }
       }
     }
   }
   else
   {
-    TRC_ERROR("unknown alarm definition: %s", identifier.c_str());
+    TRC_ERROR("Unknown alarm definition: %s", identifier.c_str());
   }
 }
 
 void AlarmHeap::sync_alarms()
 {
-  for (ObservedAlarmsIterator it = _observed_alarms.begin(); it != _observed_alarms.end(); it++)
+  TRC_STATUS("Resyncing alarms");
+
+  for (AlarmStateMap::iterator it = _alarm_state.begin();
+                               it != _alarm_state.end();
+                               it++)
   {
-    _alarm_trap_sender->send_trap(it->alarm_table_def());
+    AlarmDef::Severity current_state = (*it).second->get_state();
+
+    if (current_state != AlarmDef::Severity::UNDEFINED_SEVERITY)
+    {
+      AlarmTableDef& alarm_table_def = _alarm_table_defs->get_definition((*it).first, current_state);
+      _alarm_trap_sender->send_trap(alarm_table_def);
+    }
   }
 }
