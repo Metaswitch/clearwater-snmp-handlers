@@ -64,17 +64,17 @@ public:
     _index(index)
  {}
 
-  const unsigned int index() { return _index; }
-  AlarmDef::Severity severity() { return _severity; }
-  void set_severity(AlarmDef::Severity severity) { _severity = severity; }
-  bool in_heap() { return (_heap != nullptr); }
-
+  // Updates the pop time of the AlarmInHeap, and rebalances the heap to
+  // account for the changed pop time
   void update_pop_time(uint64_t time_to_add)
   {
     _pop_time = Utils::get_time() + time_to_add;
     _heap->rebalance(this);
   }
 
+  // Removes the AlarmInHeap from the heap, and sets the pop time/severity
+  // to clearly invalid values (that won't cause INFORMS to be sent in error
+  // cases)
   void remove_from_heap()
   {
     _pop_time = UINT64_MAX;
@@ -82,6 +82,10 @@ public:
     _heap->remove(this);
   }
 
+  const unsigned int index() { return _index; }
+  AlarmDef::Severity severity() { return _severity; }
+  void set_severity(AlarmDef::Severity severity) { _severity = severity; }
+  bool in_heap() { return (_heap != nullptr); }
   uint64_t get_pop_time() const { return _pop_time; }
 
 private:
