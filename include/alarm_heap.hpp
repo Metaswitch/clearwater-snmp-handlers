@@ -59,7 +59,7 @@ class AlarmInHeap : public HeapableTimer
 {
 public:
   AlarmInHeap(unsigned int index) :
-    _pop_time(UINT_MAX),
+    _pop_time(UINT64_MAX),
     _severity(AlarmDef::Severity::UNDEFINED_SEVERITY),
     _index(index)
  {}
@@ -67,6 +67,7 @@ public:
   const unsigned int index() { return _index; }
   AlarmDef::Severity severity() { return _severity; }
   void set_severity(AlarmDef::Severity severity) { _severity = severity; }
+  bool in_heap() { return (_heap != nullptr); }
 
   void update_pop_time(uint64_t time_to_add)
   {
@@ -74,10 +75,11 @@ public:
     _heap->rebalance(this);
   }
 
-  void set_max_pop_time()
+  void remove_from_heap()
   {
-    _pop_time = UINT_MAX;
-    _heap->rebalance(this);
+    _pop_time = UINT64_MAX;
+    _severity = AlarmDef::Severity::UNDEFINED_SEVERITY;
+    _heap->remove(this);
   }
 
   uint64_t get_pop_time() const { return _pop_time; }
@@ -105,7 +107,7 @@ public:
   // @returns         - the severity change
   AlarmSeverityChange new_alarm_severity(AlarmDef::Severity severity);
 
-  // Updates the alarm in the heap's severity, and it's time to pop
+  // Updates the alarm in the heap's severity, and its time to pop
   void update_alarm_in_heap(AlarmDef::Severity new_severity,
                             uint64_t time_to_delay);
 
@@ -119,9 +121,7 @@ public:
     // Resend the alarm if its severity and the current severity match,
     // and there isn't already an alarm in the heap waiting to update
     // the severity.
-    return ((_severity == severity) &&
-            (_alarm_in_heap->severity() ==
-             AlarmDef::Severity::UNDEFINED_SEVERITY));
+    return ((_severity == severity) && (!_alarm_in_heap->in_heap()));
   }
 
 private:
@@ -147,14 +147,14 @@ public:
 
   // Constructor/Destructor
   AlarmHeap(AlarmTableDefs* alarm_table_defs);
-  ~AlarmHeap();
+  virtual ~AlarmHeap();
 
   // Generates an alarmActiveState inform if the identified alarm is not
   // of CLEARED severity and not already active (or subject to filtering).
   // Generates an alarmClearState inform if the identified alarm is of a
   // CLEARED severity and an associated alarm is active (unless subject
   // to filtering).
-  void issue_alarm(const std::string& issuer,
+  virtual void issue_alarm(const std::string& issuer,
                    const std::string& identifier);
 
   static void* heap_sender_function(void* data);
@@ -163,7 +163,7 @@ public:
 
   // Runs through all currently active alarms and adds them to the alarm heap
   // to send immediately.
-  void sync_alarms();
+  virtual void sync_alarms();
 
   // Handles the case where an INFORM sent by the trap sender timed out.
   // @params alarm_table_def - Definition of the alarm (index/severity) we
@@ -174,6 +174,10 @@ public:
   volatile bool _terminated;
 
 private:
+  void update_alarm_in_heap(AlarmInfo* alarm_info,
+                            AlarmDef::Severity severity,
+                            uint64_t alarm_pop_time);
+
   AlarmTableDefs* _alarm_table_defs;
   AlarmTrapSender* _alarm_trap_sender;
   TimerHeap _alarm_heap;

@@ -48,6 +48,7 @@
 #include "alarm_trap_sender.hpp"
 #include "test_utils.hpp"
 
+#include "mock_alarm_heap.h"
 #include "fakezmq.h"
 #include "fakenetsnmp.h"
 #include "fakelogger.h"
@@ -68,89 +69,6 @@ using ::testing::Invoke;
 static const char issuer1[] = "sprout";
 static const char issuer2[] = "homestead";
 
-class TrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*> {
-public:
-  enum TrapType
-  {
-    UNDEFINED,
-    CLEAR,
-    ACTIVE
-  };
-
-  enum OctetIndices
-  {
-    LAST_TRAP_OID_OCTET = 8,
-    ALARM_IDX_ROW_OID_OCTET = 13
-  };
-
-  explicit TrapVarsMatcher(TrapType trap_type,
-                           unsigned int alarm_index) :
-      _trap_type(trap_type),
-      _alarm_index(alarm_index) {}
-
-  virtual bool MatchAndExplain(netsnmp_variable_list* vl,
-                               MatchResultListener* listener) const {
-    TrapType type = UNDEFINED;
-    unsigned int index;
-
-    if (vl->val.objid[LAST_TRAP_OID_OCTET] == 3)
-    {
-      type = CLEAR;
-    }
-    else if (vl->val.objid[LAST_TRAP_OID_OCTET] == 2)
-    {
-      type = ACTIVE;
-    }
-
-    vl = vl->next_variable;
-
-    if (vl != NULL)
-    {
-      index = vl->val.objid[ALARM_IDX_ROW_OID_OCTET];
-    }
-
-    return (_trap_type == type) && (_alarm_index == index);
-  }
-
-  virtual void DescribeTo(::std::ostream* os) const {
-    *os << "trap is " << _alarm_index << ((_trap_type == CLEAR) ? " CLEAR" : " ACTIVE");
-  }
-
-  virtual void DescribeNegationTo(::std::ostream* os) const {
-    *os << "trap is not " << _alarm_index << ((_trap_type == CLEAR) ? " CLEAR" : " ACTIVE");
-  }
- private:
-  TrapType _trap_type;
-  unsigned int _alarm_index;
-};
-
-class SNMPCallbackCollector
-{
-public:
-  void call_all_callbacks()
-  {
-    snmp_session session;
-    session.peername = strdup("peer");
-
-    for (auto ii = _callbacks.begin();
-         ii != _callbacks.end();
-         ++ii)
-    {
-      ii->first(NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE, &session, 0, NULL, ii->second);
-    }
-    _callbacks.clear();
-    free(session.peername);
-  }
-
-  void collect_callback(netsnmp_variable_list* ignored, snmp_callback callback, void* correlator)
-  {
-    _callbacks.emplace_back(callback, correlator);
-  }
-
-private:
-  std::vector<std::pair<snmp_callback, void*>> _callbacks;
-};
-
 class AlarmReqListenerTest : public ::testing::Test
 {
 public:
@@ -161,11 +79,9 @@ public:
     _multi_alarm_1(issuer1, 2000)
   {
     cwtest_completely_control_time();
-    cwtest_intercept_netsnmp(&_ms);
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_heap = new AlarmHeap(_alarm_table_defs);
+    _alarm_heap = new MockAlarmHeap(_alarm_table_defs);
     _alarm_req_listener = new AlarmReqListener(_alarm_heap);
     _alarm_req_listener->start(NULL);
     AlarmReqAgent::get_instance().start();
@@ -180,13 +96,7 @@ public:
     delete _alarm_heap; _alarm_heap = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
 
-    cwtest_restore_netsnmp();
     cwtest_reset_time();
-  }
-
-  void TearDown()
-  {
-    _collector.call_all_callbacks();
   }
 
   void sync_alarms()
@@ -194,28 +104,6 @@ public:
     std::vector<std::string> req;
 
     req.push_back("sync-alarms");
-
-    AlarmReqAgent::get_instance().alarm_request(req);
-  }
-
-  void issue_malformed_alarm()
-  {
-    std::vector<std::string> req;
-
-    req.push_back("issue-alarm");
-    req.push_back("sprout");
-    req.push_back("one.two");
-
-    AlarmReqAgent::get_instance().alarm_request(req);
-  }
-
-  void issue_unknown_alarm()
-  {
-    std::vector<std::string> req;
-
-    req.push_back("issue-alarm");
-    req.push_back("sprout");
-    req.push_back("0000.0");
 
     AlarmReqAgent::get_instance().alarm_request(req);
   }
@@ -230,20 +118,15 @@ public:
   }
 
 private:
-  MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
-  SNMPCallbackCollector _collector;
   AlarmTableDefs* _alarm_table_defs;
-  AlarmHeap* _alarm_heap;
+  MockAlarmHeap* _alarm_heap;
   AlarmReqListener* _alarm_req_listener;
   Alarm _alarm_1;
   Alarm _alarm_2;
   Alarm _alarm_3;
   MultiStateAlarm _multi_alarm_1;
-  static long _delta_ms;
 };
-
-long AlarmReqListenerTest::_delta_ms = 0;
 
 class AlarmReqListenerZmqErrorTest : public ::testing::Test
 {
@@ -252,12 +135,10 @@ public:
     _c(1),
     _s(2)
   {
-    cwtest_intercept_netsnmp(&_ms);
     cwtest_intercept_zmq(&_mz);
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_heap = new AlarmHeap(_alarm_table_defs);
+    _alarm_heap = new MockAlarmHeap(_alarm_table_defs);
     _alarm_req_listener = new AlarmReqListener(_alarm_heap);
   }
 
@@ -268,227 +149,48 @@ public:
     delete _alarm_table_defs; _alarm_table_defs = NULL;
 
     cwtest_restore_zmq();
-    cwtest_restore_netsnmp();
   }
 
 private:
-  MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
   MockZmqInterface _mz;
   int _c;
   int _s;
   AlarmTableDefs* _alarm_table_defs;
-  AlarmHeap* _alarm_heap;
+  MockAlarmHeap* _alarm_heap;
   AlarmReqListener* _alarm_req_listener;
 };
 
-// Safely set up an expect call for an SNMP trap send that will succeed.
-#define COLLECT_CALL(CALL) EXPECT_CALL(_ms, CALL).                                \
-  WillOnce(Invoke(&_collector, &SNMPCallbackCollector::collect_callback))
-#define COLLECT_CALLS(N, CALL) EXPECT_CALL(_ms, CALL).                            \
-  Times(N).                                                                       \
-  WillRepeatedly(Invoke(&_collector, &SNMPCallbackCollector::collect_callback))
-
-inline Matcher<netsnmp_variable_list*> TrapVars(TrapVarsMatcher::TrapType trap_type,
-                                                unsigned int alarm_index) {
-  return MakeMatcher(new TrapVarsMatcher(trap_type, alarm_index));
-}
-
-TEST_F(AlarmReqListenerTest, SetAlarm)
+// Check that setting/clearing alarms are translated into the correct
+// issuers/index/severity
+TEST_F(AlarmReqListenerTest, IssueAlarms)
 {
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
-
+  EXPECT_CALL(*_alarm_heap, issue_alarm("sprout", "1000.3"));
   _alarm_1.set();
-  _ms.trap_complete(1, 5);
+
+  EXPECT_CALL(*_alarm_heap, issue_alarm("homestead", "1000.1"));
+  _alarm_2.clear();
+  sleep(1);
 }
 
-TEST_F(AlarmReqListenerTest, ClearAlarm)
-{
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
-  _alarm_1.clear();
-  _ms.trap_complete(1, 5);
-}
-
-TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
-{
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
-  _alarm_1.set();
-  _alarm_1.set();
-  _ms.trap_complete(1, 5);
-}
-
-TEST_F(AlarmReqListenerTest, SetMultiAlarmIncreasingState)
-{
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 2000), _, _));
-  _multi_alarm_1.clear();
-  _ms.trap_complete(1, 5);
-  sleep(5);
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 2000), _, _));
-  _multi_alarm_1.set_minor();
-  _ms.trap_complete(1, 5);
-  sleep(5);
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 2000), _, _));
-  _multi_alarm_1.set_major();
-  _ms.trap_complete(1, 5);
-}
-
-
+// Check that the ZMQ request to sync alarms is translated into an internal
+// request to sync alarms
 TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
-  // Put our three alarms into a state we expect
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                        1000), _, _));
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        1001), _, _));
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        1002), _, _));
-
-  _alarm_1.set();
-  _alarm_2.clear();
-  _alarm_3.clear();
-
-  _ms.trap_complete(3, 5);
-
-  // Now call sync_alarms and expect those states to be retransmitted
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                        1000), _, _));
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        1001), _, _));
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                        1002), _, _));
-
-  sync_alarms();
-
-  _ms.trap_complete(3, 5);
-}
-
-TEST_F(AlarmReqListenerTest, AlarmFilter)
-{
-  for (int idx = 0; idx < 10; idx++)
-  {
-    _alarm_1.set();
-    _alarm_1.clear();
-  }
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                    1000), _, _));
-  _ms.trap_complete(1, 5);
-  sleep(5);
-
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                    1000), _, _));
-  cwtest_advance_time_ms(AlarmHeap::ALARM_REDUCED);
-  _alarm_heap->_cond->signal();
-  _ms.trap_complete(1, 5);
-}
-
-TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
-{
-  snmp_callback callback;
-  void* correlator;
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
-    WillOnce(DoAll(SaveArg<1>(&callback),
-                   SaveArg<2>(&correlator)));
-  _alarm_1.set();
-  _ms.trap_complete(1, 5);
-  sleep(5);
-
-  // Now report the send as failed. Check that we don't get any new INFORMS
-  // sent
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).Times(0);
-  snmp_session session;
-  session.peername = strdup("peer");
-  callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
-  free(session.peername);
-
-  // Now advance time by the retry delay amount. This triggers the retry to be
-  // sent
-  COLLECT_CALL(send_v2trap(_, _, _));
-  cwtest_advance_time_ms(AlarmHeap::ALARM_RETRY_DELAY);
-  _ms.trap_complete(1, 5);
-}
-
-TEST_F(AlarmReqListenerTest, AlarmFailedToClearRaisedInInterval)
-{
-  snmp_callback callback;
-  void* correlator;
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
-    WillOnce(DoAll(SaveArg<1>(&callback),
-                   SaveArg<2>(&correlator)));
-  _alarm_1.clear();
-  _ms.trap_complete(1, 5);
-
-  COLLECT_CALL(send_v2trap(_, _, _));
-  _alarm_1.set();
-  _ms.trap_complete(1, 5);
-
-  // Now report the clear as failed which will not attempt to resend the
-  // alarm.
-  snmp_session session;
-  session.peername = strdup("peer");
-  callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
-  free(session.peername);
-}
-
-TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
-{
-  snmp_callback callback;
-  void* correlator;
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
-    WillOnce(DoAll(SaveArg<1>(&callback),
-                   SaveArg<2>(&correlator)));
-  _alarm_1.set_minor_state();
-  _ms.trap_complete(1, 5);
-
-  COLLECT_CALL(send_v2trap(_, _, _));
-  _alarm_1.set();
-  _ms.trap_complete(1, 5);
-
-  // Now report the clear as failed which will not attempt to resend the
-  // alarm.
-  snmp_session session;
-  session.peername = strdup("peer");
-  callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
-  free(session.peername);
+  EXPECT_CALL(*_alarm_heap, sync_alarms());
+  std::vector<std::string> req;
+  req.push_back("sync-alarms");
+  AlarmReqAgent::get_instance().alarm_request(req);
+  sleep(1);
 }
 
 TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 {
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
-    Times(0);
-
-  invalid_zmq_request();
-  usleep(100000);
-
+  std::vector<std::string> req;
+  req.push_back("invalid-request");
+  AlarmReqAgent::get_instance().alarm_request(req);
+  sleep(1);
   EXPECT_TRUE(_log.contains("unexpected alarm request"));
-}
-
-TEST_F(AlarmReqListenerTest, InvalidAlarmIdentifier)
-{
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
-    Times(0);
-
-  issue_malformed_alarm();
-  usleep(100000);
-
-  EXPECT_TRUE(_log.contains("malformed alarm identifier"));
-}
-
-TEST_F(AlarmReqListenerTest, UnknownAlarmIdentifier)
-{
-  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
-    Times(0);
-
-  issue_unknown_alarm();
-  usleep(100000);
-
-  EXPECT_TRUE(_log.contains("Unknown alarm definition"));
 }
 
 TEST_F(AlarmReqListenerZmqErrorTest, CreateContext)

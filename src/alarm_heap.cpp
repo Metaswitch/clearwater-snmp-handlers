@@ -83,8 +83,11 @@ void AlarmInfo::update_alarm_in_heap(AlarmDef::Severity new_severity,
 {
   // Update the alarm in the heap's severity, and update its time to pop
   // (which also rebalances the heap).
-  _alarm_in_heap->set_severity(new_severity);
-  _alarm_in_heap->update_pop_time(time_to_delay);
+  if (new_severity != _alarm_in_heap->severity())
+  {
+    _alarm_in_heap->set_severity(new_severity);
+    _alarm_in_heap->update_pop_time(time_to_delay);
+  }
 }
 
 AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
@@ -96,7 +99,7 @@ AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
   pthread_mutex_init(&_lock, NULL);
   _cond = new CondVar(&_lock);
 
-  // Populate the alarm heap and alarm state map
+  // Populate the alarm state map
   for (AlarmTableDefsIterator it = _alarm_table_defs->begin();
                               it != _alarm_table_defs->end();
                               it++)
@@ -107,11 +110,10 @@ AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
     {
       // We only have one entry for each alarm index (not one per severity).
       AlarmInHeap* alarm_in_heap = new AlarmInHeap(it->alarm_index());
-      _alarm_heap.insert(alarm_in_heap);
       AlarmInfo* alarm_info = new AlarmInfo(alarm_in_heap,
                                             AlarmDef::Severity::UNDEFINED_SEVERITY);
       _all_alarms_state.insert(std::pair<unsigned int, AlarmInfo*>(it->alarm_index(),
-                                                              alarm_info));
+                                                                   alarm_info));
     }
   }
 
@@ -166,7 +168,8 @@ void AlarmHeap::heap_sender()
     uint64_t time_now_in_ms = Utils::get_time();
     AlarmInHeap* alarm_in_heap = (AlarmInHeap*)_alarm_heap.get_next_timer();
 
-    while (alarm_in_heap->get_pop_time() <= time_now_in_ms)
+    while ((alarm_in_heap) &&
+           (alarm_in_heap->get_pop_time() <= time_now_in_ms))
     {
       // While the next alarm in the heap is due to be sent, we:
       //  - Pull out the alarm definition for its index and severity.
@@ -174,13 +177,7 @@ void AlarmHeap::heap_sender()
       //    for actually sending any INFORMs).
       //  - Update the master view of the current severity for this alarm (by
       //    updating the _all_alarms_state map).
-      //  - Finally, we then set the pop time for this alarm in the heap to
-      //    UINT_MAX, and set its severity to UNDEFINED. We set this to
-      //    UINT_MAX rather than deleting the alarm from the heap to make
-      //    reasoning about the heap easier. Changing the severity means
-      //    we can detect when an alarm in the heap represents a valid alarm
-      //    that's due to be sent at some point (which means that we can deal
-      //    with failed callbacks correctly).
+      //  - Finally, we then remove the alarm from the heap.
       AlarmTableDef& alarm_table_def =
               _alarm_table_defs->get_definition(alarm_in_heap->index(),
                                                 alarm_in_heap->severity());
@@ -196,19 +193,35 @@ void AlarmHeap::heap_sender()
         }
       }
 
-      alarm_in_heap->set_severity(AlarmDef::Severity::UNDEFINED_SEVERITY);
-      alarm_in_heap->set_max_pop_time();
+      alarm_in_heap->remove_from_heap();
       alarm_in_heap = (AlarmInHeap*)_alarm_heap.get_next_timer();
     }
 
     // The next alarm in the heap isn't due to pop yet. Wait until it's due.
-    struct timespec time;
-    time.tv_sec = alarm_in_heap->get_pop_time() / 1000;
-    time.tv_nsec = (alarm_in_heap->get_pop_time() % 1000) * 1000000;
-    _cond->timedwait(&time);
+    if (alarm_in_heap)
+    {
+      // The next alarm in the heap isn't due to pop yet. Wait until it's due.
+      struct timespec time;
+      time.tv_sec = alarm_in_heap->get_pop_time() / 1000;
+      time.tv_nsec = (alarm_in_heap->get_pop_time() % 1000) * 1000000;
+      _cond->timedwait(&time);
+    }
+    else
+    {
+      // There's no alarms in the heap. Wait until we're signalled.
+      _cond->wait();
+    }
   }
 
   pthread_mutex_unlock(&_lock);
+}
+
+void AlarmHeap::update_alarm_in_heap(AlarmInfo* alarm_info,
+                                     AlarmDef::Severity severity,
+                                     uint64_t alarm_pop_time)
+{
+  _alarm_heap.insert(alarm_info->alarm_in_heap());
+  alarm_info->update_alarm_in_heap(severity, alarm_pop_time);
 }
 
 void AlarmHeap::issue_alarm(const std::string& issuer,
@@ -237,23 +250,24 @@ void AlarmHeap::issue_alarm(const std::string& issuer,
       AlarmSeverityChange severity_change =
                   (*alarm).second->new_alarm_severity(severity_as_enum);
 
-      // If we haven't been asked to change the severity of the alarm,
-      // we don't do anything. If it has changed, we update the alarm
-      // in the heap (with an appropriate delay depending on if the severity
-      // has increased/reduced).
       if (severity_change == AlarmSeverityChange::INCREASED_SEVERITY)
       {
         TRC_DEBUG("Severity of the alarm %lu has increased", index);
-        (*alarm).second->update_alarm_in_heap(severity_as_enum,
-                                              ALARM_INCREASED);
+        update_alarm_in_heap((*alarm).second, severity_as_enum, ALARM_INCREASED);
         _cond->signal();
       }
       else if (severity_change == AlarmSeverityChange::REDUCED_SEVERITY)
       {
         TRC_DEBUG("Severity of the alarm %lu has reduced", index);
-        (*alarm).second->update_alarm_in_heap(severity_as_enum,
-                                              ALARM_REDUCED);
+        _alarm_heap.insert((*alarm).second->alarm_in_heap());
+        update_alarm_in_heap((*alarm).second, severity_as_enum, ALARM_REDUCED);
         _cond->signal();
+      }
+      else
+      {
+        // The severity of the alarm hasn't changed. Remove it from the heap
+        // (safe to call even if it's already not in the heap).
+        _alarm_heap.remove((*alarm).second->alarm_in_heap());
       }
     }
 
@@ -279,8 +293,7 @@ void AlarmHeap::sync_alarms()
 
     if (current_severity != AlarmDef::Severity::UNDEFINED_SEVERITY)
     {
-      (*it).second->update_alarm_in_heap(current_severity,
-                                         ALARM_RESYNC_DELAY);
+      update_alarm_in_heap((*it).second, current_severity, ALARM_RESYNC_DELAY);
     }
   }
 
@@ -302,8 +315,9 @@ void AlarmHeap::handle_failed_alarm(AlarmTableDef& alarm_table_def)
   {
     if ((*alarm).second->should_resend_alarm(alarm_table_def.severity()))
     {
-      (*alarm).second->update_alarm_in_heap(alarm_table_def.severity(),
-                                            ALARM_RETRY_DELAY);
+      update_alarm_in_heap((*alarm).second,
+                           alarm_table_def.severity(),
+                           ALARM_RETRY_DELAY);
       _cond->signal();
     }
   }

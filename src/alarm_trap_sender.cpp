@@ -55,7 +55,6 @@ static int alarm_trap_send_callback(int op,
 {
   ((SNMPCallbackAlarmInfo*)correlator)->_ats->alarm_trap_send_callback(
                                 op, ((SNMPCallbackAlarmInfo*)correlator)->_atd);
-  delete (SNMPCallbackAlarmInfo*)correlator;
   return 1;
 }
 
@@ -78,9 +77,11 @@ void AlarmTrapSender::alarm_trap_send_callback(
     break;
     // LCOV_EXCL_STOP
   case NETSNMP_CALLBACK_OP_TIMED_OUT:
-    TRC_DEBUG("Failed to deliver alarm");
-    _alarm_heap->handle_failed_alarm((AlarmTableDef&)alarm_table_def);
-    break;
+    {
+      TRC_DEBUG("Failed to deliver alarm");
+      _alarm_heap->handle_failed_alarm((AlarmTableDef&)alarm_table_def);
+      break;
+    }
   default:
     // LCOV_EXCL_START - logic error
     TRC_DEBUG("Ignoring unexpected alarm delivery callback (%d)", op);
