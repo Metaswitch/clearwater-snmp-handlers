@@ -42,72 +42,49 @@
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
 
-AlarmFilter AlarmFilter::_instance;
-
-bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
+AlarmInfo::~AlarmInfo()
 {
-  unsigned long now = current_time_ms();
+  delete _alarm_in_heap; _alarm_in_heap = NULL;
+}
 
-  if (now > _clean_time)
+AlarmSeverityChange AlarmInfo::new_alarm_severity(AlarmDef::Severity severity)
+{
+  // Order the severities so we can do a simple comparison to determine any
+  // severity change.
+  unsigned int ordered_severities[] = {0, 1, 2, 6, 5, 4, 3};
+  int old_severity = ordered_severities[_severity];
+  int new_severity = ordered_severities[severity];
+
+  if (old_severity == new_severity)
   {
-    _clean_time = now + CLEAN_FILTER_TIME;
-
-    std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.begin();
-    while (it != _issue_times.end())
-    {
-      if (now > (it->second + ALARM_FILTER_TIME))
-      {
-        _issue_times.erase(it++);
-      }
-      else
-      {
-        ++it;
-      }
-    }
+    return AlarmSeverityChange::NO_CHANGE;
   }
-
-  AlarmFilterKey key(index, severity);
-  std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.find(key);
-
-  bool filtered = false;
-
-  if (it != _issue_times.end())
+  else if (old_severity > new_severity)
   {
-    if (now > (it->second + ALARM_FILTER_TIME))
-    {
-      _issue_times[key] = now;
-    }
-    else
-    {
-      filtered = true;
-    }
+    return AlarmSeverityChange::REDUCED_SEVERITY;
   }
   else
   {
-    _issue_times[key] = now;
+    return AlarmSeverityChange::INCREASED_SEVERITY;
   }
-
-  return filtered;
 }
 
-bool AlarmFilter::AlarmFilterKey::operator<(const AlarmFilter::AlarmFilterKey& rhs) const
+void AlarmInfo::set_severity(AlarmTableDef& alarm_table_def)
 {
-  return  (_index  < rhs._index) ||
-         ((_index == rhs._index) && (_severity < rhs._severity));
+  // Update the severity in the map.
+  _severity = alarm_table_def.severity();
+
+  // Update the ActiveAlarmTable.
+  alarmActiveTable_trap_handler(alarm_table_def);
 }
 
-unsigned long AlarmFilter::current_time_ms()
+void AlarmInfo::update_alarm_in_heap(AlarmDef::Severity new_severity,
+                                     uint64_t time_to_delay)
 {
-  struct timespec ts;
-
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-
-  return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
-}
-
-bool AlarmInfo::add_alarm_to_heap(AlarmDef::Severity severity)
-{
-  return (severity != _state);
+  // Update the alarm in the heap's severity, and update its time to pop
+  // (which also rebalances the heap).
+  _alarm_in_heap->set_severity(new_severity);
+  _alarm_in_heap->update_pop_time(time_to_delay);
 }
 
 AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
@@ -115,27 +92,32 @@ AlarmHeap::AlarmHeap(AlarmTableDefs* alarm_table_defs) :
   _alarm_table_defs(alarm_table_defs),
   _alarm_trap_sender(new AlarmTrapSender(this))
 {
+  // Create the lock/condition variables.
   pthread_mutex_init(&_lock, NULL);
   _cond = new CondVar(&_lock);
 
+  // Populate the alarm heap and alarm state map
   for (AlarmTableDefsIterator it = _alarm_table_defs->begin();
                               it != _alarm_table_defs->end();
                               it++)
   {
-    AlarmStateMap::iterator index = _alarm_state.find(it->alarm_index());
+    AllAlarmsStateMap::iterator index = _all_alarms_state.find(it->alarm_index());
 
-    if (index == _alarm_state.end())
+    if (index == _all_alarms_state.end())
     {
+      // We only have one entry for each alarm index (not one per severity).
       AlarmInHeap* alarm_in_heap = new AlarmInHeap(it->alarm_index());
       _alarm_heap.insert(alarm_in_heap);
       AlarmInfo* alarm_info = new AlarmInfo(alarm_in_heap,
                                             AlarmDef::Severity::UNDEFINED_SEVERITY);
-      _alarm_state.insert(std::pair<unsigned int, AlarmInfo*>(it->alarm_index(),
+      _all_alarms_state.insert(std::pair<unsigned int, AlarmInfo*>(it->alarm_index(),
                                                               alarm_info));
     }
   }
 
-  int rc = pthread_create(&_heap_pop_thread, NULL, heap_pop_function, this);
+  // Finally, create the heap thread. This covers getting any alarms to send
+  // from the heap and passing them to the trap sender to actually send.
+  int rc = pthread_create(&_heap_sender_thread, NULL, heap_sender_function, this);
 
   if (rc < 0)
   {
@@ -152,28 +134,30 @@ AlarmHeap::~AlarmHeap()
   _terminated = true;
   _cond->signal();
   pthread_mutex_unlock(&_lock);
-  pthread_join(_heap_pop_thread, NULL);
+
+  pthread_join(_heap_sender_thread, NULL);
   delete _cond; _cond = NULL;
+
   pthread_mutex_destroy(&_lock);
 
   delete _alarm_trap_sender; _alarm_trap_sender = NULL;
   _alarm_heap.clear();
 
-  for (AlarmStateMap::iterator it = _alarm_state.begin();
-                               it != _alarm_state.end();
+  for (AllAlarmsStateMap::iterator it = _all_alarms_state.begin();
+                               it != _all_alarms_state.end();
                                it++)
   {
     delete (*it).second;
   }
 }
 
-void* AlarmHeap::heap_pop_function(void* data)
+void* AlarmHeap::heap_sender_function(void* data)
 {
-  ((AlarmHeap*)data)->heap_pop();
+  ((AlarmHeap*)data)->heap_sender();
   return NULL;
 }
 
-void AlarmHeap::heap_pop()
+void AlarmHeap::heap_sender()
 {
   pthread_mutex_lock(&_lock);
 
@@ -184,6 +168,19 @@ void AlarmHeap::heap_pop()
 
     while (alarm_in_heap->get_pop_time() <= time_now_in_ms)
     {
+      // While the next alarm in the heap is due to be sent, we:
+      //  - Pull out the alarm definition for its index and severity.
+      //  - Pass the alarm definition to the trap sender (which is responsible
+      //    for actually sending any INFORMs).
+      //  - Update the master view of the current severity for this alarm (by
+      //    updating the _all_alarms_state map).
+      //  - Finally, we then set the pop time for this alarm in the heap to
+      //    UINT_MAX, and set its severity to UNDEFINED. We set this to
+      //    UINT_MAX rather than deleting the alarm from the heap to make
+      //    reasoning about the heap easier. Changing the severity means
+      //    we can detect when an alarm in the heap represents a valid alarm
+      //    that's due to be sent at some point (which means that we can deal
+      //    with failed callbacks correctly).
       AlarmTableDef& alarm_table_def =
               _alarm_table_defs->get_definition(alarm_in_heap->index(),
                                                 alarm_in_heap->severity());
@@ -191,46 +188,31 @@ void AlarmHeap::heap_pop()
       if (alarm_table_def.is_valid())
       {
         _alarm_trap_sender->send_trap(alarm_table_def);
+        AllAlarmsStateMap::iterator alarm = _all_alarms_state.find(alarm_in_heap->index());
 
-        AlarmStateMap::iterator alarm = _alarm_state.find(alarm_in_heap->index());
-        if (alarm != _alarm_state.end())
+        if (alarm != _all_alarms_state.end())
         {
-          // Update the alarm state map
-          (*alarm).second->set_state(alarm_in_heap->severity());
+          (*alarm).second->set_severity(alarm_table_def);
         }
       }
 
-      // Now set the alarm in the heap to ages away, and rebalance the heap
-      alarm_in_heap->set_pop_time_to_max();
+      alarm_in_heap->set_severity(AlarmDef::Severity::UNDEFINED_SEVERITY);
+      alarm_in_heap->set_max_pop_time();
       alarm_in_heap = (AlarmInHeap*)_alarm_heap.get_next_timer();
     }
 
+    // The next alarm in the heap isn't due to pop yet. Wait until it's due.
     struct timespec time;
-    time.tv_sec = time_now_in_ms / 1000;
-    time.tv_nsec = (time_now_in_ms % 1000) * 1000000;
+    time.tv_sec = alarm_in_heap->get_pop_time() / 1000;
+    time.tv_nsec = (alarm_in_heap->get_pop_time() % 1000) * 1000000;
     _cond->timedwait(&time);
   }
 
   pthread_mutex_unlock(&_lock);
 }
 
-void AlarmHeap::handle_failed_alarm(AlarmTableDef& alarm_table_def)
-{
-  pthread_mutex_lock(&_lock);
-  AlarmStateMap::iterator alarm = _alarm_state.find(alarm_table_def.alarm_index());
-  if (alarm != _alarm_state.end())
-  {
-    if ((*alarm).second->get_state() == alarm_table_def.severity())
-    {
-      (*alarm).second->alarm_in_heap()->set_severity(alarm_table_def.severity()); // TODO this needs more checking
-      (*alarm).second->alarm_in_heap()->update_pop_time(0);
-      _cond->signal();
-    }
-  }
-  pthread_mutex_unlock(&_lock);
-}
-
-void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identifier)
+void AlarmHeap::issue_alarm(const std::string& issuer,
+                            const std::string& identifier)
 {
   unsigned int index;
   unsigned int severity;
@@ -240,27 +222,38 @@ void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identi
     return;
   }
 
-  AlarmTableDef& alarm_table_def = _alarm_table_defs->get_definition(index, severity);
+  AlarmTableDef& alarm_table_def = _alarm_table_defs->get_definition(index,
+                                                                     severity);
 
   if (alarm_table_def.is_valid())
   {
-    AlarmDef::Severity severity_as_enum = (AlarmDef::Severity)severity;
-    // If the alarm to be issued exists in the ObservedAlarms mapping at the
-    // same severity then we disregard the alarm as it has not changed state.
     pthread_mutex_lock(&_lock);
-    AlarmStateMap::iterator alarm = _alarm_state.find(index);
 
-    if (alarm != _alarm_state.end())
+    AllAlarmsStateMap::iterator alarm = _all_alarms_state.find(index);
+
+    if (alarm != _all_alarms_state.end())
     {
-      if ((*alarm).second->add_alarm_to_heap(severity_as_enum))
+      AlarmDef::Severity severity_as_enum = (AlarmDef::Severity)severity;
+      AlarmSeverityChange severity_change =
+                  (*alarm).second->new_alarm_severity(severity_as_enum);
+
+      // If we haven't been asked to change the severity of the alarm,
+      // we don't do anything. If it has changed, we update the alarm
+      // in the heap (with an appropriate delay depending on if the severity
+      // has increased/reduced).
+      if (severity_change == AlarmSeverityChange::INCREASED_SEVERITY)
       {
-        if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
-        {
-          alarmActiveTable_trap_handler(alarm_table_def); // TODO - move to alarm_state_map
-          (*alarm).second->alarm_in_heap()->set_severity(severity_as_enum);
-          (*alarm).second->alarm_in_heap()->update_pop_time(0);
-          _cond->signal();
-        }
+        TRC_DEBUG("Severity of the alarm %lu has increased", index);
+        (*alarm).second->update_alarm_in_heap(severity_as_enum,
+                                              ALARM_INCREASED);
+        _cond->signal();
+      }
+      else if (severity_change == AlarmSeverityChange::REDUCED_SEVERITY)
+      {
+        TRC_DEBUG("Severity of the alarm %lu has reduced", index);
+        (*alarm).second->update_alarm_in_heap(severity_as_enum,
+                                              ALARM_REDUCED);
+        _cond->signal();
       }
     }
 
@@ -274,21 +267,46 @@ void AlarmHeap::issue_alarm(const std::string& issuer, const std::string& identi
 
 void AlarmHeap::sync_alarms()
 {
-  pthread_mutex_lock(&_lock);
-  TRC_STATUS("Resyncing alarms");
+  TRC_STATUS("Resyncing all alarms");
 
-  for (AlarmStateMap::iterator it = _alarm_state.begin();
-                               it != _alarm_state.end();
+  pthread_mutex_lock(&_lock);
+
+  for (AllAlarmsStateMap::iterator it = _all_alarms_state.begin();
+                               it != _all_alarms_state.end();
                                it++)
   {
-    AlarmDef::Severity current_state = (*it).second->get_state();
+    AlarmDef::Severity current_severity = (*it).second->get_severity();
 
-    if (current_state != AlarmDef::Severity::UNDEFINED_SEVERITY)
+    if (current_severity != AlarmDef::Severity::UNDEFINED_SEVERITY)
     {
-      (*it).second->alarm_in_heap()->update_pop_time(0);
+      (*it).second->update_alarm_in_heap(current_severity,
+                                         ALARM_RESYNC_DELAY);
     }
   }
 
   _cond->signal();
+  pthread_mutex_unlock(&_lock);
+}
+
+void AlarmHeap::handle_failed_alarm(AlarmTableDef& alarm_table_def)
+{
+  TRC_DEBUG("Handling a failed callback for the alarm: %lu",
+            alarm_table_def.alarm_index());
+
+  pthread_mutex_lock(&_lock);
+
+  AllAlarmsStateMap::iterator alarm =
+                          _all_alarms_state.find(alarm_table_def.alarm_index());
+
+  if (alarm != _all_alarms_state.end())
+  {
+    if ((*alarm).second->should_resend_alarm(alarm_table_def.severity()))
+    {
+      (*alarm).second->update_alarm_in_heap(alarm_table_def.severity(),
+                                            ALARM_RETRY_DELAY);
+      _cond->signal();
+    }
+  }
+
   pthread_mutex_unlock(&_lock);
 }

@@ -47,57 +47,13 @@
 #include "utils.h"
 #include "cond_var.h"
 
-// Container for all alarms we have seen being raised (either at CLEARED or
-// non-CLEARED severity). Maps the index of an alarm to the latest severity
-// with which it was raised. Currently indexed by alarm model index (may need
-// to be extended to include a resource id going forward).
-
-// Singleton helper used to filter inform notifications (as per their
-// descriptions in section 4.2 of RFC 3877).
-
-class AlarmFilter
+enum AlarmSeverityChange
 {
-public:
-  enum
-  {
-    ALARM_FILTER_TIME = 5000,
-    CLEAN_FILTER_TIME = 60000
-  };
-
-  // Intened to be called before generating an inform notification to
-  // determine if the inform should be filtered (i.e. dropped because
-  // it has already been issued within the filter period). This must
-  // be tracked based on a <alarm model index, severity> basis.
-  bool alarm_filtered(unsigned int index, unsigned int severity);
-
-  static AlarmFilter& get_instance() {return _instance;}
-
-private:
-  class AlarmFilterKey
-  {
-  public:
-    AlarmFilterKey(unsigned int index,
-                   unsigned int severity) :
-      _index(index),
-      _severity(severity) {}
-
-    bool operator<(const AlarmFilterKey& rhs) const;
-
-  private:
-    unsigned int _index;
-    unsigned int _severity;
-  };
-
-  AlarmFilter() : _clean_time(0) {}
-
-  unsigned long current_time_ms();
-
-  std::map<AlarmFilterKey, unsigned long> _issue_times;
-
-  unsigned long _clean_time;
-
-  static AlarmFilter _instance;
+  NO_CHANGE,
+  INCREASED_SEVERITY,
+  REDUCED_SEVERITY,
 };
+
 
 class AlarmInHeap : public HeapableTimer
 {
@@ -109,8 +65,8 @@ public:
  {}
 
   const unsigned int index() { return _index; }
-  void set_severity(AlarmDef::Severity severity) { _severity = severity; }
   AlarmDef::Severity severity() { return _severity; }
+  void set_severity(AlarmDef::Severity severity) { _severity = severity; }
 
   void update_pop_time(uint64_t time_to_add)
   {
@@ -118,7 +74,7 @@ public:
     _heap->rebalance(this);
   }
 
-  void set_pop_time_to_max()
+  void set_max_pop_time()
   {
     _pop_time = UINT_MAX;
     _heap->rebalance(this);
@@ -136,35 +92,59 @@ class AlarmInfo
 {
 public:
   AlarmInfo(AlarmInHeap* alarm_in_heap,
-            AlarmDef::Severity state) :
+            AlarmDef::Severity severity) :
     _alarm_in_heap(alarm_in_heap),
-    _state(state)
+    _severity(severity)
   {}
 
-  ~AlarmInfo()
-  {
-    delete _alarm_in_heap; _alarm_in_heap = NULL;
-  }
+  ~AlarmInfo();
+
+  // Compares a new severity with the current severity for this alarm,
+  // and returns the severity change
+  // @params severity - the new severity
+  // @returns         - the severity change
+  AlarmSeverityChange new_alarm_severity(AlarmDef::Severity severity);
+
+  // Updates the alarm in the heap's severity, and it's time to pop
+  void update_alarm_in_heap(AlarmDef::Severity new_severity,
+                            uint64_t time_to_delay);
 
   AlarmInHeap* alarm_in_heap() { return _alarm_in_heap; }
-  bool add_alarm_to_heap(AlarmDef::Severity severity);
-  AlarmDef::Severity get_state() { return _state; }
-  void set_state(AlarmDef::Severity state) { _state = state; }
-  void set_alarm_in_heap(AlarmDef::Severity severity, uint64_t time_to_send) { _alarm_in_heap->set_severity(severity); _alarm_in_heap->update_pop_time(time_to_send); }
+  AlarmDef::Severity get_severity() { return _severity; }
+  void set_severity(AlarmTableDef& alarm_table_def);
+
+  // Determines whether this alarm should be resent after failure
+  bool should_resend_alarm(AlarmDef::Severity severity)
+  {
+    // Resend the alarm if its severity and the current severity match,
+    // and there isn't already an alarm in the heap waiting to update
+    // the severity.
+    return ((_severity == severity) &&
+            (_alarm_in_heap->severity() ==
+             AlarmDef::Severity::UNDEFINED_SEVERITY));
+  }
 
 private:
   AlarmInHeap* _alarm_in_heap;
-  AlarmDef::Severity _state;
+  AlarmDef::Severity _severity;
 };
 
-typedef std::map<unsigned int, AlarmInfo*> AlarmStateMap;
+typedef std::map<unsigned int, AlarmInfo*> AllAlarmsStateMap;
 
-// Singleton class providing methods for generating alarmActiveState and
-// alarmClearState inform notifications. It maintains an observed alarm
-// list to support filtering and synchronization.
+// This class accepts alarm triggers, checks that they correspond to valid
+// alarms, and passes valid alarms to the alarm trap sender to send as SNMP
+// INFORMs. It also filters the alarms.
 class AlarmHeap
 {
 public:
+  // Times to send an alarms. If we're reducing the severity of an alarm we
+  // add a delay of 30secs (to protect against flicker). Increased severity
+  // alarms or resyncing alarms are sent immediately.
+  const static uint64_t ALARM_REDUCED = 30000;
+  const static uint64_t ALARM_RETRY_DELAY = 30000;
+  const static uint64_t ALARM_RESYNC_DELAY = 0;
+  const static uint64_t ALARM_INCREASED = 0;
+
   // Constructor/Destructor
   AlarmHeap(AlarmTableDefs* alarm_table_defs);
   ~AlarmHeap();
@@ -177,16 +157,18 @@ public:
   void issue_alarm(const std::string& issuer,
                    const std::string& identifier);
 
-  void handle_failed_alarm(AlarmTableDef& alarm_table_def);
+  static void* heap_sender_function(void* data);
 
-  static void* heap_pop_function(void* data);
+  void heap_sender();
 
-  void heap_pop();
-
-  // Generates alarmClearState INFORMs corresponding to each of the currently
-  // cleared alarms and alarmActiveState INFORMs for each currently active
-  // alarm.
+  // Runs through all currently active alarms and adds them to the alarm heap
+  // to send immediately.
   void sync_alarms();
+
+  // Handles the case where an INFORM sent by the trap sender timed out.
+  // @params alarm_table_def - Definition of the alarm (index/severity) we
+  //                           tried to send.
+  void handle_failed_alarm(AlarmTableDef& alarm_table_def);
 
   // Whether the program has terminated
   volatile bool _terminated;
@@ -195,11 +177,14 @@ private:
   AlarmTableDefs* _alarm_table_defs;
   AlarmTrapSender* _alarm_trap_sender;
   TimerHeap _alarm_heap;
-  AlarmStateMap _alarm_state;
+
+  // Map holding all alarms. This maps the index of an alarm to information
+  // about the alarm (its current severity and its representation in the heap).
+  AllAlarmsStateMap _all_alarms_state;
 
   pthread_mutex_t _lock;
   CondVar* _cond;
-  pthread_t _heap_pop_thread;
+  pthread_t _heap_sender_thread;
 };
 
 #endif

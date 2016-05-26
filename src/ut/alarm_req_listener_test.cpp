@@ -157,11 +157,10 @@ public:
   AlarmReqListenerTest() :
     _alarm_1(issuer1, 1000, AlarmDef::CRITICAL),
     _alarm_2(issuer1, 1001, AlarmDef::CRITICAL),
-    _alarm_3(issuer2, 1002, AlarmDef::CRITICAL)
+    _alarm_3(issuer2, 1002, AlarmDef::CRITICAL),
+    _multi_alarm_1(issuer1, 2000)
   {
     cwtest_completely_control_time();
-    cwtest_advance_time_ms(_delta_ms);
-
     cwtest_intercept_netsnmp(&_ms);
 
     _alarm_table_defs = new AlarmTableDefs();
@@ -230,13 +229,6 @@ public:
     AlarmReqAgent::get_instance().alarm_request(req);
   }
 
-  void advance_time_ms(long delta_ms)
-  {
-    _delta_ms += delta_ms;
-
-    cwtest_advance_time_ms(delta_ms);
-  }
-
 private:
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
@@ -247,6 +239,7 @@ private:
   Alarm _alarm_1;
   Alarm _alarm_2;
   Alarm _alarm_3;
+  MultiStateAlarm _multi_alarm_1;
   static long _delta_ms;
 };
 
@@ -301,14 +294,6 @@ inline Matcher<netsnmp_variable_list*> TrapVars(TrapVarsMatcher::TrapType trap_t
   return MakeMatcher(new TrapVarsMatcher(trap_type, alarm_index));
 }
 
-TEST_F(AlarmReqListenerTest, ClearAlarmNoSet)
-{
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
-
-  _alarm_1.clear();
-  _ms.trap_complete(1, 5);
-}
-
 TEST_F(AlarmReqListenerTest, SetAlarm)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
@@ -319,36 +304,39 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
 
 TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
   _alarm_1.clear();
   _ms.trap_complete(1, 5);
 }
 
-// Raises an alarm, waits thirty seconds, raises the same alarm in the
-// same state and then clears the alarm. We should only expect two traps, for
-// the initial raising and the clearing, raising the alarm in a repeated state
-// should not cause a trap to be sent.
 TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
-  {
-    InSequence s;
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
-  }
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
   _alarm_1.set();
-  advance_time_ms(30);
   _alarm_1.set();
-  _alarm_1.clear();
-  _ms.trap_complete(2, 5);
+  _ms.trap_complete(1, 5);
 }
+
+TEST_F(AlarmReqListenerTest, SetMultiAlarmIncreasingState)
+{
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 2000), _, _));
+  _multi_alarm_1.clear();
+  _ms.trap_complete(1, 5);
+  sleep(5);
+
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 2000), _, _));
+  _multi_alarm_1.set_minor();
+  _ms.trap_complete(1, 5);
+  sleep(5);
+
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 2000), _, _));
+  _multi_alarm_1.set_major();
+  _ms.trap_complete(1, 5);
+}
+
 
 TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
   // Put our three alarms into a state we expect
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                         1000), _, _));
@@ -382,75 +370,26 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
 
 TEST_F(AlarmReqListenerTest, AlarmFilter)
 {
-  advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
-
-  {
-    InSequence s;
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                      1000), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                      1000), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                      1001), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                      1001), _, _));
-  }
-
   for (int idx = 0; idx < 10; idx++)
   {
     _alarm_1.set();
     _alarm_1.clear();
   }
 
-  _alarm_2.set();
-  _alarm_2.clear();
-
-  _ms.trap_complete(4, 5);
-}
-
-TEST_F(AlarmReqListenerTest, AlarmFilterClean)
-{
-  advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME + 1);
-
-  {
-    InSequence s;
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                      1000), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
-                                      1001), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                      1000), _, _));
-
-    COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
-                                      1001), _, _));
-  }
-
-  _alarm_1.set();
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
+                                    1000), _, _));
   _ms.trap_complete(1, 5);
+  sleep(5);
 
-  advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME - 2000);
-
-  _alarm_2.set();
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
+                                    1000), _, _));
+  cwtest_advance_time_ms(AlarmHeap::ALARM_REDUCED);
+  _alarm_heap->_cond->signal();
   _ms.trap_complete(1, 5);
-
-  advance_time_ms(3000);
-
-  _alarm_1.clear();
-  _alarm_2.clear();
-  _ms.trap_complete(2, 5);
 }
 
 TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
 {
-  advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME + 1);
-
   snmp_callback callback;
   void* correlator;
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
@@ -458,38 +397,60 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
                    SaveArg<2>(&correlator)));
   _alarm_1.set();
   _ms.trap_complete(1, 5);
+  sleep(5);
 
-  // Now report the send as failed
-  COLLECT_CALL(send_v2trap(_, _, _));
+  // Now report the send as failed. Check that we don't get any new INFORMS
+  // sent
+  EXPECT_CALL(_ms, send_v2trap(_, _, _)).Times(0);
   snmp_session session;
   session.peername = strdup("peer");
   callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
   free(session.peername);
-  _ms.trap_complete(1, 5);
 
+  // Now advance time by the retry delay amount. This triggers the retry to be
+  // sent
   COLLECT_CALL(send_v2trap(_, _, _));
-  _alarm_1.clear();
+  cwtest_advance_time_ms(AlarmHeap::ALARM_RETRY_DELAY);
   _ms.trap_complete(1, 5);
 }
 
-TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
+TEST_F(AlarmReqListenerTest, AlarmFailedToClearRaisedInInterval)
 {
-  advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME + 1);
-
   snmp_callback callback;
   void* correlator;
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     WillOnce(DoAll(SaveArg<1>(&callback),
                    SaveArg<2>(&correlator)));
-  _alarm_1.set();
-  _ms.trap_complete(1, 5);
-
-  // Clear the alarm
-  COLLECT_CALL(send_v2trap(_, _, _));
   _alarm_1.clear();
   _ms.trap_complete(1, 5);
 
-  // Now report the send as failed which will not attempt to resend the
+  COLLECT_CALL(send_v2trap(_, _, _));
+  _alarm_1.set();
+  _ms.trap_complete(1, 5);
+
+  // Now report the clear as failed which will not attempt to resend the
+  // alarm.
+  snmp_session session;
+  session.peername = strdup("peer");
+  callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
+  free(session.peername);
+}
+
+TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
+{
+  snmp_callback callback;
+  void* correlator;
+  EXPECT_CALL(_ms, send_v2trap(_, _, _)).
+    WillOnce(DoAll(SaveArg<1>(&callback),
+                   SaveArg<2>(&correlator)));
+  _alarm_1.set_minor_state();
+  _ms.trap_complete(1, 5);
+
+  COLLECT_CALL(send_v2trap(_, _, _));
+  _alarm_1.set();
+  _ms.trap_complete(1, 5);
+
+  // Now report the clear as failed which will not attempt to resend the
   // alarm.
   snmp_session session;
   session.peername = strdup("peer");
