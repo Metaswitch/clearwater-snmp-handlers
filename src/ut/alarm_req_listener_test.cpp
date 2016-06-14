@@ -155,22 +155,26 @@ class AlarmReqListenerTest : public ::testing::Test
 {
 public:
   AlarmReqListenerTest() :
-    _alarm_1(issuer1, 1000, AlarmDef::CRITICAL),
-    _alarm_2(issuer1, 1001, AlarmDef::CRITICAL),
-    _alarm_3(issuer2, 1002, AlarmDef::CRITICAL)
+    _alarm_manager(NULL),
+    _alarm_1(NULL)
   {
     cwtest_completely_control_time();
     cwtest_advance_time_ms(_delta_ms);
-
     cwtest_intercept_netsnmp(&_ms);
 
     AlarmReqListener::get_instance().start(NULL);
-    AlarmReqAgent::get_instance().start();
+    _alarm_manager = new AlarmManager();
+    _alarm_1 = new Alarm(_alarm_manager, issuer1, 1000, AlarmDef::CRITICAL);
+    _alarm_2 = new Alarm(_alarm_manager, issuer1, 1001, AlarmDef::CRITICAL);
+    _alarm_3 = new Alarm(_alarm_manager, issuer2, 1002, AlarmDef::CRITICAL);
   }
 
   virtual ~AlarmReqListenerTest()
   {
-    AlarmReqAgent::get_instance().stop();
+    delete _alarm_3; _alarm_3 = NULL;
+    delete _alarm_2; _alarm_2 = NULL;
+    delete _alarm_1; _alarm_1 = NULL;
+    delete _alarm_manager; _alarm_manager = NULL;
     AlarmReqListener::get_instance().stop();
 
     cwtest_restore_netsnmp();
@@ -193,7 +197,7 @@ public:
 
     req.push_back("sync-alarms");
 
-    AlarmReqAgent::get_instance().alarm_request(req);
+    _alarm_manager->alarm_req_agent()->alarm_request(req);
   }
 
   void issue_malformed_alarm()
@@ -204,7 +208,7 @@ public:
     req.push_back("sprout");
     req.push_back("one.two");
 
-    AlarmReqAgent::get_instance().alarm_request(req);
+    _alarm_manager->alarm_req_agent()->alarm_request(req);
   }
 
   void issue_unknown_alarm()
@@ -215,7 +219,7 @@ public:
     req.push_back("sprout");
     req.push_back("0000.0");
 
-    AlarmReqAgent::get_instance().alarm_request(req);
+    _alarm_manager->alarm_req_agent()->alarm_request(req);
   }
 
   void invalid_zmq_request()
@@ -224,7 +228,7 @@ public:
 
     req.push_back("invalid-request");
 
-    AlarmReqAgent::get_instance().alarm_request(req);
+    _alarm_manager->alarm_req_agent()->alarm_request(req);
   }
 
   void advance_time_ms(long delta_ms)
@@ -238,9 +242,10 @@ private:
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
   SNMPCallbackCollector _collector;
-  Alarm _alarm_1;
-  Alarm _alarm_2;
-  Alarm _alarm_3;
+  AlarmManager* _alarm_manager;
+  Alarm* _alarm_1;
+  Alarm* _alarm_2;
+  Alarm* _alarm_3;
   static long _delta_ms;
 };
 
@@ -287,7 +292,7 @@ TEST_F(AlarmReqListenerTest, ClearAlarmNoSet)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
 
-  _alarm_1.clear();
+  _alarm_1->clear();
   _ms.trap_complete(1, 5);
 }
 
@@ -295,7 +300,7 @@ TEST_F(AlarmReqListenerTest, SetAlarm)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
 
-  _alarm_1.set();
+  _alarm_1->set();
   _ms.trap_complete(1, 5);
 }
 
@@ -312,8 +317,8 @@ TEST_F(AlarmReqListenerTest, ClearAlarm)
 {
   advance_time_ms(AlarmFilter::ALARM_FILTER_TIME + 1);
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
-  _alarm_1.set();
-  _alarm_1.clear();
+  _alarm_1->set();
+  _alarm_1->clear();
   _ms.trap_complete(1, 5);
 }
 
@@ -330,10 +335,10 @@ TEST_F(AlarmReqListenerTest, SetAlarmRepeatedState)
     COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
     COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
   }
-  _alarm_1.set();
+  _alarm_1->set();
   advance_time_ms(30);
-  _alarm_1.set();
-  _alarm_1.clear();
+  _alarm_1->set();
+  _alarm_1->clear();
   _ms.trap_complete(2, 5);
 }
 
@@ -355,9 +360,9 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
                                           1002), _, _));
   }
 
-  _alarm_1.set();
-  _alarm_2.clear();
-  _alarm_3.clear();
+  _alarm_1->set();
+  _alarm_2->clear();
+  _alarm_3->clear();
 
   _ms.trap_complete(3, 5);
 
@@ -381,7 +386,7 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
   // Clear the alarm to put us back into a good state
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                         1000), _, _));
-  _alarm_1.clear();
+  _alarm_1->clear();
   _ms.trap_complete(1, 5);
 }
 
@@ -407,12 +412,12 @@ TEST_F(AlarmReqListenerTest, AlarmFilter)
 
   for (int idx = 0; idx < 10; idx++)
   {
-    _alarm_1.set();
-    _alarm_1.clear();
+    _alarm_1->set();
+    _alarm_1->clear();
   }
 
-  _alarm_2.set();
-  _alarm_2.clear();
+  _alarm_2->set();
+  _alarm_2->clear();
 
   _ms.trap_complete(4, 5);
 }
@@ -437,18 +442,18 @@ TEST_F(AlarmReqListenerTest, AlarmFilterClean)
                                       1001), _, _));
   }
 
-  _alarm_1.set();
+  _alarm_1->set();
   _ms.trap_complete(1, 5);
 
   advance_time_ms(AlarmFilter::CLEAN_FILTER_TIME - 2000);
 
-  _alarm_2.set();
+  _alarm_2->set();
   _ms.trap_complete(1, 5);
 
   advance_time_ms(3000);
 
-  _alarm_1.clear();
-  _alarm_2.clear();
+  _alarm_1->clear();
+  _alarm_2->clear();
   _ms.trap_complete(2, 5);
 }
 
@@ -461,7 +466,7 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     WillOnce(DoAll(SaveArg<1>(&callback),
                    SaveArg<2>(&correlator)));
-  _alarm_1.set();
+  _alarm_1->set();
   _ms.trap_complete(1, 5);
 
   // Now report the send as failed
@@ -473,7 +478,7 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSend)
   _ms.trap_complete(1, 5);
 
   COLLECT_CALL(send_v2trap(_, _, _));
-  _alarm_1.clear();
+  _alarm_1->clear();
   _ms.trap_complete(1, 5);
 }
 
@@ -486,12 +491,12 @@ TEST_F(AlarmReqListenerTest, AlarmFailedToSendClearedInInterval)
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     WillOnce(DoAll(SaveArg<1>(&callback),
                    SaveArg<2>(&correlator)));
-  _alarm_1.set();
+  _alarm_1->set();
   _ms.trap_complete(1, 5);
 
   // Clear the alarm
   COLLECT_CALL(send_v2trap(_, _, _));
-  _alarm_1.clear();
+  _alarm_1->clear();
   _ms.trap_complete(1, 5);
 
   // Now report the send as failed which will not attempt to resend the
