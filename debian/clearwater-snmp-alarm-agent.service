@@ -1,0 +1,11 @@
+[Unit]
+Description=Clearwater SNMP alarm agent
+
+[Service]
+ExecStart=/usr/share/clearwater/bin/clearwater-snmp-alarm-agent-wrapper
+Restart=on-failure
+RestartSec=5s
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
