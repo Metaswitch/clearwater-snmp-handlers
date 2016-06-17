@@ -8,6 +8,8 @@ Requires:       redhat-lsb-core clearwater-snmpd boost-filesystem
 %description
 The SNMP subagent for Clearwater alarm reporting
 
+%debug_package
+
 %install
 . %{rootdir}/build-infra/cw-rpm-utils clearwater-snmp-alarm-agent %{rootdir} %{buildroot}
 setup_buildroot
