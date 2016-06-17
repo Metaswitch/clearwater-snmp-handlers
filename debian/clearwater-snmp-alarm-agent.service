@@ -8,4 +8,5 @@ RestartSec=5s
 LimitCORE=infinity
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=clearwater-monit.service
+Before=clearwater-monit.service
