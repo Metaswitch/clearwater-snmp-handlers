@@ -16,4 +16,8 @@ setup_buildroot
 install_to_buildroot < %{rootdir}/debian/clearwater-snmp-alarm-agent.install
 build_files_list > clearwater-snmp-alarm-agent.files
 
+%postun
+# Trigger an snmpd restart to unload the sub-agent
+systemctl stop snmpd || true
+
 %files -f clearwater-snmp-alarm-agent.files
