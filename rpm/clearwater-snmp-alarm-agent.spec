@@ -2,6 +2,7 @@ Name:           clearwater-snmp-alarm-agent
 Summary:        The SNMP subagent for Clearwater alarm reporting
 BuildRequires:  net-snmp-devel = 1:5.7.2-24.el7.centos.1.clearwater1 boost-devel zeromq-devel
 Requires:       redhat-lsb-core clearwater-snmpd boost-filesystem net-snmp-libs = 1:5.7.2-24.el7.centos.1.clearwater1 net-snmp-agent-libs = 1:5.7.2-24.el7.centos.1.clearwater1 zeromq
+License:        GPLv3 with exceptions
 
 %include %{rootdir}/build-infra/cw-rpm.spec.inc
 
