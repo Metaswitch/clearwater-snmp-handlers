@@ -14,6 +14,7 @@ The SNMP subagent for Clearwater alarm reporting
 . %{rootdir}/build-infra/cw-rpm-utils clearwater-snmp-alarm-agent %{rootdir} %{buildroot}
 setup_buildroot
 install_to_buildroot < %{rootdir}/debian/clearwater-snmp-alarm-agent.install
+copy_to_buildroot debian/clearwater-snmp-alarm-agent.service /etc/systemd/system
 build_files_list > clearwater-snmp-alarm-agent.files
 
 %post
@@ -21,8 +22,11 @@ systemctl enable clearwater-snmp-alarm-agent
 systemctl start clearwater-snmp-alarm-agent
 
 %preun
-systemctl stop clearwater-snmp-alarm-agent
-systemctl disable clearwater-snmp-alarm-agent
+if [ "$1" == 0 ] ; then
+  # Uninstall, not upgrade.
+  systemctl stop clearwater-snmp-alarm-agent
+  systemctl disable clearwater-snmp-alarm-agent
+fi
 
 %postun
 # Trigger an snmpd restart to unload the sub-agent
