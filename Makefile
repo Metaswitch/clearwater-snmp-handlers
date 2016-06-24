@@ -9,17 +9,24 @@ PREFIX ?= ${ROOT}/usr
 INSTALL_DIR ?= ${PREFIX}
 MODULE_DIR := ${ROOT}/modules
 
-DEB_COMPONENT := clearwater-snmp-handlers
-DEB_MAJOR_VERSION := 1.0${DEB_VERSION_QUALIFIER}
-DEB_NAMES := clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire clearwater-snmp-alarm-agent-dbg
+PKG_COMPONENT := clearwater-snmp-handlers
+PKG_MAJOR_VERSION ?= 1.0
 
-# Add dependencies to deb-only (target will be added by build-infra)
+# Define DEB_NAMES and RPM_NAMES separately as we don't have RPMs for all the
+# components yet.
+DEB_NAMES := clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire
+RPM_NAMES := clearwater-snmp-alarm-agent
+
+# Add dependencies to deb-only and rpm-only (targets will be added by
+# build-infra). Again, these definitions are differnet as we don't have RPMs for
+# everything yet.
 deb-only: cw_alarm_agent cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so
+rpm-only: cw_alarm_agent
 
 INCLUDE_DIR := ${INSTALL_DIR}/include
 LIB_DIR := ${INSTALL_DIR}/lib
 
-SUBMODULES := 
+SUBMODULES :=
 
 CW_ALARM_AGENT_DIR := ${ROOT}/src
 CW_ALARM_AGENT_TEST_DIR := ${ROOT}/tests
@@ -68,9 +75,12 @@ distclean: $(patsubst %, %_distclean, ${SUBMODULES}) cw_alarm_agent_distclean
 	rm -rf ${ROOT}/build
 
 include build-infra/cw-deb.mk
-
 .PHONY: deb
 deb: build deb-only
+
+include build-infra/cw-rpm.mk
+.PHONY: rpm
+rpm: build rpm-only
 
 .PHONY: all build test clean distclean
 
