@@ -1,5 +1,6 @@
 [Unit]
 Description=Clearwater SNMP alarm agent
+Before=clearwater-monit.service
 
 [Service]
 ExecStart=/usr/share/clearwater/bin/clearwater-snmp-alarm-agent-wrapper
@@ -9,4 +10,3 @@ LimitCORE=infinity
 
 [Install]
 WantedBy=clearwater-monit.service
-Before=clearwater-monit.service
