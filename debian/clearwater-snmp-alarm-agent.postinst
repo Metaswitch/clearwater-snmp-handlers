@@ -61,9 +61,7 @@ case "$1" in
     ;;
 
     triggered)
-        # Restart the alarm agent. Use restart rather than stop
-        # as the alarm agent is covered by upstart not monit
-        restart clearwater-snmp-alarm-agent || /bin/true
+        /usr/share/clearwater/install/triggers/clearwater-snmp-alarm-agent
     ;;
 
     *)

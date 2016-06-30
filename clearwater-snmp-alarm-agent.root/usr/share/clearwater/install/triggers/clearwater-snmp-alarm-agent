@@ -1,0 +1,13 @@
+#!/bin/bash
+SERVICE=clearwater-snmp-alarm-agent
+
+# Restart the alarm agent.  The alarm agent is managed either by systemctl (on
+# centos) or upstart (on ubuntu). Detect which one is installed and restart the
+# agent appropriately.
+if which systemctl >/dev/null 2>&1; then
+  systemctl restart $SERVICE
+else
+  restart $SERVICE
+fi
+
+exit 0
