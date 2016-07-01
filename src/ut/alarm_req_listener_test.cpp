@@ -72,11 +72,7 @@ static const char issuer2[] = "homestead";
 class AlarmReqListenerTest : public ::testing::Test
 {
 public:
-  AlarmReqListenerTest() :
-    _alarm_1(issuer1, 1000, AlarmDef::CRITICAL),
-    _alarm_2(issuer1, 1001, AlarmDef::CRITICAL),
-    _alarm_3(issuer2, 1002, AlarmDef::CRITICAL),
-    _multi_alarm_1(issuer1, 2000)
+  AlarmReqListenerTest()
   {
     cwtest_completely_control_time();
 
@@ -84,14 +80,17 @@ public:
     _alarm_heap = new MockAlarmHeap(_alarm_table_defs);
     _alarm_req_listener = new AlarmReqListener(_alarm_heap);
     _alarm_req_listener->start(NULL);
-    AlarmReqAgent::get_instance().start();
+    _alarm_manager = new AlarmManager();
+    _alarm_1 = new Alarm(_alarm_manager, issuer1, 1000, AlarmDef::CRITICAL);
+    _alarm_2 = new Alarm(_alarm_manager, issuer2, 1001, AlarmDef::CRITICAL);
   }
 
   virtual ~AlarmReqListenerTest()
   {
-    AlarmReqAgent::get_instance().stop();
+    delete _alarm_2; _alarm_2 = NULL;
+    delete _alarm_1; _alarm_1 = NULL;
+    delete _alarm_manager; _alarm_manager = NULL;
     _alarm_req_listener->stop();
-
     delete _alarm_req_listener; _alarm_req_listener = NULL;
     delete _alarm_heap; _alarm_heap = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
@@ -99,33 +98,14 @@ public:
     cwtest_reset_time();
   }
 
-  void sync_alarms()
-  {
-    std::vector<std::string> req;
-
-    req.push_back("sync-alarms");
-
-    AlarmReqAgent::get_instance().alarm_request(req);
-  }
-
-  void invalid_zmq_request()
-  {
-    std::vector<std::string> req;
-
-    req.push_back("invalid-request");
-
-    AlarmReqAgent::get_instance().alarm_request(req);
-  }
-
 private:
   CapturingTestLogger _log;
   AlarmTableDefs* _alarm_table_defs;
   MockAlarmHeap* _alarm_heap;
   AlarmReqListener* _alarm_req_listener;
-  Alarm _alarm_1;
-  Alarm _alarm_2;
-  Alarm _alarm_3;
-  MultiStateAlarm _multi_alarm_1;
+  AlarmManager* _alarm_manager;
+  Alarm* _alarm_1;
+  Alarm* _alarm_2;
 };
 
 class AlarmReqListenerZmqErrorTest : public ::testing::Test
@@ -166,10 +146,11 @@ private:
 TEST_F(AlarmReqListenerTest, IssueAlarms)
 {
   EXPECT_CALL(*_alarm_heap, issue_alarm("sprout", "1000.3"));
-  _alarm_1.set();
+  EXPECT_CALL(*_alarm_heap, issue_alarm("homestead", "1001.1"));
 
-  EXPECT_CALL(*_alarm_heap, issue_alarm("homestead", "1000.1"));
-  _alarm_2.clear();
+  _alarm_1->set();
+  _alarm_2->clear();
+
   sleep(1);
 }
 
@@ -180,7 +161,7 @@ TEST_F(AlarmReqListenerTest, SyncAlarms)
   EXPECT_CALL(*_alarm_heap, sync_alarms());
   std::vector<std::string> req;
   req.push_back("sync-alarms");
-  AlarmReqAgent::get_instance().alarm_request(req);
+  _alarm_manager->alarm_req_agent()->alarm_request(req);
   sleep(1);
 }
 
@@ -188,7 +169,7 @@ TEST_F(AlarmReqListenerTest, InvalidZmqRequest)
 {
   std::vector<std::string> req;
   req.push_back("invalid-request");
-  AlarmReqAgent::get_instance().alarm_request(req);
+  _alarm_manager->alarm_req_agent()->alarm_request(req);
   sleep(1);
   EXPECT_TRUE(_log.contains("unexpected alarm request"));
 }

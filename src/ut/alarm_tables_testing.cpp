@@ -62,15 +62,15 @@ std::string str_severity_raised = std::to_string(AlarmDef::CRITICAL);
 char buf[1024];
 
 TEST_F(CustomDefs, ModelTable)
-{ 
+{
   AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
   alarm_table_defs->insert_def(*def_cleared);
   alarm_table_defs->insert_def(*def_raised);
-  
+
   alarmModelTable_insert_defs(*alarm_table_defs);
 
   // Verifies the custom alarm data (contained in the header file) is exactly what
-  // is stored in the table. We use the index of the alarm "0.6666" in the 
+  // is stored in the table. We use the index of the alarm "0.6666" in the
   // snmp_get_raw command.
   ASSERT_STREQ("\"Test alarm cleared description\"\n", snmp_get_raw(alarmModelTable_entry + "." + model_description + ".0.6666." + str_cleared, buf, sizeof(buf)));
 
@@ -82,8 +82,8 @@ TEST_F(CustomDefs, ModelTable)
   // Verifies the third column (which contains the notification type) is the
   // alarmClearState oid and the alarmActiveState oid for the cleared and raised
   // alarm respectively.
-  ASSERT_STREQ("iso.3.6.1.2.1.118.0.3\n", snmp_get_raw(alarmModelTable_entry + "." + model_notification + ".0.6666." + str_cleared, buf, sizeof(buf)));
-  ASSERT_STREQ("iso.3.6.1.2.1.118.0.2\n", snmp_get_raw(alarmModelTable_entry + "." + model_notification + ".0.6666." + str_state_raised, buf, sizeof(buf)));
+  ASSERT_STREQ(".1.3.6.1.2.1.118.0.3\n", snmp_get_raw(alarmModelTable_entry + "." + model_notification + ".0.6666." + str_cleared, buf, sizeof(buf)));
+  ASSERT_STREQ(".1.3.6.1.2.1.118.0.2\n", snmp_get_raw(alarmModelTable_entry + "." + model_notification + ".0.6666." + str_state_raised, buf, sizeof(buf)));
 
   delete alarm_table_defs; alarm_table_defs = NULL;
 }
@@ -93,7 +93,7 @@ TEST_F(CustomDefs, ituAlarmTable)
   AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
   alarm_table_defs->insert_def(*def_cleared);
   alarm_table_defs->insert_def(*def_raised);
-  
+
   ituAlarmTable_insert_defs(*alarm_table_defs);
 
   ASSERT_STREQ("\"Test alarm cleared details\"\n", snmp_get_raw(ituAlarmTable_entry + "." + itu_details + ".0.6666." +str_cleared, buf, sizeof(buf)));
@@ -111,7 +111,7 @@ TEST_F(CustomDefs, ActiveTableMultipleAlarms)
 {
   // The alarmActiveTable is initialised in the SetUp function defined in the
   // header file.
-  
+
   // Raises three alarms.
   alarmActiveTable_trap_handler(*def1_raised);
   alarmActiveTable_trap_handler(*def2_raised);
@@ -135,7 +135,7 @@ TEST_F(CustomDefs, ActiveTableMultipleAlarms)
   // Checks that the table has the right number of entries. Each alarm has 11
   // columns and there should be 2 alarms raised.
   ASSERT_EQ(22u, entries.size());
-  
+
   // Clears remaining alarms.
   alarmActiveTable_trap_handler(*def3_cleared);
   alarmActiveTable_trap_handler(*def4_cleared);
@@ -192,10 +192,10 @@ TEST_F(CustomDefs, ActiveTableSameAlarmDifferentSeverities)
   // Checks that the table has the right number of entries. The second alarm
   // should have overwritten the first and hence there should only be one entry
   // with 11 columns.
-  ASSERT_EQ(11u, entries.size()); 
+  ASSERT_EQ(11u, entries.size());
 
   // Calculates which column should contain the alarm description based off the
-  // column number definitions within alarm_active_table.hpp  
+  // column number definitions within alarm_active_table.hpp
   int colnum_description = COLUMN_ALARMACTIVEDESCRIPTION - alarmActiveTable_COL_MIN;
   // Checks that the alarm description column contains latest severity data.
   std::size_t found = entries[colnum_description].find("Test alarm major raised description");
@@ -216,7 +216,7 @@ TEST_F(CustomDefs, ActiveTableIndexTimeStamp)
 
   // Shells out to snmpwalk to find all entries in Alarm Active Table.
   std::vector<std::string> entries = snmp_walk(alarmActiveTable_table);
-  
+
   // Retrieves the current date.
   time_t ts = time(NULL);
   struct tm timing = *localtime(&ts);
@@ -228,10 +228,10 @@ TEST_F(CustomDefs, ActiveTableIndexTimeStamp)
   std::vector<std::string> index_fields1;
   Utils::split_string(entries[0], '.', index_fields1);
 
-  // As defined in RFC3877 the 17th and 16th elements of the index 
+  // As defined in RFC3877 the 17th and 16th elements of the index
   // field are the day and month that the alarm was raised respectively.
   // This checks those values are the current day and month as retreived
-  // above. 
+  // above.
   ASSERT_EQ(std::to_string(day), index_fields1[17]);
   ASSERT_EQ(std::to_string(month), index_fields1[16]);
 }
@@ -240,15 +240,15 @@ TEST_F(CustomDefs, AlarmTableIndexSize)
 {
   //Raises an alarm.
   alarmActiveTable_trap_handler(*def1_raised);
-  
+
   // Shells out to snmpwalk to find all entries in Alarm Active Table.
   std::vector<std::string> entries = snmp_walk(alarmActiveTable_table);
-  
+
   // Splits each part of the index field (separated by ".") of the
   // alarm into a vector.
   std::vector<std::string> index_fields;
   Utils::split_string(entries[0], '.', index_fields);
-  
+
   // Checks the index of the first alarm contains 26 elements as defined
   // in RFC 3877.
   ASSERT_EQ(26u, index_fields.size());
@@ -260,10 +260,10 @@ TEST_F(CustomDefs, AlarmTableAlarmsIndex)
   alarmActiveTable_trap_handler(*def1_raised);
   alarmActiveTable_trap_handler(*def2_raised);
   alarmActiveTable_trap_handler(*def3_raised);
-  
+
   // Shells out to snmpwalk to find all entries in Alarm Active Table.
   std::vector<std::string> entries = snmp_walk(alarmActiveTable_table);
-  
+
   // Checks the indexes for the three alarms are strictly monotonically
   // increasing in the order they were raised.
   ASSERT_LT(atoi(get_index_from_row(entries[0]).c_str()), atoi(get_index_from_row(entries[13]).c_str()));
