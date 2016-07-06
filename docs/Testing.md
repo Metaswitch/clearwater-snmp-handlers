@@ -59,7 +59,7 @@ The integration tests also use the Google Test framework and are responsible for
 testing the following components of the SNMP Alarm Agent.
 
 - The Alarm Model Table
-- The itu Alarm Table
+- The ITU Alarm Table
   - Tests that when queried using snmp get commands these tables will output the
     data exactly as it appears in an alarm definition. 
 - The Alarm Active Table
