@@ -4,7 +4,7 @@ Before=clearwater-monit.service
 
 [Service]
 ExecStart=/usr/share/clearwater/bin/clearwater-snmp-alarm-agent-wrapper
-Restart=on-failure
+Restart=always
 RestartSec=5s
 LimitCORE=infinity
 
