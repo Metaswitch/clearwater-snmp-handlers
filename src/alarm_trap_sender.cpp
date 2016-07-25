@@ -43,9 +43,11 @@
 
 #include "log.h"
 #include "alarm_trap_sender.hpp"
-#include "alarm_heap.hpp"
+#include "alarm_scheduler.hpp"
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
+
+AlarmTrapSender AlarmTrapSender::_instance;
 
 static int alarm_trap_send_callback(int op,
                                     snmp_session* session,
@@ -53,8 +55,8 @@ static int alarm_trap_send_callback(int op,
                                     snmp_pdu* pdu,
                                     void* correlator)
 {
-  ((SNMPCallbackAlarmInfo*)correlator)->_ats->alarm_trap_send_callback(
-                                op, ((SNMPCallbackAlarmInfo*)correlator)->_atd);
+  AlarmTableDef* alarm_table_def = (AlarmTableDef*)correlator; correlator = NULL;
+  AlarmTrapSender::get_instance().alarm_trap_send_callback(op, *alarm_table_def);
   return 1;
 }
 
@@ -77,11 +79,9 @@ void AlarmTrapSender::alarm_trap_send_callback(
     break;
     // LCOV_EXCL_STOP
   case NETSNMP_CALLBACK_OP_TIMED_OUT:
-    {
-      TRC_DEBUG("Failed to deliver alarm");
-      _alarm_heap->handle_failed_alarm((AlarmTableDef&)alarm_table_def);
-      break;
-    }
+    TRC_DEBUG("Failed to deliver alarm");
+    _alarm_scheduler->handle_failed_alarm((AlarmTableDef&)alarm_table_def);
+    break;
   default:
     // LCOV_EXCL_START - logic error
     TRC_DEBUG("Ignoring unexpected alarm delivery callback (%d)", op);
@@ -139,9 +139,7 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
-  SNMPCallbackAlarmInfo* cbi = new SNMPCallbackAlarmInfo(this, (AlarmTableDef&)alarm_table_def);
-
-  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)cbi);
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def); 
 
   snmp_reset_var_buffers(&var_trap);
 }

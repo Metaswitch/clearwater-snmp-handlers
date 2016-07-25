@@ -1,5 +1,5 @@
 /**
- * @file alarm_heap_test.cpp
+ * @file alarm_scheduler_test.cpp
  *
  * Project Clearwater - IMS in the Cloud
  * Copyright (C) 2016  Metaswitch Networks Ltd
@@ -40,7 +40,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#include "alarm_heap.hpp"
+#include "alarm_scheduler.hpp"
 #include "test_utils.hpp"
 
 #include "fakenetsnmp.h"
@@ -59,7 +59,8 @@ using ::testing::MatchResultListener;
 using ::testing::SaveArg;
 using ::testing::Invoke;
 
-class TrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*> {
+class TrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*>
+{
 public:
   enum TrapType
   {
@@ -128,7 +129,6 @@ public:
          ++ii)
     {
       ii->first(NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE, &session, 0, NULL, ii->second);
-      delete (SNMPCallbackAlarmInfo*)ii->second;
     }
 
     _callbacks.clear();
@@ -144,22 +144,22 @@ private:
   std::vector<std::pair<snmp_callback, void*>> _callbacks;
 };
 
-class AlarmHeapTest : public ::testing::Test
+class AlarmSchedulerTest : public ::testing::Test
 {
 public:
-  AlarmHeapTest()
+  AlarmSchedulerTest()
   {
     cwtest_completely_control_time();
     cwtest_intercept_netsnmp(&_ms);
 
     _alarm_table_defs = new AlarmTableDefs();
     _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_heap = new AlarmHeap(_alarm_table_defs);
+    _alarm_scheduler = new AlarmScheduler(_alarm_table_defs);
   }
 
-  virtual ~AlarmHeapTest()
+  virtual ~AlarmSchedulerTest()
   {
-    delete _alarm_heap; _alarm_heap = NULL;
+    delete _alarm_scheduler; _alarm_scheduler = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
     _collector.call_all_callbacks();
 
@@ -172,7 +172,7 @@ private:
   CapturingTestLogger _log;
   SNMPCallbackCollector _collector;
   AlarmTableDefs* _alarm_table_defs;
-  AlarmHeap* _alarm_heap;
+  AlarmScheduler* _alarm_scheduler;
 };
 
 // Safely set up an expect call for an SNMP trap send that will succeed.
@@ -188,50 +188,50 @@ inline Matcher<netsnmp_variable_list*> TrapVars(TrapVarsMatcher::TrapType trap_t
 }
 
 // Simple test that raising an alarm triggers an INFORM to be sent immediately
-TEST_F(AlarmHeapTest, SetAlarm)
+TEST_F(AlarmSchedulerTest, SetAlarm)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
-  _alarm_heap->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 }
 
 // Simple test that clearing an alarm triggers an INFORM to be sent immediately
 // (from a clean start).
-TEST_F(AlarmHeapTest, ClearAlarm)
+TEST_F(AlarmSchedulerTest, ClearAlarm)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
-  _alarm_heap->issue_alarm("test", "1000.1");
+  _alarm_scheduler->issue_alarm("test", "1000.1");
   _ms.trap_complete(1, 5);
 }
 
 // Test that repeated alarms only generate one INFORM
-TEST_F(AlarmHeapTest, SetAlarmRepeatedState)
+TEST_F(AlarmSchedulerTest, SetAlarmRepeatedState)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
-  _alarm_heap->issue_alarm("test", "1000.3");
-  _alarm_heap->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 }
 
 // Test that increasing alarm severity generates INFORMs immediately
-TEST_F(AlarmHeapTest, SetMultiAlarmIncreasingState)
+TEST_F(AlarmSchedulerTest, SetMultiAlarmIncreasingState)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 2000), _, _));
-  _alarm_heap->issue_alarm("test", "2000.1");
+  _alarm_scheduler->issue_alarm("test", "2000.1");
   _ms.trap_complete(1, 5);
 
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 2000), _, _));
-  _alarm_heap->issue_alarm("test", "2000.5");
+  _alarm_scheduler->issue_alarm("test", "2000.5");
   _ms.trap_complete(1, 5);
 
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 2000), _, _));
-  _alarm_heap->issue_alarm("test", "2000.4");
+  _alarm_scheduler->issue_alarm("test", "2000.4");
   _ms.trap_complete(1, 5);
 }
 
 
 // Test that syncing alarms generates INFORMs for all known alarms immediately
-TEST_F(AlarmHeapTest, SyncAlarms)
+TEST_F(AlarmSchedulerTest, SyncAlarms)
 {
   // Put our three alarms into a state we expect
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
@@ -243,9 +243,9 @@ TEST_F(AlarmHeapTest, SyncAlarms)
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                         1002), _, _));
 
-  _alarm_heap->issue_alarm("test", "1000.3");
-  _alarm_heap->issue_alarm("test", "1001.1");
-  _alarm_heap->issue_alarm("test", "1002.1");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1001.1");
+  _alarm_scheduler->issue_alarm("test", "1002.1");
 
   _ms.trap_complete(3, 5);
 
@@ -259,41 +259,43 @@ TEST_F(AlarmHeapTest, SyncAlarms)
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                         1002), _, _));
 
-  _alarm_heap->sync_alarms();
+  _alarm_scheduler->sync_alarms();
 
   _ms.trap_complete(3, 5);
 }
 
 // Test that an alarm flicker situation doesn't cause flickering INFORMs
-TEST_F(AlarmHeapTest, AlarmFlicker)
+// (by sending multiple set/clears, and checking that this doesn't
+// generate informs).
+TEST_F(AlarmSchedulerTest, AlarmFlicker)
 {
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                     1000), _, _));
-  _alarm_heap->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                     1000), _, _));
   for (int idx = 0; idx < 10; idx++)
   {
-    _alarm_heap->issue_alarm("test", "1000.3");
-    _alarm_heap->issue_alarm("test", "1000.1");
+    _alarm_scheduler->issue_alarm("test", "1000.3");
+    _alarm_scheduler->issue_alarm("test", "1000.1");
   }
 
-  cwtest_advance_time_ms(AlarmHeap::ALARM_REDUCED);
-  _alarm_heap->_cond->signal();
+  cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
+  _alarm_scheduler->_cond->signal();
   _ms.trap_complete(1, 5);
 }
 
 // Test that a failed alarm is retried after a delay
-TEST_F(AlarmHeapTest, AlarmFailedToSend)
+TEST_F(AlarmSchedulerTest, AlarmFailedToSend)
 {
   snmp_callback callback;
   void* correlator;
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     WillOnce(DoAll(SaveArg<1>(&callback),
                    SaveArg<2>(&correlator)));
-  _alarm_heap->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 
   // Now report the send as failed.
@@ -301,30 +303,29 @@ TEST_F(AlarmHeapTest, AlarmFailedToSend)
   session.peername = strdup("peer");
   callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
   free(session.peername);
-  delete (SNMPCallbackAlarmInfo*)correlator;
 
   // Now advance time by the retry delay amount. This triggers the retry to be
   // sent
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE,
                                     1000), _, _));
-  cwtest_advance_time_ms(AlarmHeap::ALARM_RETRY_DELAY);
-  _alarm_heap->_cond->signal();
+  cwtest_advance_time_ms(AlarmScheduler::ALARM_RETRY_DELAY);
+  _alarm_scheduler->_cond->signal();
   _ms.trap_complete(1, 5);
 }
 
-// Test that when the raise alarm fails, but a clear alarm has been sent it later,
+// Test that when the raise alarm fails, but a clear alarm has been sent in later,
 // the clear alarm only is sent after a delay
-TEST_F(AlarmHeapTest, AlarmFailedToSendClearedInInterval)
+TEST_F(AlarmSchedulerTest, AlarmFailedToSendClearedInInterval)
 {
   snmp_callback callback;
   void* correlator;
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     WillOnce(DoAll(SaveArg<1>(&callback),
                    SaveArg<2>(&correlator)));
-  _alarm_heap->issue_alarm("test", "1000.3");
+  _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 
-  _alarm_heap->issue_alarm("test", "1000.1");
+  _alarm_scheduler->issue_alarm("test", "1000.1");
 
   // Now report the send as failed. which will not attempt to resend the
   // alarm.
@@ -332,31 +333,30 @@ TEST_F(AlarmHeapTest, AlarmFailedToSendClearedInInterval)
   session.peername = strdup("peer");
   callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
   free(session.peername);
-  delete (SNMPCallbackAlarmInfo*)correlator;
 
   COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR,
                                     1000), _, _));
-  cwtest_advance_time_ms(AlarmHeap::ALARM_REDUCED);
-  _alarm_heap->_cond->signal();
+  cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
+  _alarm_scheduler->_cond->signal();
   _ms.trap_complete(1, 5);
 }
 
 // Test handling of an invalid alarm
-TEST_F(AlarmHeapTest, InvalidAlarmIdentifier)
+TEST_F(AlarmSchedulerTest, InvalidAlarmIdentifier)
 {
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     Times(0);
 
-  _alarm_heap->issue_alarm("test", "not_digits.3");
+  _alarm_scheduler->issue_alarm("test", "not_digits.3");
   EXPECT_TRUE(_log.contains("malformed alarm identifier"));
 }
 
 // Test handling of an unknown alarm
-TEST_F(AlarmHeapTest, UnknownAlarmIdentifier)
+TEST_F(AlarmSchedulerTest, UnknownAlarmIdentifier)
 {
   EXPECT_CALL(_ms, send_v2trap(_, _, _)).
     Times(0);
 
-  _alarm_heap->issue_alarm("test", "6000.3");
+  _alarm_scheduler->issue_alarm("test", "6000.3");
   EXPECT_TRUE(_log.contains("Unknown alarm definition"));
 }

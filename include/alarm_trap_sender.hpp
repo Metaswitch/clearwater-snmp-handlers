@@ -43,17 +43,15 @@
 
 #include "alarm_table_defs.hpp"
 
-class AlarmHeap;
+class AlarmScheduler;
 
-// Singleton class providing methods for generating alarmActiveState and
-// alarmClearState inform notifications. It maintains an observed alarm
-// list to support filtering and synchronization.
+// Class providing methods for generating alarmActiveState and
+// alarmClearState inform notifications.
 class AlarmTrapSender
 {
 public:
-  AlarmTrapSender(AlarmHeap* alarm_heap) :
-    _alarm_heap(alarm_heap)
-  {}
+  void initialise(AlarmScheduler* alarm_scheduler)
+    { _alarm_scheduler = alarm_scheduler; }
 
   void send_trap(const AlarmTableDef& alarm_table_def);
 
@@ -65,22 +63,12 @@ public:
   void alarm_trap_send_callback(int op,
                                 const AlarmTableDef& alarm_table_def);
 
+  static AlarmTrapSender& get_instance() {return _instance;}
+
 private:
-  AlarmHeap* _alarm_heap;
-};
-
-// CallbackInfo struct. This holds a pointer to the underlying Alarm Trap
-// Sender and a reference to the alarm definition we just send an INFORM
-// for. This is passed on the SNMP callback function
-struct SNMPCallbackAlarmInfo
-{
-  SNMPCallbackAlarmInfo(AlarmTrapSender* ats, AlarmTableDef& atd) :
-    _ats(ats),
-    _atd(atd)
-  {}
-
-  AlarmTrapSender* _ats;
-  AlarmTableDef& _atd;
+  AlarmTrapSender() : _alarm_scheduler(NULL) {}
+  AlarmScheduler* _alarm_scheduler;
+  static AlarmTrapSender _instance; 
 };
 
 #endif

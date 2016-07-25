@@ -50,7 +50,7 @@
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
-#include "alarm_heap.hpp"
+#include "alarm_scheduler.hpp"
 
 static sem_t term_sem;
 // Signal handler that triggers termination.
@@ -146,11 +146,12 @@ int main (int argc, char **argv)
   if (!alarm_table_defs->initialize(alarms_path))
   {
     TRC_ERROR("Hit error parsing the alarm file - shutting down");
-    return 0;
+    return 1;
   }
 
-  AlarmHeap* alarm_heap = new AlarmHeap(alarm_table_defs);
-  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_heap);
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs);
+  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
+
   init_alarmModelTable(*alarm_table_defs);
   init_ituAlarmTable(*alarm_table_defs);
   init_alarmActiveTable(local_ip);
@@ -161,7 +162,7 @@ int main (int argc, char **argv)
   if (!alarm_req_listener->start(&term_sem))
   {
     TRC_ERROR("Hit error starting the listener - shutting down");
-    return 0;
+    return 1;
   }
 
   TRC_STATUS("Alarm agent has started");
@@ -172,6 +173,6 @@ int main (int argc, char **argv)
   snmp_terminate("clearwater-alarms");
 
   delete alarm_req_listener; alarm_req_listener = NULL;
-  delete alarm_heap; alarm_heap = NULL;
+  delete alarm_scheduler; alarm_scheduler = NULL;
   delete alarm_table_defs; alarm_table_defs = NULL;
 }

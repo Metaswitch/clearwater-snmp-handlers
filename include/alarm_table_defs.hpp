@@ -41,7 +41,6 @@
 
 // Container for data needed to generate entries of the Alarm Model Table
 // and ITU Alarm Table.
-
 class AlarmTableDef
 {
 public:
@@ -83,7 +82,6 @@ private:
 
 // Unique key for alarm table definitions is comprised of alarm index and
 // alarm severity.
-
 class AlarmTableDefKey
 {
 public:
@@ -100,7 +98,6 @@ private:
 // Iterator for enumerating all alarm table definitions. Subclassed from 
 // map's iterator to hide pair template. Only operations defined are
 // supported.
-
 class AlarmTableDefsIterator : public std::map<AlarmTableDefKey, AlarmTableDef>::iterator
 {
 public:
@@ -110,14 +107,10 @@ public:
   AlarmTableDef* operator->() {return &(std::map<AlarmTableDefKey, AlarmTableDef>::iterator::operator*().second);}
 };
 
-// Singleton class providing access to alarm table definitions.
-
+/// Class providing access to alarm table definitions.
 class AlarmTableDefs
 {
 public:
-  // Constructor
-  AlarmTableDefs() {}
-
   // Generate alarm table definitions based on JSON files on the node
   bool initialize(std::string& path);
 

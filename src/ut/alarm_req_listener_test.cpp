@@ -48,7 +48,7 @@
 #include "alarm_trap_sender.hpp"
 #include "test_utils.hpp"
 
-#include "mock_alarm_heap.h"
+#include "mock_alarm_scheduler.h"
 #include "fakezmq.h"
 #include "fakenetsnmp.h"
 #include "fakelogger.h"
@@ -77,12 +77,16 @@ public:
     cwtest_completely_control_time();
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_heap = new MockAlarmHeap(_alarm_table_defs);
-    _alarm_req_listener = new AlarmReqListener(_alarm_heap);
+    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs);
+    _alarm_req_listener = new AlarmReqListener(_alarm_scheduler);
     _alarm_req_listener->start(NULL);
     _alarm_manager = new AlarmManager();
     _alarm_1 = new Alarm(_alarm_manager, issuer1, 1000, AlarmDef::CRITICAL);
     _alarm_2 = new Alarm(_alarm_manager, issuer2, 1001, AlarmDef::CRITICAL);
+
+    // Wait until the AlarmReRaiser is waiting before we start (so it doesn't
+    // try and reraise any alarms unexpectedly).
+    _alarm_manager->alarm_re_raiser()->_condition->block_till_waiting();
   }
 
   virtual ~AlarmReqListenerTest()
@@ -92,7 +96,7 @@ public:
     delete _alarm_manager; _alarm_manager = NULL;
     _alarm_req_listener->stop();
     delete _alarm_req_listener; _alarm_req_listener = NULL;
-    delete _alarm_heap; _alarm_heap = NULL;
+    delete _alarm_scheduler; _alarm_scheduler = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
 
     cwtest_reset_time();
@@ -101,7 +105,7 @@ public:
 private:
   CapturingTestLogger _log;
   AlarmTableDefs* _alarm_table_defs;
-  MockAlarmHeap* _alarm_heap;
+  MockAlarmScheduler* _alarm_scheduler;
   AlarmReqListener* _alarm_req_listener;
   AlarmManager* _alarm_manager;
   Alarm* _alarm_1;
@@ -118,14 +122,14 @@ public:
     cwtest_intercept_zmq(&_mz);
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_heap = new MockAlarmHeap(_alarm_table_defs);
-    _alarm_req_listener = new AlarmReqListener(_alarm_heap);
+    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs);
+    _alarm_req_listener = new AlarmReqListener(_alarm_scheduler);
   }
 
   virtual ~AlarmReqListenerZmqErrorTest()
   {
     delete _alarm_req_listener; _alarm_req_listener = NULL;
-    delete _alarm_heap; _alarm_heap = NULL;
+    delete _alarm_scheduler; _alarm_scheduler = NULL;
     delete _alarm_table_defs; _alarm_table_defs = NULL;
 
     cwtest_restore_zmq();
@@ -137,7 +141,7 @@ private:
   int _c;
   int _s;
   AlarmTableDefs* _alarm_table_defs;
-  MockAlarmHeap* _alarm_heap;
+  MockAlarmScheduler* _alarm_scheduler;
   AlarmReqListener* _alarm_req_listener;
 };
 
@@ -145,8 +149,8 @@ private:
 // issuers/index/severity
 TEST_F(AlarmReqListenerTest, IssueAlarms)
 {
-  EXPECT_CALL(*_alarm_heap, issue_alarm("sprout", "1000.3"));
-  EXPECT_CALL(*_alarm_heap, issue_alarm("homestead", "1001.1"));
+  EXPECT_CALL(*_alarm_scheduler, issue_alarm("sprout", "1000.3"));
+  EXPECT_CALL(*_alarm_scheduler, issue_alarm("homestead", "1001.1"));
 
   _alarm_1->set();
   _alarm_2->clear();
@@ -158,7 +162,7 @@ TEST_F(AlarmReqListenerTest, IssueAlarms)
 // request to sync alarms
 TEST_F(AlarmReqListenerTest, SyncAlarms)
 {
-  EXPECT_CALL(*_alarm_heap, sync_alarms());
+  EXPECT_CALL(*_alarm_scheduler, sync_alarms());
   std::vector<std::string> req;
   req.push_back("sync-alarms");
   _alarm_manager->alarm_req_agent()->alarm_request(req);

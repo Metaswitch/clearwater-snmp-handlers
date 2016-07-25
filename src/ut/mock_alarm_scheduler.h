@@ -1,5 +1,5 @@
 /**
- * @file mock_alarm_heap.h
+ * @file mock_alarm_scheduler.h
  *
  * Project Clearwater - IMS in the Cloud
  * Copyright (C) 2016  Metaswitch Networks Ltd
@@ -34,17 +34,17 @@
  * as those licenses appear in the file LICENSE-OPENSSL.
  */
 
-#ifndef MOCK_ALARM_HEAP_H__
-#define MOCK_ALARM_HEAP_H__
+#ifndef MOCK_ALARM_SCHEDULER_H__
+#define MOCK_ALARM_SCHEDULER_H__
 
 #include "gmock/gmock.h"
-#include "alarm_heap.hpp"
+#include "alarm_scheduler.hpp"
 
-class MockAlarmHeap : public AlarmHeap
+class MockAlarmScheduler : public AlarmScheduler
 {
 public:
-  MockAlarmHeap(AlarmTableDefs* alarm_table_defs) :
-    AlarmHeap(alarm_table_defs)
+  MockAlarmScheduler(AlarmTableDefs* alarm_table_defs) :
+    AlarmScheduler(alarm_table_defs)
   {}
 
   MOCK_METHOD2(issue_alarm, void(const std::string& issuer,

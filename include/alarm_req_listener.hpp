@@ -39,7 +39,7 @@
 #include <string>
 #include <semaphore.h>
 
-#include "alarm_heap.hpp"
+#include "alarm_scheduler.hpp"
  
 // Singleton which provides a listener thead to accept alarm requests from
 // clients via ZMQ, then generates alarmActiveState/alarmClearState inform
@@ -48,10 +48,10 @@
 class AlarmReqListener
 {
 public:
-  AlarmReqListener(AlarmHeap* alarm_heap) :
+  AlarmReqListener(AlarmScheduler* alarm_scheduler) :
     _ctx(NULL),
     _sck(NULL),
-    _alarm_heap(alarm_heap)
+    _alarm_scheduler(alarm_scheduler)
   {}
 
   // Initialize ZMQ context and start listener thread.
@@ -84,7 +84,7 @@ private:
 
   void* _ctx;
   void* _sck;
-  AlarmHeap* _alarm_heap;
+  AlarmScheduler* _alarm_scheduler;
 
   sem_t* _term_sem;
 };
