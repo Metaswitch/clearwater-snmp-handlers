@@ -56,13 +56,13 @@ typedef struct ituAlarmTable_context_s {
 
 } ituAlarmTable_context;
 
-void init_ituAlarmTable(void);
+void init_ituAlarmTable(AlarmTableDefs& defs);
 int initialize_table_ituAlarmTable(void);
 int ituAlarmTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
 
 ituAlarmTable_context* ituAlarmTable_create_row_context(char*, unsigned long, long);
 int ituAlarmTable_index_to_oid(char*, unsigned long, long, netsnmp_index*);
-void ituAlarmTable_insert_defs(void);
+void ituAlarmTable_insert_defs(AlarmTableDefs& defs);
 
 /*************************************************************
  *

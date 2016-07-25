@@ -46,9 +46,6 @@
 
 #include "log.h"
 #include "alarm_req_listener.hpp"
-#include "alarm_trap_sender.hpp"
-
-AlarmReqListener AlarmReqListener::_instance;
 
 bool AlarmReqListener::start(sem_t* term_sem)
 {
@@ -65,10 +62,9 @@ bool AlarmReqListener::start(sem_t* term_sem)
 
   pthread_mutex_init(&_start_mutex, NULL);
   pthread_cond_init(&_start_cond, NULL);
-
   pthread_mutex_lock(&_start_mutex);
 
-  int rc = pthread_create(&_thread, NULL, &listener_thread, (void*) &_instance);
+  int rc = pthread_create(&_thread, NULL, &listener_thread, (void*)this);
   if (rc == 0)
   {
     pthread_cond_wait(&_start_cond, &_start_mutex);
@@ -110,10 +106,6 @@ void* AlarmReqListener::listener_thread(void* alarm_req_listener)
   }
 
   return NULL;
-}
-
-AlarmReqListener::AlarmReqListener() : _ctx(NULL), _sck(NULL)
-{
 }
 
 bool AlarmReqListener::zmq_init_ctx()
@@ -238,11 +230,11 @@ void AlarmReqListener::listener()
     // section 5.4: https://tools.ietf.org/html/rfc3877#section-5.4
     if ((msg[0].compare("issue-alarm") == 0) && (msg.size() == 3))
     {
-      AlarmTrapSender::get_instance().issue_alarm(msg[1], msg[2]);
+      _alarm_scheduler->issue_alarm(msg[1], msg[2]);
     }
     else if ((msg[0].compare("sync-alarms") == 0) && (msg.size() == 1))
     {
-      AlarmTrapSender::get_instance().sync_alarms();
+      _alarm_scheduler->sync_alarms();
     }
     else if ((msg[0].compare("poll") == 0) && (msg.size() == 1))
     {
@@ -324,4 +316,3 @@ void AlarmReqListener::reply(const char* response)
     TRC_ERROR("zmq_send failed: %s", zmq_strerror(errno));
   }
 }
-

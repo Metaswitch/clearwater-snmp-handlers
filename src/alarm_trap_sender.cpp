@@ -43,152 +43,11 @@
 
 #include "log.h"
 #include "alarm_trap_sender.hpp"
+#include "alarm_scheduler.hpp"
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
 
-AlarmFilter AlarmFilter::_instance;
-
 AlarmTrapSender AlarmTrapSender::_instance;
-
-bool ObservedAlarms::update(const AlarmTableDef& alarm_table_def, const std::string& issuer)
-{
-  bool updated = false;
-  if (!is_active(alarm_table_def))
-  {
-    _index_to_entry[alarm_table_def.alarm_index()] = AlarmListEntry(alarm_table_def, issuer);
-    updated = true;
-  }
-  return updated;
-}
-
-bool ObservedAlarms::is_active(const AlarmTableDef& alarm_table_def)
-{
-  std::map<unsigned int, AlarmListEntry>::iterator it = _index_to_entry.find(alarm_table_def.alarm_index());
-
-  if ((it == _index_to_entry.end()) || (alarm_table_def.severity() != it->second.alarm_table_def().severity()))
-  {
-    // Either the current alarm doesn't exist in the ObservedAlarms mapping
-    // or there is an entry for the current alarm in the mapping but at a
-    // different severity to the one we are currently raising the alarm with.
-    if (it == _index_to_entry.end())
-    {
-      TRC_DEBUG("Alarm was not known at any severity");
-    }
-    else
-    {
-      TRC_DEBUG("Alarm is active at %d severity which does not match the given severity (%d)",
-                it->second.alarm_table_def().severity(),
-                alarm_table_def.severity());
-    }
-    return false;
-  }
-  else
-  {
-    TRC_DEBUG("Alarm is active at the given severity (%d)",
-              alarm_table_def.severity());
-    return true;
-  }
-}
-
-bool AlarmFilter::alarm_filtered(unsigned int index, unsigned int severity)
-{
-  unsigned long now = current_time_ms();
-
-  if (now > _clean_time)
-  {
-    _clean_time = now + CLEAN_FILTER_TIME;
-
-    std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.begin();
-    while (it != _issue_times.end())
-    {
-      if (now > (it->second + ALARM_FILTER_TIME))
-      {
-        _issue_times.erase(it++);
-      }
-      else
-      {
-        ++it;
-      }
-    }
-  }
-
-  AlarmFilterKey key(index, severity);
-  std::map<AlarmFilterKey, unsigned long>::iterator it = _issue_times.find(key);
-
-  bool filtered = false;
-
-  if (it != _issue_times.end())
-  {
-    if (now > (it->second + ALARM_FILTER_TIME))
-    {
-      _issue_times[key] = now;
-    }
-    else
-    {
-      filtered = true;
-    }
-  }
-  else
-  {
-    _issue_times[key] = now;
-  }
-
-  return filtered;
-}
-
-bool AlarmFilter::AlarmFilterKey::operator<(const AlarmFilter::AlarmFilterKey& rhs) const
-{
-  return  (_index  < rhs._index) ||
-         ((_index == rhs._index) && (_severity < rhs._severity));
-}
-
-unsigned long AlarmFilter::current_time_ms()
-{
-  struct timespec ts;
-
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-
-  return ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
-}
-
-void AlarmTrapSender::issue_alarm(const std::string& issuer, const std::string& identifier)
-{
-  unsigned int index;
-  unsigned int severity;
-  if (sscanf(identifier.c_str(), "%u.%u", &index, &severity) != 2)
-  {
-    TRC_ERROR("malformed alarm identifier: %s", identifier.c_str());
-    return;
-  }
-
-  AlarmTableDef& alarm_table_def = AlarmTableDefs::get_instance().get_definition(index, severity);
-
-  if (alarm_table_def.is_valid())
-  {
-    // If the alarm to be issued exists in the ObservedAlarms mapping at the
-    // same severity then we disregard the alarm as it has not changed state.
-    if (_observed_alarms.update(alarm_table_def, issuer))
-    {
-      if (!AlarmFilter::get_instance().alarm_filtered(index, severity))
-      {
-        alarmActiveTable_trap_handler(alarm_table_def);
-        send_trap(alarm_table_def);
-      }
-    }
-  }
-  else
-  {
-    TRC_ERROR("unknown alarm definition: %s", identifier.c_str());
-  }
-}
-
-void AlarmTrapSender::sync_alarms()
-{
-  for (ObservedAlarmsIterator it = _observed_alarms.begin(); it != _observed_alarms.end(); it++)
-  {
-    send_trap(it->alarm_table_def());
-  }
-}
 
 static int alarm_trap_send_callback(int op,
                                     snmp_session* session,
@@ -196,14 +55,14 @@ static int alarm_trap_send_callback(int op,
                                     snmp_pdu* pdu,
                                     void* correlator)
 {
-  AlarmTableDef* alarm_table_def = (AlarmTableDef *)correlator; correlator = NULL;
-  AlarmTrapSender::get_instance().alarm_trap_send_callback(op,
-                                                           *alarm_table_def);
+  AlarmTableDef* alarm_table_def = (AlarmTableDef*)correlator; correlator = NULL;
+  AlarmTrapSender::get_instance().alarm_trap_send_callback(op, *alarm_table_def);
   return 1;
 }
 
-void AlarmTrapSender::alarm_trap_send_callback(int op,
-                                               const AlarmTableDef& alarm_table_def)
+void AlarmTrapSender::alarm_trap_send_callback(
+                                           int op,
+                                           const AlarmTableDef& alarm_table_def)
 {
   switch (op)
   {
@@ -221,11 +80,7 @@ void AlarmTrapSender::alarm_trap_send_callback(int op,
     // LCOV_EXCL_STOP
   case NETSNMP_CALLBACK_OP_TIMED_OUT:
     TRC_DEBUG("Failed to deliver alarm");
-    if (_observed_alarms.is_active(alarm_table_def))
-    {
-      // Alarm is still active, attempt to re-transmit
-      send_trap(alarm_table_def);
-    }
+    _alarm_scheduler->handle_failed_alarm((AlarmTableDef&)alarm_table_def);
     break;
   default:
     // LCOV_EXCL_START - logic error
@@ -241,7 +96,7 @@ void AlarmTrapSender::alarm_trap_send_callback(int op,
 // retires if needed.
 void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
-  TRC_WARNING("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
+  TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
@@ -284,8 +139,7 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
-  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def);
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def); 
 
   snmp_reset_var_buffers(&var_trap);
 }
-

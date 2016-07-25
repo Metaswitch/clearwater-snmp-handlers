@@ -63,10 +63,11 @@ char buf[1024];
 
 TEST_F(CustomDefs, ModelTable)
 {
-  AlarmTableDefs::get_instance().insert_def(*def_cleared);
-  AlarmTableDefs::get_instance().insert_def(*def_raised);
+  AlarmTableDefs alarm_table_defs;
+  alarm_table_defs.insert_def(*def_cleared);
+  alarm_table_defs.insert_def(*def_raised);
 
-  alarmModelTable_insert_defs();
+  alarmModelTable_insert_defs(alarm_table_defs);
 
   // Verifies the custom alarm data (contained in the header file) is exactly what
   // is stored in the table. We use the index of the alarm "0.6666" in the
@@ -87,10 +88,11 @@ TEST_F(CustomDefs, ModelTable)
 
 TEST_F(CustomDefs, ituAlarmTable)
 {
-  AlarmTableDefs::get_instance().insert_def(*def_cleared);
-  AlarmTableDefs::get_instance().insert_def(*def_raised);
+  AlarmTableDefs alarm_table_defs;
+  alarm_table_defs.insert_def(*def_cleared);
+  alarm_table_defs.insert_def(*def_raised);
 
-  ituAlarmTable_insert_defs();
+  ituAlarmTable_insert_defs(alarm_table_defs);
 
   ASSERT_STREQ("\"Test alarm cleared details\"\n", snmp_get_raw(ituAlarmTable_entry + "." + itu_details + ".0.6666." +str_cleared, buf, sizeof(buf)));
   //Here we use ituAlarmPerceivedSeverity to query ituAlarmTable, for

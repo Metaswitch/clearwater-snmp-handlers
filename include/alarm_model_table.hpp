@@ -56,13 +56,13 @@ typedef struct alarmModelTable_context_s {
 
 } alarmModelTable_context;
 
-void init_alarmModelTable(void);
+void init_alarmModelTable(AlarmTableDefs& defs);
 int initialize_table_alarmModelTable(void);
 int alarmModelTable_get_value(netsnmp_request_info*, netsnmp_index*, netsnmp_table_request_info*);
 
 alarmModelTable_context* alarmModelTable_create_row_context(char*, unsigned long, unsigned long);
 int alarmModelTable_index_to_oid(char*, unsigned long, unsigned long, netsnmp_index*);
-void alarmModelTable_insert_defs(void);
+void alarmModelTable_insert_defs(AlarmTableDefs& defs);
 
 /*************************************************************
  *

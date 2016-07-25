@@ -50,6 +50,7 @@
 #include "alarm_model_table.hpp"
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
+#include "alarm_scheduler.hpp"
 
 static sem_t term_sem;
 // Signal handler that triggers termination.
@@ -139,21 +140,30 @@ int main (int argc, char **argv)
 
   // Initialise the ZMQ listeners and alarm tables
   // Pull in any local alarm definitions off the node.
+  AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
   std::string alarms_path = "/usr/share/clearwater/infrastructure/alarms/";
-  AlarmTableDefs::get_instance().initialize(alarms_path);
 
-  // Exit if the ReqListener wasn't able to fully start
-  if (!AlarmReqListener::get_instance().start(&term_sem))
+  if (!alarm_table_defs->initialize(alarms_path))
   {
-    TRC_ERROR("Hit error starting the listener - shutting down");
-    return 0;
+    TRC_ERROR("Hit error parsing the alarm file - shutting down");
+    return 1;
   }
 
-  init_alarmModelTable();
-  init_ituAlarmTable();
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs);
+  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
+
+  init_alarmModelTable(*alarm_table_defs);
+  init_ituAlarmTable(*alarm_table_defs);
   init_alarmActiveTable(local_ip);
  
   init_snmp_handler_threads("clearwater-alarms");
+
+  // Exit if the ReqListener wasn't able to fully start
+  if (!alarm_req_listener->start(&term_sem))
+  {
+    TRC_ERROR("Hit error starting the listener - shutting down");
+    return 1;
+  }
 
   TRC_STATUS("Alarm agent has started");
  
@@ -162,5 +172,7 @@ int main (int argc, char **argv)
   sem_wait(&term_sem);
   snmp_terminate("clearwater-alarms");
 
-  return 0;
+  delete alarm_req_listener; alarm_req_listener = NULL;
+  delete alarm_scheduler; alarm_scheduler = NULL;
+  delete alarm_table_defs; alarm_table_defs = NULL;
 }

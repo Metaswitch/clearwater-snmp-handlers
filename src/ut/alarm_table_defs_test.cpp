@@ -53,7 +53,7 @@ class AlarmTableDefsTest : public ::testing::Test
 {
 public:
   AlarmTableDefsTest() :
-    _defs(AlarmTableDefs::get_instance())
+    _defs(AlarmTableDefs())
   {
     cwtest_intercept_netsnmp(&_ms);
   }
@@ -64,7 +64,7 @@ public:
   }
 
 private:
-  AlarmTableDefs& _defs;
+  AlarmTableDefs _defs;
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
 };

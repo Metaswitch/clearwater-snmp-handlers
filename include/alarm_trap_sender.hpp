@@ -43,145 +43,32 @@
 
 #include "alarm_table_defs.hpp"
 
-// Definition of an entry in the ObservedAlarms mapping. 
+class AlarmScheduler;
 
-class AlarmListEntry
-{
-public:
-  AlarmListEntry() {}
-
-  AlarmListEntry(const AlarmTableDef& alarm_table_def, const std::string& issuer) :
-    _alarm_table_def(alarm_table_def), _issuer(issuer) {}
-
-  const AlarmTableDef& alarm_table_def() {return _alarm_table_def;}
-  std::string& issuer() {return _issuer;}
-
-private:
-  AlarmTableDef _alarm_table_def;
-  std::string _issuer;
-};
-
-// Iterator for enumerating entries in the ObservedAlarms mapping. Subclassed
-// from map iterator to hide pair template. Only operations defined are
-// supported.
-
-class ObservedAlarmsIterator : public std::map<unsigned int, AlarmListEntry>::iterator
-{
-public:
-  ObservedAlarmsIterator(std::map<unsigned int, AlarmListEntry>::iterator iter) : std::map<unsigned int, AlarmListEntry>::iterator(iter) {}
-
-  AlarmListEntry& operator*()  {return  (std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
-  AlarmListEntry* operator->() {return &(std::map<unsigned int, AlarmListEntry>::iterator::operator*().second);}
-};
-
-// Container for all alarms we have seen being raised (either at CLEARED or
-// non-CLEARED severity). Maps the index of an alarm to the latest severity
-// with which it was raised. Currently indexed by alarm model index (may need 
-// to be extended to include a resource id going forward). 
-
-class ObservedAlarms
-{
-public:
-  ObservedAlarms() {}
-
-  // Adds any alarm to the mapping if it does not already exist and returns 
-  // true. If an entry does exist but at a different severity then we 
-  // update the mapping and return true.
-  bool update(const AlarmTableDef& alarm_table_def, const std::string& issuer);
-  bool is_active(const AlarmTableDef& alarm_table_def);
-
-  ObservedAlarmsIterator begin() {return _index_to_entry.begin();}
-  ObservedAlarmsIterator end() {return _index_to_entry.end();}
-
-private:
-  std::map<unsigned int, AlarmListEntry> _index_to_entry;
-};
-
-// Singleton helper used to filter inform notifications (as per their
-// descriptions in section 4.2 of RFC 3877). 
-
-class AlarmFilter
-{
-public:
-  enum 
-  { 
-    ALARM_FILTER_TIME = 5000,
-    CLEAN_FILTER_TIME = 60000
-  };
-
-  // Intened to be called before generating an inform notification to
-  // determine if the inform should be filtered (i.e. dropped because
-  // it has already been issued within the filter period). This must
-  // be tracked based on a <alarm model index, severity> basis.
-  bool alarm_filtered(unsigned int index, unsigned int severity);
-
-  static AlarmFilter& get_instance() {return _instance;}
-
-private:
-  class AlarmFilterKey
-  {
-  public:
-    AlarmFilterKey(unsigned int index,
-                   unsigned int severity) :
-      _index(index), 
-      _severity(severity) {}
-
-    bool operator<(const AlarmFilterKey& rhs) const;
-
-  private:
-    unsigned int _index;
-    unsigned int _severity;    
-  };
-
-  AlarmFilter() : _clean_time(0) {}
-
-  unsigned long current_time_ms();
-
-  std::map<AlarmFilterKey, unsigned long> _issue_times;
-
-  unsigned long _clean_time;
-
-  static AlarmFilter _instance;
-};
-
-// Singleton class providing methods for generating alarmActiveState and
-// alarmClearState inform notifications. It maintains an observed alarm 
-// list to support filtering and synchronization. 
-
+// Class providing methods for generating alarmActiveState and
+// alarmClearState inform notifications.
 class AlarmTrapSender
 {
 public:
-  // Generates an alarmActiveState inform if the identified alarm is not 
-  // of CLEARED severity and not already active (or subject to filtering).
-  // Generates an alarmClearState inform if the identified alarm is of a
-  // CLEARED severity and an associated alarm is active (unless subject
-  // to filtering).
-  void issue_alarm(const std::string& issuer, const std::string& identifier);
+  void initialise(AlarmScheduler* alarm_scheduler)
+    { _alarm_scheduler = alarm_scheduler; }
 
-  // Generates alarmClearState INFORMs corresponding to each of the currently
-  // cleared alarms and alarmActiveState INFORMs for each currently active
-  // alarm.
-  void sync_alarms();
+  void send_trap(const AlarmTableDef& alarm_table_def);
 
   // Callback triggered when an alarm send completes (either successfully
   // or not).
   //
   // @param op - NETSNMP operation code
-  // @param peer - The SNMP peer that failed
   // @param alarm_table_def - The alarm entry that was being raised
   void alarm_trap_send_callback(int op,
                                 const AlarmTableDef& alarm_table_def);
 
   static AlarmTrapSender& get_instance() {return _instance;}
+
 private:
-  AlarmTrapSender() {}
-
-  void send_trap(const AlarmTableDef& alarm_table_def);
-
-  ObservedAlarms _observed_alarms;
-
-  static AlarmTrapSender _instance;
+  AlarmTrapSender() : _alarm_scheduler(NULL) {}
+  AlarmScheduler* _alarm_scheduler;
+  static AlarmTrapSender _instance; 
 };
 
 #endif
-

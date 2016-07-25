@@ -43,7 +43,6 @@
 #define ALARM_ACTIVE_TABLE_HPP
 
 #include <alarm_table_defs.hpp>
-#include "alarm_trap_sender.hpp"
 #include "oid_definitions.hpp"
 #ifdef __cplusplus
 extern "C" {
