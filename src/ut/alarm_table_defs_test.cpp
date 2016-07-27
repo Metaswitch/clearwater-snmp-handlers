@@ -125,8 +125,7 @@ TEST_F(AlarmTableDefsTest, ExtendedFieldsDefLookup)
   EXPECT_THAT(_def.extended_cause(), StrEq("Cause"));
   EXPECT_THAT(_def.effect(), StrEq("Effect"));
   EXPECT_THAT(_def.action(), StrEq("Action"));
-  EXPECT_THAT(_def.extended_details(), 
-              StrEq("These are some extended details"));
+  EXPECT_THAT(_def.extended_details(), StrEq("These are some extended details"));
   EXPECT_THAT(_def.extended_description(), StrEq("This is an extended description"));
 }
 
