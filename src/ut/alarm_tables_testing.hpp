@@ -44,14 +44,18 @@ void CustomDefs::SetUp()
                                     "Test alarm cleared details",
                                     "Test alarm cleared cause",
                                     "Test alarm cleared effect",
-                                    "Test alarm cleared action");
+                                    "Test alarm cleared action",
+                                    "Test alarm cleared extended details",
+                                    "Test alarm cleared extended description");
   AlarmDef::SeverityDetails raised(AlarmDef::CRITICAL,
                                    "Test alarm raised description",
                                    "Test alarm raised details",
                                    "Test alarm raised cause",
                                    "Test alarm raised effect",
-                                   "Test alarm raised action");
-  AlarmDef::AlarmDefinition example(6666, AlarmDef::SOFTWARE_ERROR, {cleared, raised});
+                                   "Test alarm raised action",
+                                   "Test alarm raised extended details",
+                                   "Test alarm raised extended description");
+  AlarmDef::AlarmDefinition example("test alarm", 6666, AlarmDef::SOFTWARE_ERROR, {cleared, raised});
   def_cleared = new AlarmTableDef(example, cleared);
   def_raised = new AlarmTableDef(example, raised);
 
@@ -60,14 +64,18 @@ void CustomDefs::SetUp()
                                      "First alarm cleared details",
                                      "First alarm cleared cause",
                                      "First alarm cleared effect",
-                                     "First alarm cleared action");
+                                     "First alarm cleared action",
+                                     "First alarm cleared extended details",
+                                     "First alarm cleared extended description");
   AlarmDef::SeverityDetails raised1(AlarmDef::CRITICAL,
                                     "First alarm raised description",
                                     "First alarm raised details",
                                     "First alarm raised cause",
                                     "First alarm raised effect",
-                                    "First alarm raised action");
-  AlarmDef::AlarmDefinition example1(6666, AlarmDef::SOFTWARE_ERROR, {cleared1, raised1});
+                                    "First alarm raised action",
+                                    "First alarm raised extended details",
+                                    "First alarm raised extended description");
+  AlarmDef::AlarmDefinition example1("test alarm1", 6666, AlarmDef::SOFTWARE_ERROR, {cleared1, raised1});
   def1_cleared = new AlarmTableDef(example1, cleared1);
   def1_raised = new AlarmTableDef(example1, raised1);
 
@@ -76,14 +84,18 @@ void CustomDefs::SetUp()
                                      "Second alarm cleared details",
                                      "Second alarm cleared cause",
                                      "Second alarm cleared effect",
-                                     "Second alarm cleared action");
+                                     "Second alarm cleared action",
+                                     "Second alarm cleared extended details",
+                                     "Second alarm cleared extended description");
   AlarmDef::SeverityDetails raised2(AlarmDef::CRITICAL,
                                     "Second alarm raised description",
                                     "Second alarm raised details",
                                     "Second alarm raised cause",
                                     "Second alarm raised effect",
-                                    "Second alarm raised action");
-  AlarmDef::AlarmDefinition example2(6667, AlarmDef::SOFTWARE_ERROR, {cleared2, raised2});
+                                    "Second alarm raised action",
+                                    "Second alarm raised extended details",
+                                    "Second alarm raised extended description");
+  AlarmDef::AlarmDefinition example2("test alarm2", 6667, AlarmDef::SOFTWARE_ERROR, {cleared2, raised2});
   def2_cleared = new AlarmTableDef(example2, cleared2);
   def2_raised = new AlarmTableDef(example2, raised2);
 
@@ -92,14 +104,18 @@ void CustomDefs::SetUp()
                                      "Third alarm cleared details",
                                      "Third alarm cleared cause",
                                      "Third alarm cleared effect",
-                                     "Third alarm cleared action");
+                                     "Third alarm cleared action",
+                                     "Third alarm cleared extended details",
+                                     "Third alarm cleared extended description");
   AlarmDef::SeverityDetails raised3(AlarmDef::CRITICAL,
                                     "Third alarm raised description",
                                     "Third alarm raised details",
                                     "Third alarm raised cause",
                                     "Third alarm raised effect",
-                                    "Third alarm raised action");
-  AlarmDef::AlarmDefinition example3(6668, AlarmDef::SOFTWARE_ERROR, {cleared3, raised3});
+                                    "Third alarm raised action",
+                                    "Third alarm raised extended details",
+                                    "Third alarm raised extended description");
+  AlarmDef::AlarmDefinition example3("test alarm3", 6668, AlarmDef::SOFTWARE_ERROR, {cleared3, raised3});
   def3_cleared = new AlarmTableDef(example3, cleared3);
   def3_raised = new AlarmTableDef(example3, raised3);
 
@@ -108,14 +124,18 @@ void CustomDefs::SetUp()
                                      "Fourth alarm cleared details",
                                      "Fourth alarm cleared cause",
                                      "Fourth alarm cleared effect",
-                                     "Fourth alarm cleared action");
+                                     "Fourth alarm cleared action",
+                                     "Fourth alarm cleared extended details",
+                                     "Fourth alarm cleared extended description");
   AlarmDef::SeverityDetails raised4(AlarmDef::CRITICAL,
                                     "Fourth alarm raised description",
                                     "Fourth alarm raised details",
                                     "Fourth alarm raised cause",
                                     "Fourth alarm raised effect",
-                                    "Fourth alarm raised action");
-  AlarmDef::AlarmDefinition example4(6669, AlarmDef::SOFTWARE_ERROR, {cleared4, raised4});
+                                    "Fourth alarm raised action",
+                                    "Fourth alarm raised extended details",
+                                    "Fourth alarm raised extended description");
+  AlarmDef::AlarmDefinition example4("test alarm4", 6669, AlarmDef::SOFTWARE_ERROR, {cleared4, raised4});
   def4_cleared = new AlarmTableDef(example4, cleared4);
   def4_raised = new AlarmTableDef(example4, raised4);
 
@@ -124,14 +144,18 @@ void CustomDefs::SetUp()
                                      "Fifth alarm cleared details",
                                      "Fifth alarm cleared cause",
                                      "Fifth alarm cleared effect",
-                                     "Fifth alarm cleared action");
+                                     "Fifth alarm cleared action",
+                                     "Fifth alarm cleared extended details",
+                                     "Fifth alarm cleared extended description");
   AlarmDef::SeverityDetails raised5(AlarmDef::CRITICAL,
                                     "Fifth alarm raised description",
                                     "Fifth alarm raised details",
                                     "Fifth alarm raised cause",
                                     "Fifth alarm raised effect",
-                                    "Fifth alarm raised action");
-  AlarmDef::AlarmDefinition example5(6670, AlarmDef::SOFTWARE_ERROR, {cleared5, raised5});
+                                    "Fifth alarm raised action",
+                                    "Fifth alarm raised extended details",
+                                    "Fifth alarm raised extended description");
+  AlarmDef::AlarmDefinition example5("test alarm5", 6670, AlarmDef::SOFTWARE_ERROR, {cleared5, raised5});
   def5_cleared = new AlarmTableDef(example5, cleared5);
   def5_raised = new AlarmTableDef(example5, raised5);
 
@@ -140,20 +164,26 @@ void CustomDefs::SetUp()
                                      "Test alarm cleared details",
                                      "Test alarm cleared cause",
                                      "Test alarm cleared effect",
-                                     "Test alarm cleared action");
+                                     "Test alarm cleared action",
+                                     "Test alarm cleared extended details",
+                                     "Test alarm cleared extended description");
   AlarmDef::SeverityDetails raised_critical(AlarmDef::CRITICAL,
                                             "Test alarm critical raised description",
                                             "Test alarm critical raised details",
                                             "Test alarm critical raised cause",
                                             "Test alarm critical raised effect",
-                                            "Test alarm critical raised action");
+                                            "Test alarm critical raised action",
+                                            "Test alarm critical raised extended details",
+                                            "Test alarm critical raised extended description");
   AlarmDef::SeverityDetails raised_major(AlarmDef::MAJOR,
                                          "Test alarm major raised description",
                                          "Test alarm major raised details",
                                          "Test alarm major raised cause",
                                          "Test alarm major raised effect",
-                                         "Test alarm major raised action");
-  AlarmDef::AlarmDefinition example6(6666, AlarmDef::SOFTWARE_ERROR, {cleared, raised_critical, raised_major});
+                                         "Test alarm major raised action",
+                                         "Test alarm major raised extended details",
+                                         "Test alarm major raised extended description");
+  AlarmDef::AlarmDefinition example6("test alarm6", 6666, AlarmDef::SOFTWARE_ERROR, {cleared, raised_critical, raised_major});
   def6_cleared = new AlarmTableDef(example6, cleared6);
   def_raised_critical = new AlarmTableDef(example, raised_critical);
   def_raised_major = new AlarmTableDef(example, raised_major);
