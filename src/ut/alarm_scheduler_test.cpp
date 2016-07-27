@@ -204,6 +204,28 @@ TEST_F(AlarmSchedulerTest, ClearAlarm)
   _ms.trap_complete(1, 5);
 }
 
+// Test that clearing a set alarm only clears the alarm after a delay
+TEST_F(AlarmSchedulerTest, SetAndClearAlarm)
+{
+  // Set the alarm - this should raise the alarm straight away
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
+  _alarm_scheduler->issue_alarm("test", "1000.3");
+  _ms.trap_complete(1, 5);
+
+  // Now clear the alarm. Block until we're waiting for the heap (note - this
+  // doesn't prove we're waiting on the alarm to be due, but the next check
+  // will fail if we aren't).
+  _alarm_scheduler->issue_alarm("test", "1000.1");
+  _alarm_scheduler->_cond->block_till_waiting();
+
+  // Advance time so that the alarm is due to be sent, and check that the
+  // cleared alarm is sent.
+  cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
+  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
+  _alarm_scheduler->_cond->signal();
+  _ms.trap_complete(1, 5);
+}
+
 // Test that repeated alarms only generate one INFORM
 TEST_F(AlarmSchedulerTest, SetAlarmRepeatedState)
 {

@@ -73,7 +73,11 @@ AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs) :
 
   // Create the lock/condition variables.
   pthread_mutex_init(&_lock, NULL);
+#ifdef UNIT_TEST
+  _cond = new MockPThreadCondVar(&_lock);
+#else
   _cond = new CondVar(&_lock);
+#endif
 
   // Populate the alarm state map
   for (AlarmTableDefsIterator it = _alarm_table_defs->begin();

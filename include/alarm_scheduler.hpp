@@ -45,7 +45,11 @@
 #include "alarm_trap_sender.hpp"
 #include "timer_heap.h"
 #include "utils.h"
+#ifdef UNIT_TEST
+#include "pthread_cond_var_helper.h"
+#else
 #include "cond_var.h"
+#endif
 
 /// AlarmTimer. This holds information about an alarm that's scheduled to be
 /// sent, in a format that can be placed into the heap.
@@ -193,7 +197,11 @@ private:
   // This lock protects access to the _all_alarms_state map and the _alarm_heap,
   // and should be taken whenever reading/writing to these structures
   pthread_mutex_t _lock;
+#ifdef UNIT_TEST
+  MockPThreadCondVar* _cond;
+#else
   CondVar* _cond;
+#endif
   pthread_t _heap_sender_thread;
 };
 
