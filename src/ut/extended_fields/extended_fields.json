@@ -12,8 +12,8 @@
                     "cause": "Cause",
                     "effect": "Effect",
                     "action": "Action",
-                    "extended details": "These are some extended details",
-                    "extended description": "This is an extended description"
+                    "extended_details": "These are some extended details",
+                    "extended_description": "This is an extended description"
                 },
                 {
                     "severity": "CRITICAL",
@@ -22,8 +22,8 @@
                     "cause": "Cause",
                     "effect": "Effect",
                     "action": "Action",
-                    "extended details": "These are some extended details",
-                    "extended description": "This is an extended description"
+                    "extended_details": "These are some extended details",
+                    "extended_description": "This is an extended description"
                 }
             ]
         }
