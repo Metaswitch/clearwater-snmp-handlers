@@ -61,9 +61,9 @@ public:
 
   unsigned int state() const;
 
-  const std::string& name() const    {return _alarm_definition._name;}
-  unsigned int alarm_index() const   {return _alarm_definition._index;} 
-  AlarmDef::Cause cause() const      {return _alarm_definition._cause;}
+  const std::string& name() const     {return _alarm_definition._name;}
+  unsigned int alarm_index() const    {return _alarm_definition._index;} 
+  AlarmDef::Cause alarm_cause() const {return _alarm_definition._cause;}
 
   AlarmDef::Severity severity() const             {return _severity_details._severity;}
   const std::string& description() const          {return _severity_details._description;}
