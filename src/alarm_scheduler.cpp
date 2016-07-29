@@ -65,8 +65,10 @@ void SingleAlarmManager::change_schedule(AlarmDef::Severity new_severity,
   }
 }
 
-AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs) :
+AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
+                               std::string snmp_notification_type) :
   _terminated(false),
+  _snmp_notification_type(snmp_notification_type),
   _alarm_table_defs(alarm_table_defs)
 {
   AlarmTrapSender::get_instance().initialise(this);

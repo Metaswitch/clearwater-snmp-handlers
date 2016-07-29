@@ -68,6 +68,7 @@ public:
 private:
   AlarmTrapSender() : _alarm_scheduler(NULL) {}
   AlarmScheduler* _alarm_scheduler;
+  std::string _snmp_notification_type;
   static AlarmTrapSender _instance; 
 };
 

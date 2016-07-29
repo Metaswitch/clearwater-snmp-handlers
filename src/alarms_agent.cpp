@@ -62,6 +62,7 @@ void agent_terminate_handler(int sig)
 enum OptionTypes
 {
   OPT_COMMUNITY=256+1,
+  OPT_NOTIFICATION_TYPE,
   OPT_LOCAL_IP,
   OPT_SNMP_IPS,
   OPT_LOG_LEVEL,
@@ -71,6 +72,7 @@ enum OptionTypes
 const static struct option long_opt[] =
 {
   { "community",                       required_argument, 0, OPT_COMMUNITY},
+  { "snmp_notification_type",          required_argument, 0, OPT_NOTIFICATION_TYPE},
   { "snmp-ips",                        required_argument, 0, OPT_SNMP_IPS},
   { "local_ip",                        required_argument, 0, OPT_LOCAL_IP},
   { "log-level",                       required_argument, 0, OPT_LOG_LEVEL},
@@ -83,6 +85,7 @@ static void usage(void)
          "\n"
          " --snmp-ips <ip>,<ip>       Send SNMP notifications to the specified IPs\n"
          " --community <name>         Include the given community string on notifications\n"
+         " --snmp_notification_type   Sends SNMP noticiations with the specified format\n"
          " --log-dir <directory>\n"
          "                            Log to file in specified directory\n"
          " --log-level N              Set log level to N (default: 4)\n"
@@ -93,6 +96,7 @@ int main (int argc, char **argv)
 {
   std::vector<std::string> trap_ips;
   char* community = NULL;
+  std::string snmp_notification_type = "rfc3877";
   std::string local_ip = "0.0.0.0";
   std::string logdir = "";
   int loglevel = 4;
@@ -106,6 +110,9 @@ int main (int argc, char **argv)
       {
       case OPT_COMMUNITY:
         community = optarg;
+        break;
+      case OPT_NOTIFICATION_TYPE:
+        snmp_notification_type = optarg;
         break;
       case OPT_SNMP_IPS:
         Utils::split_string(optarg, ',', trap_ips);
@@ -149,7 +156,7 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs);
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notification_type);
   AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
 
   init_alarmModelTable(*alarm_table_defs);
