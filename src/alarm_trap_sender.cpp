@@ -98,7 +98,6 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
   std::string snmp_notification_type = _alarm_scheduler->_snmp_notification_type;
   TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
-  TRC_INFO("\n\n @@@ame2 SNMP notification: %s \n\n", snmp_notification_type.c_str());
 
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
