@@ -96,6 +96,10 @@ void AlarmTrapSender::alarm_trap_send_callback(
 // retires if needed.
 void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
+  // snmp notification type is a config option which allows the user to specify
+  // whether they'd like to send traps that are compliant with rfc3877 ("rfc3877") 
+  // or send traps containing the information in the enterprise MIB
+  // ("enterprise")
   std::string snmp_notification_type = _alarm_scheduler->_snmp_notification_type;
   TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
