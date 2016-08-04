@@ -171,7 +171,7 @@ public:
 
   // Whether the program has terminated
   volatile bool _terminated;
-  
+
 private:
   void change_schedule_for_alarm(SingleAlarmManager* single_alarm_manager,
                                  AlarmDef::Severity severity,
