@@ -40,6 +40,7 @@
 #include <string>
 #include <vector>
 #include <semaphore.h>
+#include <iostream>
 
 #include "utils.h"
 #include "snmp_agent.h"
@@ -96,7 +97,7 @@ int main (int argc, char **argv)
 {
   std::vector<std::string> trap_ips;
   char* community = NULL;
-  std::string snmp_notification_type = "rfc3877";
+  std::vector<NotificationType> snmp_notifications;
   std::string local_ip = "0.0.0.0";
   std::string logdir = "";
   int loglevel = 4;
@@ -112,8 +113,36 @@ int main (int argc, char **argv)
         community = optarg;
         break;
       case OPT_NOTIFICATION_TYPE:
-        snmp_notification_type = optarg;
-        break;
+        {
+          std::vector<std::string> notification_types;
+          Utils::split_string(std::string(optarg), ',', notification_types);
+          for (std::vector<std::string>::iterator it = notification_types.begin();
+               it != notification_types.end();
+               ++it)
+          {
+            if (*it == "rfc3877" && std::find(snmp_notifications.begin(), 
+                                              snmp_notifications.end(),
+                                              NotificationType::RFC3877) == snmp_notifications.end())
+            {
+              snmp_notifications.push_back(NotificationType::RFC3877);
+            }
+            else if (*it == "enterprise" && std::find(snmp_notifications.begin(), 
+                                              snmp_notifications.end(),
+                                              NotificationType::ENTERPRISE) == snmp_notifications.end())
+            {
+              snmp_notifications.push_back(NotificationType::ENTERPRISE);
+            }
+            else
+            {
+              puts("Invalid config option used for snmp notification type");
+            }
+          }
+          if (snmp_notifications.empty())
+          {
+            snmp_notifications.push_back(NotificationType::RFC3877);
+          }
+          break;
+        }
       case OPT_SNMP_IPS:
         Utils::split_string(optarg, ',', trap_ips);
         break;
@@ -144,7 +173,7 @@ int main (int argc, char **argv)
     create_trap_session(const_cast<char*>(ii->c_str()), 162, community,
                         SNMP_VERSION_2c, SNMP_MSG_INFORM);  
   }
-
+  
   // Initialise the ZMQ listeners and alarm tables
   // Pull in any local alarm definitions off the node.
   AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
@@ -156,7 +185,7 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notification_type);
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications);
   AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
 
   init_alarmModelTable(*alarm_table_defs);

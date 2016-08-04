@@ -43,6 +43,12 @@
 
 #include "alarm_table_defs.hpp"
 
+enum NotificationType
+{
+  RFC3877,
+  ENTERPRISE
+};
+
 class AlarmScheduler;
 
 // Class providing methods for generating alarmActiveState and
@@ -50,8 +56,10 @@ class AlarmScheduler;
 class AlarmTrapSender
 {
 public:
-  void initialise(AlarmScheduler* alarm_scheduler)
-    { _alarm_scheduler = alarm_scheduler; }
+  void initialise(AlarmScheduler* alarm_scheduler,
+                  std::vector<NotificationType> snmp_notifications)
+    { _alarm_scheduler = alarm_scheduler;
+      _snmp_notifications = snmp_notifications; }
 
   void send_trap(const AlarmTableDef& alarm_table_def);
 
@@ -68,7 +76,7 @@ public:
 private:
   AlarmTrapSender() : _alarm_scheduler(NULL) {}
   AlarmScheduler* _alarm_scheduler;
-  std::string _snmp_notification_type;
+  std::vector<NotificationType> _snmp_notifications;
   static AlarmTrapSender _instance; 
 };
 
