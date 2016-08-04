@@ -96,6 +96,8 @@ void AlarmTrapSender::alarm_trap_send_callback(
 // retires if needed.
 void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
+  TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
+
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
   static const oid active_oid[] = {1,3,6,1,2,1,118,0,2};

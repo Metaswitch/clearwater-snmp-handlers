@@ -40,7 +40,6 @@
 #include <string>
 #include <vector>
 #include <semaphore.h>
-#include <iostream>
 
 #include "utils.h"
 #include "snmp_agent.h"
@@ -173,7 +172,7 @@ int main (int argc, char **argv)
     create_trap_session(const_cast<char*>(ii->c_str()), 162, community,
                         SNMP_VERSION_2c, SNMP_MSG_INFORM);  
   }
-  
+
   // Initialise the ZMQ listeners and alarm tables
   // Pull in any local alarm definitions off the node.
   AlarmTableDefs* alarm_table_defs = new AlarmTableDefs();
