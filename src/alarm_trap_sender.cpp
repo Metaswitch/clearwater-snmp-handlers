@@ -234,9 +234,6 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_alarm_effect, alarm_effect_oid, OID_LENGTH(alarm_effect_oid));
   snmp_set_var_objid(&var_alarm_action, alarm_action_oid, OID_LENGTH(alarm_action_oid));
 
-  TRC_DEBUG("\n\n @@@ame2 about to set value, alarm description: %s, length: %d", alarm_table_def.description().c_str(),
-            alarm_table_def.description().length());
-
   snmp_set_var_typed_value(&var_trap, ASN_OBJECT_ID, 
                            (u_char*) trap_type_oid, 
                            sizeof(trap_type_oid));

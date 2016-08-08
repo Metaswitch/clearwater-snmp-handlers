@@ -59,7 +59,7 @@ using ::testing::MatchResultListener;
 using ::testing::SaveArg;
 using ::testing::Invoke;
 
-class TrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*>
+class EnterpriseTrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*>
 {
 public:
 
@@ -68,17 +68,17 @@ public:
   //  ALARM_IDX_ROW_OID_OCTET = 13
   //};
 
-  explicit TrapVarsMatcher(oid trap_type,
-                           std::string MIB_version,
-                           std::string name,
-                           oid alarm_oid,
-                           oid resource_id,
-                           std::string severity,
-                           std::string description,
-                           std::string details,
-                           std::string cause,
-                           std::string effect,
-                           std::string action) :
+  explicit EnterpriseTrapVarsMatcher(oid trap_type,
+                                     std::string MIB_version,
+                                     std::string name,
+                                     oid alarm_oid,
+                                     oid resource_id,
+                                     std::string severity,
+                                     std::string description,
+                                     std::string details,
+                                     std::string cause,
+                                     std::string effect,
+                                     std::string action) :
       _trap_type(trap_type),
       _MIB_version(MIB_version),
       _name(name),
@@ -224,17 +224,17 @@ inline Matcher<netsnmp_variable_list*> TrapVars(oid trap_type,
                                                 std::string cause,
                                                 std::string effect,
                                                 std::string action) {
-  return MakeMatcher(new TrapVarsMatcher(trap_type,
-                                         MIB_version,
-                                         name,
-                                         alarm_oid,
-                                         resource_id,
-                                         severity,
-                                         description,
-                                         details,
-                                         cause,
-                                         effect,
-                                         action));
+  return MakeMatcher(new EnterpriseTrapVarsMatcher(trap_type,
+                                                   MIB_version,
+                                                   name,
+                                                   alarm_oid,
+                                                   resource_id,
+                                                   severity,
+                                                   description,
+                                                   details,
+                                                   cause,
+                                                   effect,
+                                                   action));
 }
 
 TEST_F(AlarmTrapSenderTest, SetAlarm)
