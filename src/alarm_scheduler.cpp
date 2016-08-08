@@ -70,7 +70,6 @@ AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs,
   _terminated(false),
   _alarm_table_defs(alarm_table_defs)
 {
-  printf("\n\n @@@ame2 Entered the Alarm Scheduler constructor \n\n");
   AlarmTrapSender::get_instance().initialise(this, snmp_notifications);
 
   // Create the lock/condition variables.
