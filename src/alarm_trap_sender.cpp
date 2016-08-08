@@ -47,6 +47,8 @@
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
 
+std::string MIB_version = "201608081100";
+
 AlarmTrapSender AlarmTrapSender::_instance;
 
 static int alarm_trap_send_callback(int op,
@@ -98,6 +100,28 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
   TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
+  for (std::vector<NotificationType>::iterator it = _snmp_notifications.begin();
+       it != _snmp_notifications.end();
+       ++it)
+  {
+    switch (*it)
+    {
+      case NotificationType::RFC3877:
+        send_rfc3877_trap(alarm_table_def);
+        break;
+      case NotificationType::ENTERPRISE:
+        send_enterprise_trap(alarm_table_def);
+        break;
+      default:
+        TRC_ERROR("Unknown notification type passed to the trap sender");
+        break;
+    }
+  }
+}
+
+void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
+{
+  TRC_DEBUG("\n\n @@@ame2 Entered send rfc3877 trap \n\n");
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
   static const oid active_oid[] = {1,3,6,1,2,1,118,0,2};
@@ -140,6 +164,119 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
   send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def); 
+
+  snmp_reset_var_buffers(&var_trap);
+}
+
+void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
+{
+  TRC_STATUS("\n\n @@@ame2 Entered send_enterprise_trap \n\n");
+  static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
+  static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
+  static const oid trap_type_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1};
+  static const oid MIB_version_oid[] = {1,2,826,0,1,1578918,19444,9,1};
+  static const oid alarm_name_oid[] = {1,2,826,0,1,1568918,19444,9,2,1,1,1};
+  static const oid alarm_oid_oid[] = {1,2,826,0,1,1568918,19444,9,2,1,1,2};
+  static const oid resource_id_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,3};
+  static const oid zero_dot_zero[] = {0,0};
+  static const oid model_row_oid[] = {1,3,6,1,2,1,118,1,1,2,1,3,0,1,2};
+  static const oid alarm_severity_oid[] = {1,2,826,0,1,1578919,19444,9,2,1,1,4};
+  static const oid alarm_description_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,5};
+  static const oid alarm_details_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,6};
+  static const oid alarm_cause_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,7};
+  static const oid alarm_effect_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,8};
+  static const oid alarm_action_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,9};
+  
+
+  netsnmp_variable_list var_trap;
+  netsnmp_variable_list var_MIB_version;
+  netsnmp_variable_list var_alarm_name;
+  netsnmp_variable_list var_alarm_oid;
+  netsnmp_variable_list var_resource_id;
+  netsnmp_variable_list var_alarm_severity;
+  netsnmp_variable_list var_alarm_description;
+  netsnmp_variable_list var_alarm_details;
+  netsnmp_variable_list var_alarm_cause;
+  netsnmp_variable_list var_alarm_effect;
+  netsnmp_variable_list var_alarm_action;
+
+  memset(&var_trap, 0x00, sizeof(var_trap));
+  memset(&var_MIB_version, 0x00, sizeof(var_MIB_version));
+  memset(&var_alarm_name, 0x00, sizeof(var_alarm_name));
+  memset(&var_alarm_oid, 0x00, sizeof(var_alarm_oid));
+  memset(&var_resource_id, 0x00, sizeof(var_resource_id));
+  memset(&var_alarm_severity, 0x00, sizeof(var_alarm_severity));
+  memset(&var_alarm_description, 0x00, sizeof(var_alarm_description));
+  memset(&var_alarm_details, 0x00, sizeof(var_alarm_details));
+  memset(&var_alarm_cause, 0x00, sizeof(var_alarm_cause));
+  memset(&var_alarm_effect, 0x00, sizeof(var_alarm_effect));
+  memset(&var_alarm_action, 0x00, sizeof(var_alarm_action));
+
+  var_trap.next_variable = &var_MIB_version;
+  var_MIB_version.next_variable = &var_alarm_name;
+  var_alarm_name.next_variable = &var_alarm_oid;
+  var_alarm_oid.next_variable = &var_resource_id;
+  var_resource_id.next_variable = &var_alarm_severity;
+  var_alarm_severity.next_variable = &var_alarm_description;
+  var_alarm_description.next_variable = &var_alarm_details;
+  var_alarm_details.next_variable = &var_alarm_cause;
+  var_alarm_cause.next_variable = &var_alarm_effect;
+  var_alarm_effect.next_variable = &var_alarm_action;
+  var_alarm_action.next_variable = NULL;
+
+  snmp_set_var_objid(&var_trap, snmp_trap_oid, OID_LENGTH(snmp_trap_oid));
+  snmp_set_var_objid(&var_MIB_version, MIB_version_oid, OID_LENGTH(MIB_version_oid));
+  snmp_set_var_objid(&var_alarm_name, alarm_name_oid, OID_LENGTH(alarm_name_oid));
+  snmp_set_var_objid(&var_alarm_oid, alarm_oid_oid, OID_LENGTH(alarm_oid_oid));
+  snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
+  snmp_set_var_objid(&var_alarm_severity, alarm_severity_oid, OID_LENGTH(alarm_severity_oid));
+  snmp_set_var_objid(&var_alarm_description, alarm_description_oid, OID_LENGTH(alarm_description_oid));
+  snmp_set_var_objid(&var_alarm_details, alarm_details_oid, OID_LENGTH(alarm_details_oid));
+  snmp_set_var_objid(&var_alarm_cause, alarm_cause_oid, OID_LENGTH(alarm_cause_oid));
+  snmp_set_var_objid(&var_alarm_effect, alarm_effect_oid, OID_LENGTH(alarm_effect_oid));
+  snmp_set_var_objid(&var_alarm_action, alarm_action_oid, OID_LENGTH(alarm_action_oid));
+
+  TRC_DEBUG("\n\n @@@ame2 about to set value, alarm description: %s, length: %d", alarm_table_def.description().c_str(),
+            alarm_table_def.description().length());
+
+  snmp_set_var_typed_value(&var_trap, ASN_OBJECT_ID, 
+                           (u_char*) trap_type_oid, 
+                           sizeof(trap_type_oid));
+  snmp_set_var_typed_value(&var_MIB_version, ASN_OCTET_STR,
+                           MIB_version.c_str(),
+                           MIB_version.length());
+  snmp_set_var_typed_value(&var_alarm_name, ASN_OCTET_STR,
+                           alarm_table_def.name().c_str(),
+                           alarm_table_def.name().length());
+  snmp_set_var_typed_value(&var_alarm_oid, ASN_OBJECT_ID,
+                           (u_char*) model_row_oid,
+                           sizeof(model_row_oid));
+
+  var_alarm_oid.val.objid[ALARMMODELTABLEROW_INDEX] = alarm_table_def.alarm_index();
+  
+  snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, 
+                           (u_char*) zero_dot_zero, 
+                           sizeof(zero_dot_zero));
+  snmp_set_var_typed_value(&var_alarm_severity, ASN_OCTET_STR,
+                           std::to_string(severity_to_state[alarm_table_def.severity()]).c_str(),
+                           std::to_string(severity_to_state[alarm_table_def.severity()]).length());
+  snmp_set_var_typed_value(&var_alarm_description, ASN_OCTET_STR, 
+                           alarm_table_def.extended_description().c_str(), 
+                           alarm_table_def.extended_description().length());
+  snmp_set_var_typed_value(&var_alarm_details, ASN_OCTET_STR, 
+                           alarm_table_def.extended_details().c_str(), 
+                           alarm_table_def.extended_details().length());
+  snmp_set_var_typed_value(&var_alarm_cause, ASN_OCTET_STR, 
+                           alarm_table_def.extended_cause().c_str(), 
+                           alarm_table_def.extended_cause().length());
+  snmp_set_var_typed_value(&var_alarm_effect, ASN_OCTET_STR, 
+                           alarm_table_def.effect().c_str(), 
+                           alarm_table_def.effect().length());
+  snmp_set_var_typed_value(&var_alarm_action, ASN_OCTET_STR, 
+                           alarm_table_def.action().c_str(), 
+                           alarm_table_def.action().length());
+
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def);
 
   snmp_reset_var_buffers(&var_trap);
 }

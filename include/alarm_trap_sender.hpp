@@ -78,6 +78,8 @@ private:
   AlarmScheduler* _alarm_scheduler;
   std::vector<NotificationType> _snmp_notifications;
   static AlarmTrapSender _instance; 
+  void send_rfc3877_trap(const AlarmTableDef& alarm_table_def);
+  void send_enterprise_trap(const AlarmTableDef& alarm_table_def);
 };
 
 #endif

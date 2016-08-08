@@ -149,12 +149,14 @@ class AlarmSchedulerTest : public ::testing::Test
 public:
   AlarmSchedulerTest()
   {
+    _snmp_notifications.push_back(NotificationType::RFC3877);
+    
     cwtest_completely_control_time();
     cwtest_intercept_netsnmp(&_ms);
 
     _alarm_table_defs = new AlarmTableDefs();
     _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_scheduler = new AlarmScheduler(_alarm_table_defs);
+    _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, _snmp_notifications);
   }
 
   virtual ~AlarmSchedulerTest()
@@ -168,6 +170,7 @@ public:
   }
 
 private:
+  std::vector<NotificationType> _snmp_notifications;
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
   SNMPCallbackCollector _collector;
