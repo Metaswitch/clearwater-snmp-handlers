@@ -98,6 +98,7 @@ void AlarmTrapSender::alarm_trap_send_callback(
 // retires if needed.
 void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 {
+  printf("\n\n @@@ame2 Entered the Alarm Trap Sender's send_trap function \n\n");
   TRC_INFO("Trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
 
   for (std::vector<NotificationType>::iterator it = _snmp_notifications.begin();
@@ -113,6 +114,7 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
         send_enterprise_trap(alarm_table_def);
         break;
       default:
+        printf("\n\n @@@ame2 Entered the default bit of the case statement :( \n\n");
         TRC_ERROR("Unknown notification type passed to the trap sender");
         break;
     }
@@ -121,7 +123,7 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 
 void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
 {
-  TRC_DEBUG("\n\n @@@ame2 Entered send rfc3877 trap \n\n");
+  printf("\n\n @@@ame2 Entered send rfc3877 trap \n\n");
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
   static const oid active_oid[] = {1,3,6,1,2,1,118,0,2};
@@ -170,7 +172,7 @@ void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
 
 void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
 {
-  TRC_STATUS("\n\n @@@ame2 Entered send_enterprise_trap \n\n");
+  printf("\n\n @@@ame2 Entered send_enterprise_trap \n\n");
   static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid trap_type_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1};
