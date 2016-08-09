@@ -68,7 +68,7 @@ public:
   AlarmDef::Severity severity() const             {return _severity_details._severity;}
   const std::string& description() const          {return _severity_details._description;}
   const std::string& details() const              {return _severity_details._details;}
-  const std::string& extended_cause() const       {return _severity_details._cause;}
+  const std::string& cause() const                {return _severity_details._cause;}
   const std::string& effect() const               {return _severity_details._effect;}
   const std::string& action() const               {return _severity_details._action;}
   const std::string& extended_details() const     {return _severity_details._extended_details;}
