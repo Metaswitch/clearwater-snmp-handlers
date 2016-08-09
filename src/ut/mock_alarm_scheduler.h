@@ -43,8 +43,9 @@
 class MockAlarmScheduler : public AlarmScheduler
 {
 public:
-  MockAlarmScheduler(AlarmTableDefs* alarm_table_defs) :
-    AlarmScheduler(alarm_table_defs)
+  MockAlarmScheduler(AlarmTableDefs* alarm_table_defs,
+                     std::set<NotificationType> snmp_notifications) :
+    AlarmScheduler(alarm_table_defs, snmp_notifications)
   {}
 
   MOCK_METHOD2(issue_alarm, void(const std::string& issuer,
