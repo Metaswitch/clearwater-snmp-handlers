@@ -87,7 +87,8 @@ clearwaterTraps OBJECT IDENTIFIER ::= { clearwaterEMS 2 }
     NOTIFICATIONS     { alarmTrap
                         }
     STATUS            current
-    DESCRIPTION       "smilint complains if we don't have this group"
+    DESCRIPTION       "For syntactic reasons each NOTIFICATION must belong to a
+                       group"
     ::= { clearwaterTraps 1 }
   
 
