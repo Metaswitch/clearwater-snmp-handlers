@@ -171,7 +171,7 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
 {
   static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
-  static const oid trap_type_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1};
+  static const oid trap_type_oid[] = {1,3,6,1,4,1,9,19444,9,2,1,1};
   static const oid MIB_version_oid[] = {1,2,826,0,1,1578918,19444,9,1};
   static const oid alarm_name_oid[] = {1,2,826,0,1,1568918,19444,9,2,1,1,1};
   static const oid alarm_oid_oid[] = {1,2,826,0,1,1568918,19444,9,2,1,1,2};
