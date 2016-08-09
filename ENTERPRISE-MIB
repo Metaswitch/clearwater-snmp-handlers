@@ -24,7 +24,7 @@ IMPORTS
            United Kingdom
            Tel: +44 20 8366 1177"
         DESCRIPTION  ""
-        ::= { dataConnection NUMBER }
+        ::= { dataConnection 9 }
 
 
 -- /**********************************************************/
@@ -37,7 +37,7 @@ gbNational      OBJECT IDENTIFIER ::= { gb 0 }
 gbNatCompany    OBJECT IDENTIFIER ::= { gbNational 1 }
 dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
 dataConnectionTraps  OBJECT IDENTIFIER ::= { enterprises 19444 }
-clearwaterEMS  OBJECT IDENTIFIER ::= { dataConnectionTraps NUMBER }
+clearwaterEMS  OBJECT IDENTIFIER ::= { dataConnectionTraps 9 }
 
 -- /*********************************************************/
 -- /* MIB Info Section                                      */
