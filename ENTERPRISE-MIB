@@ -1,0 +1,151 @@
+CLEARWATER-ALARMS-MIB DEFINITIONS ::= BEGIN
+
+-- /**********************************************************/
+-- /* Note: Some strict MIB compilers require 'ObjectID'     */
+-- /* to be replaced with 'OBJECT IDENTIFIER'                */
+-- /**********************************************************/
+
+IMPORTS
+        MODULE-IDENTITY, OBJECT-TYPE, Integer32, enterprises,
+        NOTIFICATION-TYPE
+                                            FROM SNMPv2-SMI
+        TEXTUAL-CONVENTION, TruthValue
+                                            FROM SNMPv2-TC;
+
+
+  clearwater MODULE-IDENTITY
+        LAST-UPDATED "YYYYMMDDHHMM"
+        ORGANIZATION "MetaSwitch"
+        CONTACT-INFO
+          "MetaSwitch
+           100 Church Street
+           Enfield
+           EN2 6BQ
+           United Kingdom
+           Tel: +44 20 8366 1177"
+        DESCRIPTION  ""
+        ::= { dataConnection NUMBER }
+
+
+-- /**********************************************************/
+-- /* The object identifier subtree for the Clearwater MIBs. */
+-- /**********************************************************/
+
+memberBody      OBJECT IDENTIFIER ::= { iso 2 }
+gb              OBJECT IDENTIFIER ::= { memberBody 826 }
+gbNational      OBJECT IDENTIFIER ::= { gb 0 }
+gbNatCompany    OBJECT IDENTIFIER ::= { gbNational 1 }
+dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
+dataConnectionTraps  OBJECT IDENTIFIER ::= { enterprises 19444 }
+clearwaterEMS  OBJECT IDENTIFIER ::= { dataConnectionTraps NUMBER }
+
+-- /*********************************************************/
+-- /* MIB Info Section                                      */
+-- /*********************************************************/
+
+clearwaterInfo  OBJECT IDENTIFIER ::= { clearwater 1 }
+
+  clearwaterInfoVersion OBJECT-TYPE
+    SYNTAX       DisplayString
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "Clearwater MIB Version"
+    ::= { clearwaterInfo 1 }
+
+-- /*********************************************************/
+-- /* Traps section                                         */
+-- /*********************************************************/
+
+clearwaterTraps OBJECT IDENTIFIER ::= { clearwaterEMS 2 }
+
+-- /**************************************************************************/
+-- /* Trap for Clearwater alarms.                                            */
+-- /**************************************************************************/
+alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 1 }
+
+  alarmTrap NOTIFICATION-TYPE
+    OBJECTS      { alarmTrapDisplayName,
+                   alarmTrapAlarmOID,
+                   alarmTrapResourceID,
+                   alarmTrapSeverity,
+                   alarmTrapDescription,
+                   alarmTrapDetails,
+                   alarmTrapCause,
+                   alarmTrapEffect,
+                   alarmTrapAction
+                   }
+    STATUS       current
+    DESCRIPTION  "This is the alarm trap table for Clearwater.  A
+                  notify is sent on this table when a Clearwater
+                  object is either alarmed or cleared.  Logs associated
+                  with the alarmed object are supplied in the
+                  Description, Details, Cause, Effect and Action fields. "
+    ::= { alarmTrapsPrefix 1 }
+
+  alarmTrapDisplayName OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..128))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "The user-friendly display name of the alarmed element"
+    ::= { alarmTrap 1 }
+
+  alarmTrapAlarmOID OBJECT-TYPE
+    SYNTAX       ObjectID
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "The OID of the alarmed obect.  Gets and Sets on
+                  this OID are supported. "
+    ::= { alarmTrap 2 }
+
+  alarmTrapResourceID OBJECT-TYPE
+    SYNTAX       ObjectID
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Resource ID."
+    ::= { alarmTrap 3 }
+
+  alarmTrapSeverity OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Severity"
+    ::= { alarmTrap 4 }
+
+  alarmTrapDescription OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Detailed description of the alarmed condition."
+    ::= { alarmTrap 5 }
+
+  alarmTrapDetails OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Details about the alarmed condition."
+    ::= { alarmTrap 6 }
+
+  alarmTrapCause OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Information on possible causes of the alarmed condition."
+    ::= { alarmTrap 7 }
+
+  alarmTrapEffect OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Information on other events that may occur as a
+                  result of the alarmed condition."
+    ::= { alarmTrap 8 }
+
+  alarmTrapAction OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE(1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Suggested actions that you can take to resolve the problem."
+    ::= { alarmTrap 9 }
+
+END
+
