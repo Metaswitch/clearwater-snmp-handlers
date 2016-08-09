@@ -1,4 +1,4 @@
-CLEARWATER-ALARMS-MIB DEFINITIONS ::= BEGIN
+CLEARWATER-ENTERPRISE-MIB DEFINITIONS ::= BEGIN
 
 -- /**********************************************************/
 -- /* Note: Some strict MIB compilers require 'ObjectID'     */
