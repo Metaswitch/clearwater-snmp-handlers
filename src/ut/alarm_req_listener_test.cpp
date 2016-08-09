@@ -105,7 +105,7 @@ public:
   }
 
 private:
-  std::vector<NotificationType> _snmp_notifications;
+  std::set<NotificationType> _snmp_notifications;
   CapturingTestLogger _log;
   AlarmTableDefs* _alarm_table_defs;
   MockAlarmScheduler* _alarm_scheduler;
@@ -141,7 +141,7 @@ public:
   }
 
 private:
-  std::vector<NotificationType> _snmp_notifications;
+  std::set<NotificationType> _snmp_notifications;
   CapturingTestLogger _log;
   MockZmqInterface _mz;
   int _c;

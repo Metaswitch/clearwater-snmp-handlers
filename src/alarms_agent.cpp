@@ -38,8 +38,11 @@
 #include <net-snmp/agent/agent_trap.h>
 #include <signal.h>
 #include <string>
+#include <set>
 #include <vector>
 #include <semaphore.h>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "utils.h"
 #include "snmp_agent.h"
@@ -62,7 +65,7 @@ void agent_terminate_handler(int sig)
 enum OptionTypes
 {
   OPT_COMMUNITY=256+1,
-  OPT_NOTIFICATION_TYPE,
+  OPT_SNMP_NOTIFICATION_TYPE,
   OPT_LOCAL_IP,
   OPT_SNMP_IPS,
   OPT_LOG_LEVEL,
@@ -72,7 +75,7 @@ enum OptionTypes
 const static struct option long_opt[] =
 {
   { "community",                       required_argument, 0, OPT_COMMUNITY},
-  { "snmp_notification_type",          required_argument, 0, OPT_NOTIFICATION_TYPE},
+  { "snmp-notification-types",         required_argument, 0, OPT_SNMP_NOTIFICATION_TYPE},
   { "snmp-ips",                        required_argument, 0, OPT_SNMP_IPS},
   { "local_ip",                        required_argument, 0, OPT_LOCAL_IP},
   { "log-level",                       required_argument, 0, OPT_LOG_LEVEL},
@@ -85,7 +88,7 @@ static void usage(void)
          "\n"
          " --snmp-ips <ip>,<ip>       Send SNMP notifications to the specified IPs\n"
          " --community <name>         Include the given community string on notifications\n"
-         " --snmp_notification_type   Sends SNMP noticiations with the specified format\n"
+         " --snmp-notification-types  Sends SNMP notifiations with the specified format\n"
          " --log-dir <directory>\n"
          "                            Log to file in specified directory\n"
          " --log-level N              Set log level to N (default: 4)\n"
@@ -111,34 +114,26 @@ int main (int argc, char **argv)
       case OPT_COMMUNITY:
         community = optarg;
         break;
-      case OPT_NOTIFICATION_TYPE:
+      case OPT_SNMP_NOTIFICATION_TYPE:
         {
-          std::vector<std::string> notification_types;
-          Utils::split_string(std::string(optarg), ',', notification_types);
-          for (std::vector<std::string>::iterator it = notification_types.begin();
+          std::set<std::string> notification_types;
+          boost::split(notification_types, std::string(optarg), boost::is_any_of(","));
+          for (std::set<std::string>::iterator it = notification_types.begin();
                it != notification_types.end();
                ++it)
           {
-            if (*it == "rfc3877" && std::find(snmp_notifications.begin(), 
-                                              snmp_notifications.end(),
-                                              NotificationType::RFC3877) == snmp_notifications.end())
+            if (*it == "rfc3877")
             {
-              snmp_notifications.push_back(NotificationType::RFC3877);
+              snmp_notifications.insert(NotificationType::RFC3877);
             }
-            else if (*it == "enterprise" && std::find(snmp_notifications.begin(), 
-                                              snmp_notifications.end(),
-                                              NotificationType::ENTERPRISE) == snmp_notifications.end())
+            else if (*it == "enterprise")
             {
               snmp_notifications.push_back(NotificationType::ENTERPRISE);
             }
             else
             {
-              puts("Invalid config option used for snmp notification type");
+              puts("Invalid config option %s used for snmp notification type", (*it).c_str());
             }
-          }
-          if (snmp_notifications.empty())
-          {
-            snmp_notifications.push_back(NotificationType::RFC3877);
           }
           break;
         }
@@ -162,6 +157,15 @@ int main (int argc, char **argv)
   
   Log::setLoggingLevel(loglevel);
   Log::setLogger(new Logger(logdir, "clearwater-alarms"));
+
+  // If no config options for snmp notifications have been found we use the
+  // default RFC3877.
+  if (snmp_notifications.empty())
+  {
+    snmp_notifications.push_back(NotificationType::RFC3877);
+    TRC_DEBUG("No SNMP notification types found, defaulting to RFC3877");
+  }
+
   snmp_setup("clearwater-alarms");
   sem_init(&term_sem, 0, 0);
   // Connect to the informsinks

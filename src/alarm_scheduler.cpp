@@ -66,7 +66,7 @@ void SingleAlarmManager::change_schedule(AlarmDef::Severity new_severity,
 }
 
 AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
-                               std::vector<NotificationType> snmp_notifications) :
+                               std::set<NotificationType> snmp_notifications) :
   _terminated(false),
   _alarm_table_defs(alarm_table_defs)
 {

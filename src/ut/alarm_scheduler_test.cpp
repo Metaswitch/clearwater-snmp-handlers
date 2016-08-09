@@ -170,7 +170,7 @@ public:
   }
 
 private:
-  std::vector<NotificationType> _snmp_notifications;
+  std::set<NotificationType> _snmp_notifications;
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
   SNMPCallbackCollector _collector;

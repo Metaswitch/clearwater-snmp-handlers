@@ -43,8 +43,8 @@
 class MockAlarmScheduler : public AlarmScheduler
 {
 public:
-  MockAlarmScheduler(AlarmTableDefs* alarm_table_defs, 
-                     std::vector<NotificationType> snmp_notifications) :
+  MockAlarmScheduler(AlarmTableDefs* alarm_table_defs,
+                     std::set<NotificationType> snmp_notifications) :
     AlarmScheduler(alarm_table_defs, snmp_notifications)
   {}
 
