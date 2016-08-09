@@ -6,15 +6,17 @@ CLEARWATER-ALARMS-MIB DEFINITIONS ::= BEGIN
 -- /**********************************************************/
 
 IMPORTS
-        MODULE-IDENTITY, OBJECT-TYPE, Integer32, enterprises,
+        MODULE-IDENTITY, OBJECT-TYPE, enterprises,
         NOTIFICATION-TYPE
                                             FROM SNMPv2-SMI
-        TEXTUAL-CONVENTION, TruthValue
-                                            FROM SNMPv2-TC;
+        DisplayString
+                                            FROM SNMPv2-TC
+        OBJECT-GROUP, MODULE-COMPLIANCE, NOTIFICATION-GROUP
+                                            FROM SNMPv2-CONF;
 
 
   clearwater MODULE-IDENTITY
-        LAST-UPDATED "YYYYMMDDHHMM"
+        LAST-UPDATED "201608081100Z"
         ORGANIZATION "MetaSwitch"
         CONTACT-INFO
           "MetaSwitch
@@ -23,8 +25,14 @@ IMPORTS
            EN2 6BQ
            United Kingdom
            Tel: +44 20 8366 1177"
-        DESCRIPTION  ""
-        ::= { dataConnection 9 }
+        DESCRIPTION  "This MIB defines the Enterprise MIBs generated
+                      by Clearwater-snmp-handlers"
+        
+        REVISION     "201608081100Z" -- 08 August 2016
+        DESCRIPTION  "Creation of the MIB"
+
+ 
+        ::= { dataConnection 12 }
 
 
 -- /**********************************************************/
@@ -37,7 +45,24 @@ gbNational      OBJECT IDENTIFIER ::= { gb 0 }
 gbNatCompany    OBJECT IDENTIFIER ::= { gbNational 1 }
 dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
 dataConnectionTraps  OBJECT IDENTIFIER ::= { enterprises 19444 }
-clearwaterEMS  OBJECT IDENTIFIER ::= { dataConnectionTraps 9 }
+clearwaterEMS  OBJECT IDENTIFIER ::= { dataConnectionTraps 12 }
+
+-- Module Compliance
+clearwaterEnterpriseMIBConformance OBJECT IDENTIFIER ::= { clearwater 0}
+clearwaterEnterpriseMIBCompliance MODULE-COMPLIANCE
+  STATUS current
+  DESCRIPTION "Compliance statement for Clearwater-Enterprise-MIB"
+  MODULE
+  GROUP alarmTrapGroup
+  DESCRIPTION "Makes the module aware of the alarmTrapGroup"
+  ::= { clearwaterEnterpriseMIBConformance 1 }
+clearwaterEnterpriseMIBCompliance2 MODULE-COMPLIANCE
+  STATUS current
+  DESCRIPTION "Compliance statement for Clearwater-Enterprise-MIB"
+  MODULE
+  GROUP alarmGroup
+  DESCRIPTION "Makes the module aware of the alarmGroup"
+  ::= { clearwaterEnterpriseMIBConformance 2 }
 
 -- /*********************************************************/
 -- /* MIB Info Section                                      */
@@ -58,10 +83,35 @@ clearwaterInfo  OBJECT IDENTIFIER ::= { clearwater 1 }
 
 clearwaterTraps OBJECT IDENTIFIER ::= { clearwaterEMS 2 }
 
+  alarmGroup NOTIFICATION-GROUP
+    NOTIFICATIONS     { alarmTrap
+                        }
+    STATUS            current
+    DESCRIPTION       "smilint complains if we don't have this group"
+    ::= { clearwaterTraps 1 }
+  
+
 -- /**************************************************************************/
 -- /* Trap for Clearwater alarms.                                            */
 -- /**************************************************************************/
-alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 1 }
+alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 0 }
+
+  alarmTrapGroup OBJECT-GROUP
+    OBJECTS      { clearwaterInfoVersion,
+                   alarmTrapDisplayName,
+                   alarmTrapAlarmOID,
+                   alarmTrapResourceID,
+                   alarmTrapSeverity,
+                   alarmTrapDescription,
+                   alarmTrapDetails,
+                   alarmTrapCause,
+                   alarmTrapEffect,
+                   alarmTrapAction
+                   }
+    STATUS       current
+    DESCRIPTION  "A collection of objects providing information about the
+                  instance of an alarm"
+    ::= { alarmTrapsPrefix 11 }
 
   alarmTrap NOTIFICATION-TYPE
     OBJECTS      { alarmTrapDisplayName,
@@ -80,72 +130,72 @@ alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 1 }
                   object is either alarmed or cleared.  Logs associated
                   with the alarmed object are supplied in the
                   Description, Details, Cause, Effect and Action fields. "
-    ::= { alarmTrapsPrefix 1 }
+    ::= { alarmTrapsPrefix 1 } 
 
   alarmTrapDisplayName OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..128))
+    SYNTAX       DisplayString (SIZE (1..128))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "The user-friendly display name of the alarmed element"
-    ::= { alarmTrap 1 }
+    ::= { alarmTrapsPrefix 2 }
 
   alarmTrapAlarmOID OBJECT-TYPE
-    SYNTAX       ObjectID
+    SYNTAX       OBJECT IDENTIFIER 
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "The OID of the alarmed obect.  Gets and Sets on
                   this OID are supported. "
-    ::= { alarmTrap 2 }
+    ::= { alarmTrapsPrefix 3 }
 
   alarmTrapResourceID OBJECT-TYPE
-    SYNTAX       ObjectID
+    SYNTAX       OBJECT IDENTIFIER
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Resource ID."
-    ::= { alarmTrap 3 }
+    ::= { alarmTrapsPrefix 4 }
 
   alarmTrapSeverity OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..4096))
+    SYNTAX       DisplayString (SIZE (1..4096))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Severity"
-    ::= { alarmTrap 4 }
+    ::= { alarmTrapsPrefix 5 }
 
   alarmTrapDescription OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..4096))
+    SYNTAX       DisplayString (SIZE (1..4096))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Detailed description of the alarmed condition."
-    ::= { alarmTrap 5 }
+    ::= { alarmTrapsPrefix 6 }
 
   alarmTrapDetails OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..4096))
+    SYNTAX       DisplayString (SIZE (1..4096))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Details about the alarmed condition."
-    ::= { alarmTrap 6 }
+    ::= { alarmTrapsPrefix 7 }
 
   alarmTrapCause OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..4096))
+    SYNTAX       DisplayString (SIZE (1..4096))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Information on possible causes of the alarmed condition."
-    ::= { alarmTrap 7 }
+    ::= { alarmTrapsPrefix 8 }
 
   alarmTrapEffect OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..4096))
+    SYNTAX       DisplayString (SIZE (1..4096))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Information on other events that may occur as a
                   result of the alarmed condition."
-    ::= { alarmTrap 8 }
+    ::= { alarmTrapsPrefix 9 }
 
   alarmTrapAction OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(1..4096))
+    SYNTAX       DisplayString (SIZE (1..4096))
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION  "Suggested actions that you can take to resolve the problem."
-    ::= { alarmTrap 9 }
+    ::= { alarmTrapsPrefix 10 }
 
 END
 

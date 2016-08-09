@@ -171,19 +171,19 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
 {
   static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
-  static const oid trap_type_oid[] = {1,3,6,1,4,1,9,19444,9,2,1,1};
-  static const oid MIB_version_oid[] = {1,2,826,0,1,1578918,19444,9,1};
-  static const oid alarm_name_oid[] = {1,2,826,0,1,1568918,19444,9,2,1,1,1};
-  static const oid alarm_oid_oid[] = {1,2,826,0,1,1568918,19444,9,2,1,1,2};
-  static const oid resource_id_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,3};
+  static const oid trap_type_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,1};
+  static const oid MIB_version_oid[] = {1,3,6,1,4,1,9,19444,12,1};
+  static const oid alarm_name_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,2};
+  static const oid alarm_oid_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,3};
+  static const oid resource_id_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,4};
   static const oid zero_dot_zero[] = {0,0};
   static const oid model_row_oid[] = {1,3,6,1,2,1,118,1,1,2,1,3,0,1,2};
-  static const oid alarm_severity_oid[] = {1,2,826,0,1,1578919,19444,9,2,1,1,4};
-  static const oid alarm_description_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,5};
-  static const oid alarm_details_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,6};
-  static const oid alarm_cause_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,7};
-  static const oid alarm_effect_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,8};
-  static const oid alarm_action_oid[] = {1,2,826,0,1,1578918,19444,9,2,1,1,9};
+  static const oid alarm_severity_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,5};
+  static const oid alarm_description_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,6};
+  static const oid alarm_details_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,7};
+  static const oid alarm_cause_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,8};
+  static const oid alarm_effect_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,9};
+  static const oid alarm_action_oid[] = {1,3,6,1,4,1,9,19444,12,2,0,10};
   
 
   netsnmp_variable_list var_trap;
