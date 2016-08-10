@@ -74,7 +74,7 @@ class AlarmReqListenerTest : public ::testing::Test
 public:
   AlarmReqListenerTest()
   {
-    _snmp_notifications.push_back(NotificationType::RFC3877);
+    _snmp_notifications.insert(NotificationType::RFC3877);
     
     cwtest_completely_control_time();
 
@@ -122,7 +122,7 @@ public:
     _c(1),
     _s(2)
   {
-    _snmp_notifications.push_back(NotificationType::RFC3877);
+    _snmp_notifications.insert(NotificationType::RFC3877);
     
     cwtest_intercept_zmq(&_mz);
 

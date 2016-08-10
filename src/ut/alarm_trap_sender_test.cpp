@@ -62,12 +62,6 @@ using ::testing::Invoke;
 class EnterpriseTrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*>
 {
 public:
-
-  //enum OctetIndices
-  //{
-  //  ALARM_IDX_ROW_OID_OCTET = 13
-  //};
-
   explicit EnterpriseTrapVarsMatcher(oid trap_type,
                                      std::string MIB_version,
                                      std::string name,
@@ -144,6 +138,63 @@ private:
   std::string _action;
 };
 
+class RFCTrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*>
+{
+public:
+  enum TrapType
+  {
+    UNDEFINED,
+    CLEAR,
+    ACTIVE
+  };
+
+  enum OctetIndices
+  {
+    LAST_TRAP_OID_OCTET = 8,
+    ALARM_IDX_ROW_OID_OCTET = 13
+  };
+
+  explicit RFCTrapVarsMatcher(TrapType trap_type,
+                              unsigned int alarm_index) :
+      _trap_type(trap_type),
+      _alarm_index(alarm_index) {}
+
+  virtual bool MatchAndExplain(netsnmp_variable_list* vl,
+                               MatchResultListener* listener) const {
+    TrapType type = UNDEFINED;
+    unsigned int index;
+
+    if (vl->val.objid[LAST_TRAP_OID_OCTET] == 3)
+    {
+      type = CLEAR;
+    }
+    else if (vl->val.objid[LAST_TRAP_OID_OCTET] == 2)
+    {
+      type = ACTIVE;
+    }
+
+    vl = vl->next_variable;
+
+    if (vl != NULL)
+    {
+      index = vl->val.objid[ALARM_IDX_ROW_OID_OCTET];
+    }
+
+    return (_trap_type == type) && (_alarm_index == index);
+  }
+
+  virtual void DescribeTo(::std::ostream* os) const {
+    *os << "trap is " << _alarm_index << ((_trap_type == CLEAR) ? " CLEAR" : " ACTIVE");
+  }
+
+  virtual void DescribeNegationTo(::std::ostream* os) const {
+    *os << "trap is not " << _alarm_index << ((_trap_type == CLEAR) ? " CLEAR" : " ACTIVE");
+  }
+ private:
+  TrapType _trap_type;
+  unsigned int _alarm_index;
+};
+
 class SNMPCallbackCollector
 {
 public:
@@ -177,14 +228,8 @@ class AlarmTrapSenderTest : public ::testing::Test
 public:
   AlarmTrapSenderTest()
   {
-    _snmp_notifications.push_back(NotificationType::ENTERPRISE);
-    
     cwtest_completely_control_time();
     cwtest_intercept_netsnmp(&_ms);
-
-    _alarm_table_defs = new AlarmTableDefs();
-    _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
-    _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, _snmp_notifications);
   }
 
   virtual ~AlarmTrapSenderTest()
@@ -198,7 +243,7 @@ public:
   }
 
 private:
-  std::vector<NotificationType> _snmp_notifications;
+  std::set<NotificationType> _snmp_notifications;
   MockNetSnmpInterface _ms;
   CapturingTestLogger _log;
   SNMPCallbackCollector _collector;
@@ -213,17 +258,17 @@ private:
   Times(N).                                                                       \
   WillRepeatedly(Invoke(&_collector, &SNMPCallbackCollector::collect_callback))
 
-inline Matcher<netsnmp_variable_list*> TrapVars(oid trap_type,
-                                                std::string MIB_version,
-                                                std::string name,
-                                                oid alarm_oid,
-                                                oid resource_id,
-                                                std::string severity,
-                                                std::string description,
-                                                std::string details,
-                                                std::string cause,
-                                                std::string effect,
-                                                std::string action) {
+inline Matcher<netsnmp_variable_list*> EnterpriseTrapVars(oid trap_type,
+                                                          std::string MIB_version,
+                                                          std::string name,
+                                                          oid alarm_oid,
+                                                          oid resource_id,
+                                                          std::string severity,
+                                                          std::string description,
+                                                          std::string details,
+                                                          std::string cause,
+                                                          std::string effect,
+                                                          std::string action) {
   return MakeMatcher(new EnterpriseTrapVarsMatcher(trap_type,
                                                    MIB_version,
                                                    name,
@@ -237,23 +282,73 @@ inline Matcher<netsnmp_variable_list*> TrapVars(oid trap_type,
                                                    action));
 }
 
-TEST_F(AlarmTrapSenderTest, SetAlarm)
-{
+inline Matcher<netsnmp_variable_list*> RFCTrapVars(RFCTrapVarsMatcher::TrapType trap_type,
+                                                   unsigned int alarm_index) {
+  return MakeMatcher(new RFCTrapVarsMatcher(trap_type, alarm_index));
+}
+
+TEST_F(AlarmTrapSenderTest, SetEnterpriseAlarm)
+{   
+  _snmp_notifications.insert(NotificationType::ENTERPRISE);
+  _alarm_table_defs = new AlarmTableDefs();
+  _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
+  _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, _snmp_notifications);
+
   // Here we are checking for severity reported as an AlarmModelState value
   oid trap_type[] = {1,2,826,0,1,1578918,19444,9,2,1,1};
   oid alarm_oid[] = {1,3,6,1,2,1,118,1,1,2,1,3,0,1,2,1000};
   oid zero_dot_zero[] = {0,0};
-  COLLECT_CALL(send_v2trap(TrapVars(*(trap_type),
-                                    "201608081100",
-                                    "Process fail",
-                                    *(alarm_oid),
-                                    *(zero_dot_zero),
-                                    "6",
-                                    "Process failure",
-                                    "Monit has detected that the process has failed.",
-                                    "Cause",
-                                    "Effect",
-                                    "Action"), _, _));
+  COLLECT_CALL(send_v2trap(EnterpriseTrapVars(*(trap_type),
+                                              "201608081100",
+                                              "Process fail",
+                                              *(alarm_oid),
+                                              *(zero_dot_zero),
+                                              "6",
+                                              "Process failure",
+                                              "Monit has detected that the process has failed.",
+                                              "Cause",
+                                              "Effect",
+                                              "Action"), _, _));
+  _alarm_scheduler->issue_alarm("test", "1000.3");
+  _ms.trap_complete(1, 5);
+}
+
+TEST_F(AlarmTrapSenderTest, SetRFCAlarm)
+{
+  _snmp_notifications.insert(NotificationType::RFC3877);
+  _alarm_table_defs = new AlarmTableDefs();
+  _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
+  _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, _snmp_notifications);
+
+  COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::ACTIVE, 1000), _, _));
+  _alarm_scheduler->issue_alarm("test", "1000.3");
+  _ms.trap_complete(1, 5);
+}
+
+TEST_F(AlarmTrapSenderTest, SetBothAlarms)
+{
+  _snmp_notifications.insert(NotificationType::RFC3877);
+  _snmp_notifications.insert(NotificationType::ENTERPRISE);
+  _alarm_table_defs = new AlarmTableDefs();
+  _alarm_table_defs->initialize(std::string(UT_DIR).append("/valid_alarms/"));
+  _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, _snmp_notifications);
+
+  oid trap_type[] = {1,2,826,0,1,1578918,19444,9,2,1,1};
+  oid alarm_oid[] = {1,3,6,1,2,1,118,1,1,2,1,3,0,1,2,1000};
+  oid zero_dot_zero[] = {0,0};
+  COLLECT_CALL(send_v2trap(EnterpriseTrapVars(*(trap_type),
+                                              "201608081100",
+                                              "Process fail",
+                                              *(alarm_oid),
+                                              *(zero_dot_zero),
+                                              "6",
+                                              "Process failure",
+                                              "Monit has detected that the process has failed.",
+                                              "Cause",
+                                              "Effect",
+                                              "Action"), _, _));
+
+  COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::ACTIVE, 1000), _, _));
   _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 }

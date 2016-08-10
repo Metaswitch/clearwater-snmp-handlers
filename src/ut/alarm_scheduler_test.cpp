@@ -149,7 +149,7 @@ class AlarmSchedulerTest : public ::testing::Test
 public:
   AlarmSchedulerTest()
   {
-    _snmp_notifications.push_back(NotificationType::RFC3877);
+    _snmp_notifications.insert(NotificationType::RFC3877);
     
     cwtest_completely_control_time();
     cwtest_intercept_netsnmp(&_ms);
