@@ -40,6 +40,7 @@
 #include <string>
 #include <set>
 #include <vector>
+#include <iostream>
 #include <semaphore.h>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
@@ -132,7 +133,7 @@ int main (int argc, char **argv)
             }
             else
             {
-              puts("Invalid config option used for snmp notification type");
+              std::cout << "Invalid config option" << *it << " used for snmp notification type";
             }
           }
           break;
