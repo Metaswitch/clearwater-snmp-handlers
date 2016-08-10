@@ -99,7 +99,7 @@ int main (int argc, char **argv)
 {
   std::vector<std::string> trap_ips;
   char* community = NULL;
-  std::vector<NotificationType> snmp_notifications;
+  std::set<NotificationType> snmp_notifications;
   std::string local_ip = "0.0.0.0";
   std::string logdir = "";
   int loglevel = 4;
@@ -116,9 +116,9 @@ int main (int argc, char **argv)
         break;
       case OPT_SNMP_NOTIFICATION_TYPE:
         {
-          std::set<std::string> notification_types;
-          boost::split(notification_types, std::string(optarg), boost::is_any_of(","));
-          for (std::set<std::string>::iterator it = notification_types.begin();
+          std::vector<std::string> notification_types;
+          Utils::split_string(std::string(optarg), ',', notification_types);
+          for (std::vector<std::string>::iterator it = notification_types.begin();
                it != notification_types.end();
                ++it)
           {
@@ -128,11 +128,11 @@ int main (int argc, char **argv)
             }
             else if (*it == "enterprise")
             {
-              snmp_notifications.push_back(NotificationType::ENTERPRISE);
+              snmp_notifications.insert(NotificationType::ENTERPRISE);
             }
             else
             {
-              puts("Invalid config option %s used for snmp notification type", (*it).c_str());
+              puts("Invalid config option used for snmp notification type");
             }
           }
           break;
@@ -162,7 +162,7 @@ int main (int argc, char **argv)
   // default RFC3877.
   if (snmp_notifications.empty())
   {
-    snmp_notifications.push_back(NotificationType::RFC3877);
+    snmp_notifications.insert(NotificationType::RFC3877);
     TRC_DEBUG("No SNMP notification types found, defaulting to RFC3877");
   }
 
