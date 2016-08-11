@@ -1,10 +1,5 @@
 CLEARWATER-ENTERPRISE-MIB DEFINITIONS ::= BEGIN
 
--- /**********************************************************/
--- /* Note: Some strict MIB compilers require 'ObjectID'     */
--- /* to be replaced with 'OBJECT IDENTIFIER'                */
--- /**********************************************************/
-
 IMPORTS
         MODULE-IDENTITY, OBJECT-TYPE, enterprises,
         NOTIFICATION-TYPE

@@ -23,7 +23,6 @@ cw_alarm_test_SOURCES := test_main.cpp \
                          alarm.cpp \
                          alarm_table_defs_test.cpp \
                          alarm_req_listener_test.cpp \
-                         alarm_trap_sender_test.cpp \
                          alarm_scheduler_test.cpp \
                          test_interposer.cpp \
                          fakenetsnmp.cpp \
