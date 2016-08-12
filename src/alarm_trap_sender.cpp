@@ -47,9 +47,9 @@
 #include "itu_alarm_table.hpp"
 #include "alarm_active_table.hpp"
 
-#define create_netsnmp_list(list_name) \
-  netsnmp_variable_list list_name; \
-  memset(&list_name, 0x00, sizeof(list_name)); 
+#define CREATE_NETSNMP_LIST(LIST_NAME) \
+  netsnmp_variable_list LIST_NAME; \
+  memset(&LIST_NAME, 0x00, sizeof(LIST_NAME)); 
 
 // This is a date in the format YYYYMMDDHHMM that specfies when the current MIB
 // version was implemented. This should be changed whenever new MIBs are
@@ -128,7 +128,8 @@ void AlarmTrapSender::send_trap(const AlarmTableDef& alarm_table_def)
 
 void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
 {
-  TRC_INFO("RFC3877 compliant trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
+  TRC_INFO("RFC3877 compliant trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(),
+                                                                    alarm_table_def.state());
 
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid clear_oid[] = {1,3,6,1,2,1,118,0,3};
@@ -140,9 +141,9 @@ void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
   static const oid resource_id_oid[] = {1,3,6,1,2,1,118,1,2,2,1,10,0};
   static const oid zero_dot_zero[] = {0,0};
 
-  create_netsnmp_list(var_trap);
-  create_netsnmp_list(var_model_row);
-  create_netsnmp_list(var_resource_id);
+  CREATE_NETSNMP_LIST(var_trap);
+  CREATE_NETSNMP_LIST(var_model_row);
+  CREATE_NETSNMP_LIST(var_resource_id);
 
   var_trap.next_variable = &var_model_row;
   var_model_row.next_variable = &var_resource_id;
@@ -174,10 +175,17 @@ void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
 
 void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
 {
-  TRC_INFO("Enterprise MIB trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(), alarm_table_def.state());
+  TRC_INFO("Enterprise MIB trap with alarm ID %d.%d being sent", alarm_table_def.alarm_index(),
+                                                                 alarm_table_def.state());
 
   // Here we define OIDs according to the CLEARWATER-ENTERPRISE-MIB
-  static const unsigned int severity_to_state[] = {2, 1, 2, 6, 5, 4, 3};
+  static const std::string severity_to_string[] = {"UNDEFINED_SEVERITY", 
+                                                   "CLEARED",
+                                                   "INDETERMINATE", 
+                                                   "CRITICAL", 
+                                                   "MAJOR", 
+                                                   "MINOR", 
+                                                   "WARNING"};
   static const oid snmp_trap_oid[] = {1,3,6,1,6,3,1,1,4,1,0};
   static const oid trap_type_oid[] = {1,3,6,1,4,1,19444,12,2,0,1};
   static const oid MIB_version_oid[] = {1,2,826,0,1,1578918,12,1,1};
@@ -195,17 +203,17 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   
   // We create variable lists, wipe them clean and then link them to each other
   // so only the first needs to be passed to sent_v2trap
-  create_netsnmp_list(var_trap);
-  create_netsnmp_list(var_MIB_version);
-  create_netsnmp_list(var_alarm_name);
-  create_netsnmp_list(var_alarm_oid);
-  create_netsnmp_list(var_resource_id);
-  create_netsnmp_list(var_alarm_severity);
-  create_netsnmp_list(var_alarm_description);
-  create_netsnmp_list(var_alarm_details);
-  create_netsnmp_list(var_alarm_cause);
-  create_netsnmp_list(var_alarm_effect);
-  create_netsnmp_list(var_alarm_action);
+  CREATE_NETSNMP_LIST(var_trap);
+  CREATE_NETSNMP_LIST(var_MIB_version);
+  CREATE_NETSNMP_LIST(var_alarm_name);
+  CREATE_NETSNMP_LIST(var_alarm_oid);
+  CREATE_NETSNMP_LIST(var_resource_id);
+  CREATE_NETSNMP_LIST(var_alarm_severity);
+  CREATE_NETSNMP_LIST(var_alarm_description);
+  CREATE_NETSNMP_LIST(var_alarm_details);
+  CREATE_NETSNMP_LIST(var_alarm_cause);
+  CREATE_NETSNMP_LIST(var_alarm_effect);
+  CREATE_NETSNMP_LIST(var_alarm_action);
   
   var_trap.next_variable = &var_MIB_version;
   var_MIB_version.next_variable = &var_alarm_name;
@@ -254,8 +262,8 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
                            (u_char*) zero_dot_zero, 
                            sizeof(zero_dot_zero));
   snmp_set_var_typed_value(&var_alarm_severity, ASN_OCTET_STR,
-                           std::to_string(severity_to_state[alarm_table_def.severity()]).c_str(),
-                           std::to_string(severity_to_state[alarm_table_def.severity()]).length());
+                           severity_to_string[alarm_table_def.severity()].c_str(),
+                           severity_to_string[alarm_table_def.severity()].length());
   snmp_set_var_typed_value(&var_alarm_description, ASN_OCTET_STR, 
                            alarm_table_def.extended_description().c_str(), 
                            alarm_table_def.extended_description().length());
