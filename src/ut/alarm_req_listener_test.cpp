@@ -74,6 +74,8 @@ class AlarmReqListenerTest : public ::testing::Test
 public:
   AlarmReqListenerTest()
   {
+    _snmp_notifications.insert(NotificationType::RFC3877);
+    
     cwtest_completely_control_time();
 
     _alarm_table_defs = new AlarmTableDefs();
@@ -120,6 +122,8 @@ public:
     _c(1),
     _s(2)
   {
+    _snmp_notifications.insert(NotificationType::RFC3877);
+    
     cwtest_intercept_zmq(&_mz);
 
     _alarm_table_defs = new AlarmTableDefs();
