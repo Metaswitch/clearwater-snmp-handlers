@@ -39,9 +39,16 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <cstdint>
 
 #include "alarm_table_defs.hpp"
+
+enum NotificationType
+{
+  RFC3877,
+  ENTERPRISE
+};
 
 class AlarmScheduler;
 
@@ -50,8 +57,10 @@ class AlarmScheduler;
 class AlarmTrapSender
 {
 public:
-  void initialise(AlarmScheduler* alarm_scheduler)
-    { _alarm_scheduler = alarm_scheduler; }
+  void initialise(AlarmScheduler* alarm_scheduler,
+                  std::set<NotificationType> snmp_notifications)
+    { _alarm_scheduler    = alarm_scheduler;
+      _snmp_notifications = snmp_notifications; }
 
   void send_trap(const AlarmTableDef& alarm_table_def);
 
@@ -68,7 +77,14 @@ public:
 private:
   AlarmTrapSender() : _alarm_scheduler(NULL) {}
   AlarmScheduler* _alarm_scheduler;
-  static AlarmTrapSender _instance; 
+  std::set<NotificationType> _snmp_notifications;
+  static AlarmTrapSender _instance;
+  // Sends an RFC3877 compliant trap based upon the specified alarm definition.
+  // net-snmp will handle the retries if needed. 
+  void send_rfc3877_trap(const AlarmTableDef& alarm_table_def);
+  // Sends an Enterprise MIB style trap based upon the specified alarm
+  // definition. net-snmp will handle the retries if needed.
+  void send_enterprise_trap(const AlarmTableDef& alarm_table_def);
 };
 
 #endif

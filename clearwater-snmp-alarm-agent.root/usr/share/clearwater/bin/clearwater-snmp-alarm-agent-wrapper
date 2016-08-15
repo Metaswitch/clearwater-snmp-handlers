@@ -38,6 +38,7 @@ get_daemon_args()
 {
   snmp_ip=0.0.0.0
   snmp_community=clearwater
+  snmp_notification_types=rfc3877
   log_directory=/var/log/clearwater-alarms/
   log_level=4
   # Set up defaults and then pull in any overrides.
@@ -47,7 +48,14 @@ get_daemon_args()
   # Don't try and load MIBS at startup - we don't need them and this just causes lots of
   # "missing MIB" error logs.
   export MIBS=""
-  DAEMON_ARGS="--snmp-ips $snmp_ip --local_ip $local_ip --community $snmp_community --log-dir $log_directory --log-level $log_level"
+  ption=value
+  DAEMON_ARGS="
+               --snmp-ips=$snmp_ip 
+               --local_ip=$local_ip
+               --community=$snmp_community 
+               --snmp-notification-types=$snmp_notification_types
+               --log-dir=$log_directory 
+               --log-level=$log_level"
 }
 
 # /var/run/clearwater needs to exist so we can create a UNIX socket in it
