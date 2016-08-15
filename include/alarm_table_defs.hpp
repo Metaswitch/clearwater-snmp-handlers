@@ -61,12 +61,18 @@ public:
 
   unsigned int state() const;
 
-  unsigned int alarm_index() const   {return _alarm_definition._index;} 
-  AlarmDef::Cause cause() const      {return _alarm_definition._cause;}
+  const std::string& name() const     {return _alarm_definition._name;}
+  unsigned int alarm_index() const    {return _alarm_definition._index;} 
+  AlarmDef::Cause alarm_cause() const {return _alarm_definition._cause;}
 
-  AlarmDef::Severity severity() const    {return _severity_details._severity;}
-  const std::string& description() const {return _severity_details._description;}
-  const std::string& details() const     {return _severity_details._details;}
+  AlarmDef::Severity severity() const             {return _severity_details._severity;}
+  const std::string& description() const          {return _severity_details._description;}
+  const std::string& details() const              {return _severity_details._details;}
+  const std::string& cause() const                {return _severity_details._cause;}
+  const std::string& effect() const               {return _severity_details._effect;}
+  const std::string& action() const               {return _severity_details._action;}
+  const std::string& extended_details() const     {return _severity_details._extended_details;}
+  const std::string& extended_description() const {return _severity_details._extended_description;}
 
   // LCOV_EXCL_START
   bool is_valid() const     {return _valid;}

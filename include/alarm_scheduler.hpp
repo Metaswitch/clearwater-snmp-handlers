@@ -148,7 +148,8 @@ public:
   const static uint64_t ALARM_INCREASED_DELAY = 0;
 
   // Constructor/Destructor
-  AlarmScheduler(AlarmTableDefs* alarm_table_defs);
+  AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
+                 std::set<NotificationType> snmp_notifications);
   virtual ~AlarmScheduler();
 
   // Generates an alarmActiveState inform if the identified alarm is not

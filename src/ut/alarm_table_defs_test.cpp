@@ -95,9 +95,18 @@ TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
 
   EXPECT_TRUE(_def.is_valid());
   EXPECT_THAT((int)_def.state(), Eq(6));
-  EXPECT_THAT((int)_def.cause(), Eq(AlarmDef::SOFTWARE_ERROR));
+  EXPECT_THAT((int)_def.alarm_cause(), Eq(AlarmDef::SOFTWARE_ERROR));
+  EXPECT_THAT(_def.name(), StrEq("Process fail"));
   EXPECT_THAT(_def.description(), StrEq("Process failure"));
   EXPECT_THAT(_def.details(), StartsWith("Monit has detected that the process has failed"));
+  EXPECT_THAT(_def.cause(), StrEq("Cause"));
+  EXPECT_THAT(_def.effect(), StrEq("Effect"));
+  EXPECT_THAT(_def.action(), StrEq("Action"));
+  // The JSON file contains no extended details or description so we test that
+  // we have used the regular details and description in place.
+  EXPECT_THAT(_def.extended_details(), 
+              StartsWith("Monit has detected that the process has failed"));
+  EXPECT_THAT(_def.extended_description(), StrEq("Process failure"));
 }
 
 TEST_F(AlarmTableDefsTest, InvalidTableDefLookup) 

@@ -1,0 +1,31 @@
+{
+    "alarms": [
+        {
+            "name": "PROCESS_FAIL",
+            "index": 1000,
+            "cause": "SOFTWARE_ERROR",
+            "levels": [
+                {
+                    "severity": "CLEARED",
+                    "details": "The process has been restored to normal operation.",
+                    "description": "Process failure cleared",
+                    "cause": "Cause",
+                    "effect": "Effect",
+                    "action": "Action",
+                    "extended_details": "These are some extended details",
+                    "extended_description": "This is an extended description"
+                },
+                {
+                    "severity": "CRITICAL",
+                    "details": "Monit has detected that the process has failed.",
+                    "description": "Process failure",
+                    "cause": "Cause",
+                    "effect": "Effect",
+                    "action": "Action",
+                    "extended_details": "These are some extended details",
+                    "extended_description": "This is an extended description"
+                }
+            ]
+        }
+    ]
+}

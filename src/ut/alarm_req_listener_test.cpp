@@ -74,10 +74,12 @@ class AlarmReqListenerTest : public ::testing::Test
 public:
   AlarmReqListenerTest()
   {
+    _snmp_notifications.insert(NotificationType::RFC3877);
+    
     cwtest_completely_control_time();
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs);
+    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs, _snmp_notifications);
     _alarm_req_listener = new AlarmReqListener(_alarm_scheduler);
     _alarm_req_listener->start(NULL);
     _alarm_manager = new AlarmManager();
@@ -103,6 +105,7 @@ public:
   }
 
 private:
+  std::set<NotificationType> _snmp_notifications;
   CapturingTestLogger _log;
   AlarmTableDefs* _alarm_table_defs;
   MockAlarmScheduler* _alarm_scheduler;
@@ -119,10 +122,12 @@ public:
     _c(1),
     _s(2)
   {
+    _snmp_notifications.insert(NotificationType::RFC3877);
+    
     cwtest_intercept_zmq(&_mz);
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs);
+    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs, _snmp_notifications);
     _alarm_req_listener = new AlarmReqListener(_alarm_scheduler);
   }
 
@@ -136,6 +141,7 @@ public:
   }
 
 private:
+  std::set<NotificationType> _snmp_notifications;
   CapturingTestLogger _log;
   MockZmqInterface _mz;
   int _c;

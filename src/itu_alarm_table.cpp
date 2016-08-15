@@ -168,7 +168,7 @@ int ituAlarmTable_get_value(netsnmp_request_info* request,
     
     case COLUMN_ITUALARMPROBABLECAUSE:
     {
-      long cause = context->_alarm_table_def->cause();
+      long cause = context->_alarm_table_def->alarm_cause();
       snmp_set_var_typed_value(var, ASN_INTEGER,
                                (u_char*) &cause,
                                sizeof(cause));

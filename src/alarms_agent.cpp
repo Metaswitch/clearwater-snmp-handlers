@@ -38,8 +38,12 @@
 #include <net-snmp/agent/agent_trap.h>
 #include <signal.h>
 #include <string>
+#include <set>
 #include <vector>
+#include <iostream>
 #include <semaphore.h>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "utils.h"
 #include "snmp_agent.h"
@@ -62,6 +66,7 @@ void agent_terminate_handler(int sig)
 enum OptionTypes
 {
   OPT_COMMUNITY=256+1,
+  OPT_SNMP_NOTIFICATION_TYPE,
   OPT_LOCAL_IP,
   OPT_SNMP_IPS,
   OPT_LOG_LEVEL,
@@ -71,6 +76,7 @@ enum OptionTypes
 const static struct option long_opt[] =
 {
   { "community",                       required_argument, 0, OPT_COMMUNITY},
+  { "snmp-notification-types",         required_argument, 0, OPT_SNMP_NOTIFICATION_TYPE},
   { "snmp-ips",                        required_argument, 0, OPT_SNMP_IPS},
   { "local_ip",                        required_argument, 0, OPT_LOCAL_IP},
   { "log-level",                       required_argument, 0, OPT_LOG_LEVEL},
@@ -83,6 +89,7 @@ static void usage(void)
          "\n"
          " --snmp-ips <ip>,<ip>       Send SNMP notifications to the specified IPs\n"
          " --community <name>         Include the given community string on notifications\n"
+         " --snmp-notification-types  Sends SNMP notifiations with the specified format\n"
          " --log-dir <directory>\n"
          "                            Log to file in specified directory\n"
          " --log-level N              Set log level to N (default: 4)\n"
@@ -93,6 +100,7 @@ int main (int argc, char **argv)
 {
   std::vector<std::string> trap_ips;
   char* community = NULL;
+  std::set<NotificationType> snmp_notifications;
   std::string local_ip = "0.0.0.0";
   std::string logdir = "";
   int loglevel = 4;
@@ -107,6 +115,29 @@ int main (int argc, char **argv)
       case OPT_COMMUNITY:
         community = optarg;
         break;
+      case OPT_SNMP_NOTIFICATION_TYPE:
+        {
+          std::vector<std::string> notification_types;
+          Utils::split_string(std::string(optarg), ',', notification_types);
+          for (std::vector<std::string>::iterator it = notification_types.begin();
+               it != notification_types.end();
+               ++it)
+          {
+            if (*it == "rfc3877")
+            {
+              snmp_notifications.insert(NotificationType::RFC3877);
+            }
+            else if (*it == "enterprise")
+            {
+              snmp_notifications.insert(NotificationType::ENTERPRISE);
+            }
+            else
+            {
+              std::cout << "Invalid config option" << *it << " used for snmp notification type";
+            }
+          }
+          break;
+        }
       case OPT_SNMP_IPS:
         Utils::split_string(optarg, ',', trap_ips);
         break;
@@ -127,6 +158,15 @@ int main (int argc, char **argv)
   
   Log::setLoggingLevel(loglevel);
   Log::setLogger(new Logger(logdir, "clearwater-alarms"));
+
+  // If no config options for snmp notifications have been found we use the
+  // default RFC3877.
+  if (snmp_notifications.empty())
+  {
+    snmp_notifications.insert(NotificationType::RFC3877);
+    TRC_DEBUG("No SNMP notification types found, defaulting to RFC3877");
+  }
+
   snmp_setup("clearwater-alarms");
   sem_init(&term_sem, 0, 0);
   // Connect to the informsinks
@@ -149,7 +189,7 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs);
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications);
   AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
 
   init_alarmModelTable(*alarm_table_defs);
