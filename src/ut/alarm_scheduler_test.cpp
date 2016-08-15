@@ -376,9 +376,13 @@ TEST_F(AlarmSchedulerTest, ClearAlarm)
 
 // Test that clearing a set alarm only clears the alarm after a delay
 TEST_F(AlarmSchedulerTest, SetAndClearAlarm)
-{
+{ 
+  std::set<NotificationType> snmp_notifications;
+  snmp_notifications.insert(NotificationType::RFC3877);
+  _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, snmp_notifications);
+
   // Set the alarm - this should raise the alarm straight away
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::ACTIVE, 1000), _, _));
+  COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::ACTIVE, 1000), _, _));
   _alarm_scheduler->issue_alarm("test", "1000.3");
   _ms.trap_complete(1, 5);
 
@@ -391,7 +395,7 @@ TEST_F(AlarmSchedulerTest, SetAndClearAlarm)
   // Advance time so that the alarm is due to be sent, and check that the
   // cleared alarm is sent.
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
-  COLLECT_CALL(send_v2trap(TrapVars(TrapVarsMatcher::CLEAR, 1000), _, _));
+  COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::CLEAR, 1000), _, _));
   _alarm_scheduler->_cond->signal();
   _ms.trap_complete(1, 5);
 }

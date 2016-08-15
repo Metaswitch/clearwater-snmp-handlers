@@ -271,8 +271,8 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
                            alarm_table_def.extended_details().c_str(), 
                            alarm_table_def.extended_details().length());
   snmp_set_var_typed_value(&var_alarm_cause, ASN_OCTET_STR, 
-                           alarm_table_def.extended_cause().c_str(), 
-                           alarm_table_def.extended_cause().length());
+                           alarm_table_def.cause().c_str(), 
+                           alarm_table_def.cause().length());
   snmp_set_var_typed_value(&var_alarm_effect, ASN_OCTET_STR, 
                            alarm_table_def.effect().c_str(), 
                            alarm_table_def.effect().length());
