@@ -2496,6 +2496,79 @@ sproutINVITEsCancelledAfter1xxCount OBJECT-TYPE
                  1xx response was seen."
     ::= { sproutINVITEsCancelledAfter1xxEntry 2 }
 
+sproutSCSCFRingingTimeTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFRingingTimeEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Average time between originating INVITE and 180 Ringing
+                 messages handled by this Sprout over the given period,
+                 measured in microseconds"
+    ::= { sprout 34 }
+
+sproutSCSCFRingingTimeEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFRingingTimeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of ringing time"
+    INDEX       { sproutSCSCFRingingTimeScope }
+    ::= { sproutSCSCFRingingTimeTable 1 }
+
+SproutSCSCFRingingTimeEntry ::= SEQUENCE
+{
+  sproutSCSCFRingingTimeScope          INTEGER,
+  sproutSCSCFRingingTimeAverage        Unsigned32,
+  sproutSCSCFRingingTimeVariance       Unsigned32,
+  sproutSCSCFRingingTimeHWM            Unsigned32,
+  sproutSCSCFRingingTimeLWM            Unsigned32,
+  sproutSCSCFRingingTimeCount          Unsigned32
+}
+
+sproutSCSCFRingingTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutSCSCFRingingTimeEntry 1 }
+
+sproutSCSCFRingingTimeAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average ringing time over the period."
+    ::= { sproutSCSCFRingingTimeEntry 2 }
+
+sproutSCSCFRingingTimeVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the ringing time over the period."
+    ::= { sproutSCSCFRingingTimeEntry 3 }
+
+sproutSCSCFRingingTimeHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest ringing time over the period."
+    ::= { sproutSCSCFRingingTimeEntry 4 }
+
+sproutSCSCFRingingTimeLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest ringing time over the period."
+    ::= { sproutSCSCFRingingTimeEntry 5 }
+
+sproutSCSCFRingingTimeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total originating INVITEs over the period."
+    ::= { sproutSCSCFRingingTimeEntry 6 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -2604,7 +2677,12 @@ sproutGroup OBJECT-GROUP
       sproutPenaltiesValue,
       sproutPRRCurrentValue,
       sproutINVITEsCancelledBefore1xxCount,
-      sproutINVITEsCancelledAfter1xxCount
+      sproutINVITEsCancelledAfter1xxCount,
+      sproutSCSCFRingingTimeAverage,
+      sproutSCSCFRingingTimeVariance,
+      sproutSCSCFRingingTimeHWM,
+      sproutSCSCFRingingTimeLWM,
+      sproutSCSCFRingingTimeCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
