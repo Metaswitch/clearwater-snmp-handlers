@@ -3242,7 +3242,7 @@ homesteadCxMARResultsEntry OBJECT-TYPE
 HomesteadCxMARResultsEntry ::= SEQUENCE
 {
   homesteadCxMARResultsTimeScope           INTEGER,
-  homesteadCxMARResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxMARResultsDiameterAppIdScope  INTEGER,
   homesteadCxMARResultsResultCodeScope     Unsigned32,
   homesteadCxMARResultsCount               Unsigned32
 }
@@ -3275,7 +3275,7 @@ homesteadCxMARResultsResultCodeScope OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
     ::= { homesteadCxMARResultsEntry 3 }
-    
+
 homesteadCxMARResultsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
@@ -3305,7 +3305,7 @@ homesteadCxSARResultsEntry OBJECT-TYPE
 HomesteadCxSARResultsEntry ::= SEQUENCE
 {
   homesteadCxSARResultsTimeScope           INTEGER,
-  homesteadCxSARResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxSARResultsDiameterAppIdScope  INTEGER,
   homesteadCxSARResultsResultCodeScope     Unsigned32,
   homesteadCxSARResultsCount               Unsigned32
 }
@@ -3338,7 +3338,7 @@ homesteadCxSARResultsResultCodeScope OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
     ::= { homesteadCxSARResultsEntry 3 }
-    
+
 homesteadCxSARResultsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
@@ -3368,7 +3368,7 @@ homesteadCxUARResultsEntry OBJECT-TYPE
 HomesteadCxUARResultsEntry ::= SEQUENCE
 {
   homesteadCxUARResultsTimeScope           INTEGER,
-  homesteadCxUARResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxUARResultsDiameterAppIdScope  INTEGER,
   homesteadCxUARResultsResultCodeScope     Unsigned32,
   homesteadCxUARResultsCount               Unsigned32
 }
@@ -3401,7 +3401,7 @@ homesteadCxUARResultsResultCodeScope OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
     ::= { homesteadCxUARResultsEntry 3 }
-    
+
 homesteadCxUARResultsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
@@ -3431,7 +3431,7 @@ homesteadCxLIRResultsEntry OBJECT-TYPE
 HomesteadCxLIRResultsEntry ::= SEQUENCE
 {
   homesteadCxLIRResultsTimeScope           INTEGER,
-  homesteadCxLIRResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxLIRResultsDiameterAppIdScope  INTEGER,
   homesteadCxLIRResultsResultCodeScope     Unsigned32,
   homesteadCxLIRResultsCount               Unsigned32
 }
@@ -3464,7 +3464,7 @@ homesteadCxLIRResultsResultCodeScope OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
     ::= { homesteadCxLIRResultsEntry 3 }
-    
+
 homesteadCxLIRResultsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
@@ -3494,7 +3494,7 @@ homesteadCxPPRResultsEntry OBJECT-TYPE
 HomesteadCxPPRResultsEntry ::= SEQUENCE
 {
   homesteadCxPPRResultsTimeScope           INTEGER,
-  homesteadCxPPRResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxPPRResultsDiameterAppIdScope  INTEGER,
   homesteadCxPPRResultsResultCodeScope     Unsigned32,
   homesteadCxPPRResultsCount               Unsigned32
 }
@@ -3527,7 +3527,7 @@ homesteadCxPPRResultsResultCodeScope OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
     ::= { homesteadCxPPRResultsEntry 3 }
-    
+
 homesteadCxPPRResultsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
@@ -3557,7 +3557,7 @@ homesteadCxRTRResultsEntry OBJECT-TYPE
 HomesteadCxRTRResultsEntry ::= SEQUENCE
 {
   homesteadCxRTRResultsTimeScope           INTEGER,
-  homesteadCxRTRResultsDiameterAppIdScope  INTEGER, 
+  homesteadCxRTRResultsDiameterAppIdScope  INTEGER,
   homesteadCxRTRResultsResultCodeScope     Unsigned32,
   homesteadCxRTRResultsCount               Unsigned32
 }
@@ -3590,7 +3590,7 @@ homesteadCxRTRResultsResultCodeScope OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The result-code returned in the answer."
     ::= { homesteadCxRTRResultsEntry 3 }
-    
+
 homesteadCxRTRResultsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
