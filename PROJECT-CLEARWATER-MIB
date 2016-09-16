@@ -1322,16 +1322,17 @@ sproutReRegistrationSuccessPercent OBJECT-TYPE
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The percentage of successful re-registrations over the
-                 period."
-    ::= { sproutInitialRegistrationEntry 5 }
+    DESCRIPTION "The percentage of re-registrations attempts over the
+                 period that were successful."
+    ::= { sproutReRegistrationEntry 5 }
 
 sproutDeRegistrationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutDeRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of de-registrations"
+                 of de-registrations, and also (for convenience) provides the
+                 percentage of de-registration attempts that were succesful."
     ::= { sprout 11 }
 
 sproutDeRegistrationEntry OBJECT-TYPE
@@ -1339,7 +1340,8 @@ sproutDeRegistrationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 de-registrations"
+                 de-registrations, and the percentage of de-registration
+                 attempts that were successful."
     INDEX       { sproutDeRegistrationScope }
     ::= { sproutDeRegistrationTable 1 }
 
@@ -1348,7 +1350,8 @@ SproutDeRegistrationEntry ::= SEQUENCE
   sproutDeRegistrationScope          INTEGER,
   sproutDeRegistrationAttempts       Unsigned32,
   sproutDeRegistrationSuccesses      Unsigned32,
-  sproutDeRegistrationFailures       Unsigned32
+  sproutDeRegistrationFailures       Unsigned32,
+  sproutDeRegistrationSuccessPercent CounterBasedGauge64
 }
 
 sproutDeRegistrationScope OBJECT-TYPE
@@ -1383,12 +1386,22 @@ sproutDeRegistrationFailures OBJECT-TYPE
     DESCRIPTION "The number of de-registration failures over the period."
     ::= { sproutDeRegistrationEntry 4 }
 
+sproutDeRegistrationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of de-registration attempts over the time period
+                 that were successful."
+    ::= { sproutDeRegistrationEntry 5 }
+
 sproutThirdPartyInitialRegistrationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutThirdPartyInitialRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of third-party initial registrations"
+                 of third-party initial registrations, and also for convenience
+                 provides the percentage of attempts that were successful."
     ::= { sprout 12 }
 
 sproutThirdPartyInitialRegistrationEntry OBJECT-TYPE
@@ -1396,7 +1409,8 @@ sproutThirdPartyInitialRegistrationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 third-party initial registrations"
+                 third-party initial registrations, and the percentage of
+                 attempts that were succesful."
     INDEX       { sproutThirdPartyInitialRegistrationScope }
     ::= { sproutThirdPartyInitialRegistrationTable 1 }
 
@@ -1405,7 +1419,8 @@ SproutThirdPartyInitialRegistrationEntry ::= SEQUENCE
   sproutThirdPartyInitialRegistrationScope          INTEGER,
   sproutThirdPartyInitialRegistrationAttempts       Unsigned32,
   sproutThirdPartyInitialRegistrationSuccesses      Unsigned32,
-  sproutThirdPartyInitialRegistrationFailures       Unsigned32
+  sproutThirdPartyInitialRegistrationFailures       Unsigned32,
+  sproutThirdPartyInitialRegistrationSuccessPercent CounterBasedGauge64
 }
 
 sproutThirdPartyInitialRegistrationScope OBJECT-TYPE
@@ -1443,12 +1458,22 @@ sproutThirdPartyInitialRegistrationFailures OBJECT-TYPE
                  the period."
     ::= { sproutThirdPartyInitialRegistrationEntry 4 }
 
+sproutThirdPartyInitialRegistrationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of third-party initial registration attempts
+                 over the time period that were successful."
+    ::= { sproutThirdPartyInitialRegistrationEntry 5 }
+
 sproutThirdPartyReRegistrationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutThirdPartyReRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of third-party re-registrations"
+                 of third-party re-registrations, and also (for convenience)
+                 provides the percentage of attempts that were successful."
     ::= { sprout 13 }
 
 sproutThirdPartyReRegistrationEntry OBJECT-TYPE
@@ -1456,7 +1481,8 @@ sproutThirdPartyReRegistrationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 third-party re-registrations"
+                 third-party re-registrations, and the percentage of attempts
+                 that were successful."
     INDEX       { sproutThirdPartyReRegistrationScope }
     ::= { sproutThirdPartyReRegistrationTable 1 }
 
@@ -1465,7 +1491,8 @@ SproutThirdPartyReRegistrationEntry ::= SEQUENCE
   sproutThirdPartyReRegistrationScope          INTEGER,
   sproutThirdPartyReRegistrationAttempts       Unsigned32,
   sproutThirdPartyReRegistrationSuccesses      Unsigned32,
-  sproutThirdPartyReRegistrationFailures       Unsigned32
+  sproutThirdPartyReRegistrationFailures       Unsigned32,
+  sproutThirdPartyReRegistrationSuccessPercent CounterBasedGauge64
 }
 
 sproutThirdPartyReRegistrationScope OBJECT-TYPE
@@ -1503,12 +1530,22 @@ sproutThirdPartyReRegistrationFailures OBJECT-TYPE
 period."
     ::= { sproutThirdPartyReRegistrationEntry 4 }
 
+sproutThirdPartyReRegistrationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of third-party re-registration attempts
+                 over the time period that were successful."
+    ::= { sproutThirdPartyReRegistrationEntry 5 }
+
 sproutThirdPartyDeRegistrationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutThirdPartyDeRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of third-party de-registrations"
+                 of third-party de-registrationsm and also (for convenience)
+                 provides the percentage of attempts that were successful."
     ::= { sprout 14 }
 
 sproutThirdPartyDeRegistrationEntry OBJECT-TYPE
@@ -1516,7 +1553,8 @@ sproutThirdPartyDeRegistrationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 third-party de-registrations"
+                 third-party de-registrations, and the percentage of attempts
+                 that were successful."
     INDEX       { sproutThirdPartyDeRegistrationScope }
     ::= { sproutThirdPartyDeRegistrationTable 1 }
 
@@ -1525,7 +1563,8 @@ SproutThirdPartyDeRegistrationEntry ::= SEQUENCE
   sproutThirdPartyDeRegistrationScope          INTEGER,
   sproutThirdPartyDeRegistrationAttempts       Unsigned32,
   sproutThirdPartyDeRegistrationSuccesses      Unsigned32,
-  sproutThirdPartyDeRegistrationFailures       Unsigned32
+  sproutThirdPartyDeRegistrationFailures       Unsigned32,
+  sproutThirdPartyDeRegistrationSuccessPercent CounterBasedGauge64
 }
 
 sproutThirdPartyDeRegistrationScope OBJECT-TYPE
@@ -1563,12 +1602,22 @@ sproutThirdPartyDeRegistrationFailures OBJECT-TYPE
 period."
     ::= { sproutThirdPartyDeRegistrationEntry 4 }
 
+sproutThirdPartyDeRegistrationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of third-party de-registration attempts
+                 over the time period that were successful."
+    ::= { sproutThirdPartyDeRegistrationEntry 5 }
+
 sproutSIPDigestAuthenticationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSIPDigestAuthenticationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of SIP digest authentications on register requests"
+                 of SIP digest authentications on register requests, and (for
+                 convenience) the percentage of attempts that were successful."
     ::= { sprout 15 }
 
 sproutSIPDigestAuthenticationEntry OBJECT-TYPE
@@ -1576,7 +1625,8 @@ sproutSIPDigestAuthenticationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 SIP digest authentications on register requests"
+                 SIP digest authentications on register requests, and the
+                 percentage of attempts that were successful."
     INDEX       { sproutSIPDigestAuthenticationScope }
     ::= { sproutSIPDigestAuthenticationTable 1 }
 
@@ -1585,7 +1635,8 @@ SproutSIPDigestAuthenticationEntry ::= SEQUENCE
   sproutSIPDigestAuthenticationScope          INTEGER,
   sproutSIPDigestAuthenticationAttempts       Unsigned32,
   sproutSIPDigestAuthenticationSuccesses      Unsigned32,
-  sproutSIPDigestAuthenticationFailures       Unsigned32
+  sproutSIPDigestAuthenticationFailures       Unsigned32,
+  sproutSIPDigestAuthenticationSuccessPercent CounterBasedGauge64
 }
 
 sproutSIPDigestAuthenticationScope OBJECT-TYPE
@@ -1623,12 +1674,23 @@ sproutSIPDigestAuthenticationFailures OBJECT-TYPE
                  requests over the period."
     ::= { sproutSIPDigestAuthenticationEntry 4 }
 
+sproutSIPDigestAuthenticationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of SIP digest authentication attempts over
+                 the time period that were successful."
+    ::= { sproutSIPDigestAuthenticationEntry 5 }
+
 sproutAKAAuthenticationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutAKAAuthenticationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of AKA authentications on register requests"
+                 of AKA authentications on register requests, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 16 }
 
 sproutAKAAuthenticationEntry OBJECT-TYPE
@@ -1636,7 +1698,8 @@ sproutAKAAuthenticationEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 AKA authentications on register requests"
+                 AKA authentications on register requests, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutAKAAuthenticationScope }
     ::= { sproutAKAAuthenticationTable 1 }
 
@@ -1645,7 +1708,8 @@ SproutAKAAuthenticationEntry ::= SEQUENCE
   sproutAKAAuthenticationScope          INTEGER,
   sproutAKAAuthenticationAttempts       Unsigned32,
   sproutAKAAuthenticationSuccesses      Unsigned32,
-  sproutAKAAuthenticationFailures       Unsigned32
+  sproutAKAAuthenticationFailures       Unsigned32,
+  sproutAKAAuthenticationSuccessPercent CounterBasedGauge64
 }
 
 sproutAKAAuthenticationScope OBJECT-TYPE
@@ -1683,12 +1747,23 @@ sproutAKAAuthenticationFailures OBJECT-TYPE
                  requests over the period."
     ::= { sproutAKAAuthenticationEntry 4 }
 
+sproutAKAAuthenticationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of AKA authentication attempts over
+                 the time period that were successful."
+    ::= { sproutAKAAuthenticationEntry 5 }
+
 sproutNonRegisterAuthenticationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutNonRegisterAuthenticationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of non-register authentication requests"
+                 of non-register authentication requests, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 17 }
 
 sproutNonRegisterAuthenticationEntry OBJECT-TYPE
@@ -1705,7 +1780,8 @@ SproutNonRegisterAuthenticationEntry ::= SEQUENCE
   sproutNonRegisterAuthenticationScope          INTEGER,
   sproutNonRegisterAuthenticationAttempts       Unsigned32,
   sproutNonRegisterAuthenticationSuccesses      Unsigned32,
-  sproutNonRegisterAuthenticationFailures       Unsigned32
+  sproutNonRegisterAuthenticationFailures       Unsigned32,
+  sproutNonRegisterAuthenticationSuccessPercent CounterBasedGauge64
 }
 
 sproutNonRegisterAuthenticationScope OBJECT-TYPE
@@ -1743,12 +1819,23 @@ sproutNonRegisterAuthenticationFailures OBJECT-TYPE
                  requests over the period."
     ::= { sproutNonRegisterAuthenticationEntry 4 }
 
+sproutNonRegisterAuthenticationSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of non-register authentication attempts over the
+                 period that were successful."
+    ::= { sproutNonRegisterAuthenticationEntry 5 }
+
 sproutICSCFIncomingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutICSCFIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for the ICSCF"
+                 of incoming SIP transactions for the ICSCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 18 }
 
 sproutICSCFIncomingSIPTransactionsEntry OBJECT-TYPE
@@ -1756,7 +1843,8 @@ sproutICSCFIncomingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for the ICSCF"
+                 incoming SIP transactions for the ICSCF, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutICSCFIncomingSIPTransactionsTimeScope,
                   sproutICSCFIncomingSIPTransactionsRequestScope }
     ::= { sproutICSCFIncomingSIPTransactionsTable 1 }
@@ -1767,7 +1855,8 @@ SproutICSCFIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutICSCFIncomingSIPTransactionsRequestScope   INTEGER,
   sproutICSCFIncomingSIPTransactionsAttempts       Unsigned32,
   sproutICSCFIncomingSIPTransactionsSuccesses      Unsigned32,
-  sproutICSCFIncomingSIPTransactionsFailures       Unsigned32
+  sproutICSCFIncomingSIPTransactionsFailures       Unsigned32,
+  sproutICSCFIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutICSCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -1811,12 +1900,23 @@ sproutICSCFIncomingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { sproutICSCFIncomingSIPTransactionsEntry 5 }
 
+sproutICSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful."
+    ::= { sproutICSCFIncomingSIPTransactionsEntry 6 }
+
 sproutICSCFOutgoingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutICSCFOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for the ICSCF"
+                 of outgoing SIP transactions for the ICSCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 19 }
 
 sproutICSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -1824,7 +1924,8 @@ sproutICSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for the ICSCF"
+                 outgoing SIP transactions for the ICSCF, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutICSCFOutgoingSIPTransactionsTimeScope,
                   sproutICSCFOutgoingSIPTransactionsRequestScope }
     ::= { sproutICSCFOutgoingSIPTransactionsTable 1 }
@@ -1835,7 +1936,8 @@ SproutICSCFOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutICSCFOutgoingSIPTransactionsRequestScope   INTEGER,
   sproutICSCFOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutICSCFOutgoingSIPTransactionsSuccesses      Unsigned32,
-  sproutICSCFOutgoingSIPTransactionsFailures       Unsigned32
+  sproutICSCFOutgoingSIPTransactionsFailures       Unsigned32,
+  sproutICSCFOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutICSCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -1878,6 +1980,15 @@ sproutICSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
     ::= { sproutICSCFOutgoingSIPTransactionsEntry 5 }
+
+sproutICSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { sproutICSCFOutgoingSIPTransactionsEntry 6 }
 
 sproutSCSCFIncomingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSCSCFIncomingSIPTransactionsEntry
@@ -1966,7 +2077,9 @@ sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for the SCSCF"
+                 of outgoing SIP transactions for the SCSCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 21 }
 
 sproutSCSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -1974,7 +2087,8 @@ sproutSCSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for the SCSCF"
+                 outgoing SIP transactions for the SCSCF, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutSCSCFOutgoingSIPTransactionsTimeScope,
                   sproutSCSCFOutgoingSIPTransactionsRequestScope }
     ::= { sproutSCSCFOutgoingSIPTransactionsTable 1 }
@@ -1985,7 +2099,8 @@ SproutSCSCFOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutSCSCFOutgoingSIPTransactionsRequestScope   INTEGER,
   sproutSCSCFOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutSCSCFOutgoingSIPTransactionsSuccesses      Unsigned32,
-  sproutSCSCFOutgoingSIPTransactionsFailures       Unsigned32
+  sproutSCSCFOutgoingSIPTransactionsFailures       Unsigned32,
+  sproutSCSCFOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutSCSCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2029,12 +2144,23 @@ sproutSCSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { sproutSCSCFOutgoingSIPTransactionsEntry 5 }
 
+sproutSCSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { sproutSCSCFOutgoingSIPTransactionsEntry 6 }
+
 sproutBGCFIncomingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutBGCFIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for the BGCF"
+                 of incoming SIP transactions for the BGCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 22 }
 
 sproutBGCFIncomingSIPTransactionsEntry OBJECT-TYPE
@@ -2042,7 +2168,8 @@ sproutBGCFIncomingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for the BGCF"
+                 incoming SIP transactions for the BGCF, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutBGCFIncomingSIPTransactionsTimeScope,
                   sproutBGCFIncomingSIPTransactionsRequestScope }
     ::= { sproutBGCFIncomingSIPTransactionsTable 1 }
@@ -2053,7 +2180,8 @@ SproutBGCFIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutBGCFIncomingSIPTransactionsRequestScope   INTEGER,
   sproutBGCFIncomingSIPTransactionsAttempts       Unsigned32,
   sproutBGCFIncomingSIPTransactionsSuccesses      Unsigned32,
-  sproutBGCFIncomingSIPTransactionsFailures       Unsigned32
+  sproutBGCFIncomingSIPTransactionsFailures       Unsigned32,
+  sproutBGCFIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutBGCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2097,12 +2225,23 @@ sproutBGCFIncomingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { sproutBGCFIncomingSIPTransactionsEntry 5 }
 
+sproutBGCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 6 }
+
 sproutBGCFOutgoingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutBGCFOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for the BGCF"
+                 of outgoing SIP transactions for the BGCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 23 }
 
 sproutBGCFOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -2110,7 +2249,8 @@ sproutBGCFOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for the BGCF"
+                 outgoing SIP transactions for the BGCF, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutBGCFOutgoingSIPTransactionsTimeScope,
                   sproutBGCFOutgoingSIPTransactionsRequestScope }
     ::= { sproutBGCFOutgoingSIPTransactionsTable 1 }
@@ -2121,7 +2261,8 @@ SproutBGCFOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutBGCFOutgoingSIPTransactionsRequestScope   INTEGER,
   sproutBGCFOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutBGCFOutgoingSIPTransactionsSuccesses      Unsigned32,
-  sproutBGCFOutgoingSIPTransactionsFailures       Unsigned32
+  sproutBGCFOutgoingSIPTransactionsFailures       Unsigned32,
+  sproutBGCFOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutBGCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2165,12 +2306,23 @@ sproutBGCFOutgoingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { sproutBGCFOutgoingSIPTransactionsEntry 5 }
 
+sproutBGCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 6 }
+
 sproutMMTelIncomingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutMMTelIncomingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for the MMTel"
+                 of incoming SIP transactions for the MMTel, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 24 }
 
 sproutMMTelIncomingSIPTransactionsEntry OBJECT-TYPE
@@ -2178,7 +2330,8 @@ sproutMMTelIncomingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for the MMTel"
+                 incoming SIP transactions for the MMTel, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutMMTelIncomingSIPTransactionsTimeScope,
                   sproutMMTelIncomingSIPTransactionsRequestScope }
     ::= { sproutMMTelIncomingSIPTransactionsTable 1 }
@@ -2189,7 +2342,8 @@ SproutMMTelIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutMMTelIncomingSIPTransactionsRequestScope   INTEGER,
   sproutMMTelIncomingSIPTransactionsAttempts       Unsigned32,
   sproutMMTelIncomingSIPTransactionsSuccesses      Unsigned32,
-  sproutMMTelIncomingSIPTransactionsFailures       Unsigned32
+  sproutMMTelIncomingSIPTransactionsFailures       Unsigned32,
+  sproutMMTelIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutMMTelIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2233,12 +2387,23 @@ sproutMMTelIncomingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { sproutMMTelIncomingSIPTransactionsEntry 5 }
 
+sproutMMTelIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 6 }
+
 sproutMMTelOutgoingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutMMTelOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for the MMTel"
+                 of outgoing SIP transactions for the MMTel, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { sprout 25 }
 
 sproutMMTelOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -2246,7 +2411,8 @@ sproutMMTelOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for the MMTel"
+                 outgoing SIP transactions for the MMTel, and the percentage
+                 of attempts that were successful."
     INDEX       { sproutMMTelOutgoingSIPTransactionsTimeScope,
                   sproutMMTelOutgoingSIPTransactionsRequestScope }
     ::= { sproutMMTelOutgoingSIPTransactionsTable 1 }
@@ -2257,7 +2423,8 @@ SproutMMTelOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutMMTelOutgoingSIPTransactionsRequestScope   INTEGER,
   sproutMMTelOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutMMTelOutgoingSIPTransactionsSuccesses      Unsigned32,
-  sproutMMTelOutgoingSIPTransactionsFailures       Unsigned32
+  sproutMMTelOutgoingSIPTransactionsFailures       Unsigned32,
+  sproutMMTelOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 sproutMMTelOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2300,6 +2467,15 @@ sproutMMTelOutgoingSIPTransactionsFailures OBJECT-TYPE
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
     ::= { sproutMMTelOutgoingSIPTransactionsEntry 5 }
+
+sproutMMTelOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 6 }
 
 sproutRequestsRoutedByPreloadedRouteTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutRequestsRoutedByPreloadedRouteEntry
@@ -2904,30 +3080,39 @@ sproutGroup OBJECT-GROUP
       sproutDeRegistrationAttempts,
       sproutDeRegistrationSuccesses,
       sproutDeRegistrationFailures,
+      sproutDeRegistrationSuccessPercent,
       sproutThirdPartyInitialRegistrationAttempts,
       sproutThirdPartyInitialRegistrationSuccesses,
       sproutThirdPartyInitialRegistrationFailures,
+      sproutThirdPartyInitialRegistrationSuccessPercent,
       sproutThirdPartyReRegistrationAttempts,
       sproutThirdPartyReRegistrationSuccesses,
       sproutThirdPartyReRegistrationFailures,
+      sproutThirdPartyReRegistrationSuccessPercent,
       sproutThirdPartyDeRegistrationAttempts,
       sproutThirdPartyDeRegistrationSuccesses,
       sproutThirdPartyDeRegistrationFailures,
+      sproutThirdPartyDeRegistrationSuccessPercent,
       sproutSIPDigestAuthenticationAttempts,
       sproutSIPDigestAuthenticationSuccesses,
       sproutSIPDigestAuthenticationFailures,
+      sproutSIPDigestAuthenticationSuccessPercent,
       sproutAKAAuthenticationAttempts,
       sproutAKAAuthenticationSuccesses,
       sproutAKAAuthenticationFailures,
+      sproutAKAAuthenticationSuccessPercent,
       sproutNonRegisterAuthenticationAttempts,
       sproutNonRegisterAuthenticationSuccesses,
       sproutNonRegisterAuthenticationFailures,
+      sproutNonRegisterAuthenticationSuccessPercent,
       sproutICSCFIncomingSIPTransactionsAttempts,
       sproutICSCFIncomingSIPTransactionsSuccesses,
       sproutICSCFIncomingSIPTransactionsFailures,
+      sproutICSCFIncomingSIPTransactionsSuccessPercent,
       sproutICSCFOutgoingSIPTransactionsAttempts,
       sproutICSCFOutgoingSIPTransactionsSuccesses,
       sproutICSCFOutgoingSIPTransactionsFailures,
+      sproutICSCFOutgoingSIPTransactionsSuccessPercent,
       sproutSCSCFIncomingSIPTransactionsAttempts,
       sproutSCSCFIncomingSIPTransactionsSuccesses,
       sproutSCSCFIncomingSIPTransactionsFailures,
@@ -2935,18 +3120,23 @@ sproutGroup OBJECT-GROUP
       sproutSCSCFOutgoingSIPTransactionsAttempts,
       sproutSCSCFOutgoingSIPTransactionsSuccesses,
       sproutSCSCFOutgoingSIPTransactionsFailures,
+      sproutSCSCFOutgoingSIPTransactionsSuccessPercent,
       sproutBGCFIncomingSIPTransactionsAttempts,
       sproutBGCFIncomingSIPTransactionsSuccesses,
       sproutBGCFIncomingSIPTransactionsFailures,
+      sproutBGCFIncomingSIPTransactionsSuccessPercent,
       sproutBGCFOutgoingSIPTransactionsAttempts,
       sproutBGCFOutgoingSIPTransactionsSuccesses,
       sproutBGCFOutgoingSIPTransactionsFailures,
+      sproutBGCFOutgoingSIPTransactionsSuccessPercent,
       sproutMMTelIncomingSIPTransactionsAttempts,
       sproutMMTelIncomingSIPTransactionsSuccesses,
       sproutMMTelIncomingSIPTransactionsFailures,
+      sproutMMTelIncomingSIPTransactionsSuccessPercent,
       sproutMMTelOutgoingSIPTransactionsAttempts,
       sproutMMTelOutgoingSIPTransactionsSuccesses,
       sproutMMTelOutgoingSIPTransactionsFailures,
+      sproutMMTelOutgoingSIPTransactionsSuccessPercent,
       sproutRequestsRoutedByPreloadedRouteCount,
       sproutPRRAverage,
       sproutPRRVariance,
@@ -4024,7 +4214,9 @@ cdivAsIncomingSIPTransactionsTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for the Call Diversion AS"
+                 of incoming SIP transactions for the Call Diversion AS, and
+                 (for convenience) provides the percentage of attempts that were
+                 successful."
     ::= { callDiversionAs 2 }
 
 cdivAsIncomingSIPTransactionsEntry OBJECT-TYPE
@@ -4032,7 +4224,8 @@ cdivAsIncomingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for the Call Diversion AS"
+                 incoming SIP transactions for the Call Diversion AS, and the
+                 percentage of attempts that were successful."
     INDEX       { cdivAsIncomingSIPTransactionsTimeScope,
                   cdivAsIncomingSIPTransactionsRequestScope }
     ::= { cdivAsIncomingSIPTransactionsTable 1 }
@@ -4043,7 +4236,8 @@ CdivAsIncomingSIPTransactionsEntry ::= SEQUENCE
   cdivAsIncomingSIPTransactionsRequestScope   INTEGER,
   cdivAsIncomingSIPTransactionsAttempts       Unsigned32,
   cdivAsIncomingSIPTransactionsSuccesses      Unsigned32,
-  cdivAsIncomingSIPTransactionsFailures       Unsigned32
+  cdivAsIncomingSIPTransactionsFailures       Unsigned32,
+  cdivAsIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 cdivAsIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4087,12 +4281,23 @@ cdivAsIncomingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { cdivAsIncomingSIPTransactionsEntry 5 }
 
+cdivAsIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful."
+    ::= { cdivAsIncomingSIPTransactionsEntry 6 }
+
 cdivAsOutgoingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF CdivAsOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for the Call Diversion AS."
+                 of outgoing SIP transactions for the Call Diversion AS, and
+                 (for convenience) provides the percentage of attempts that were
+                 successful."
     ::= { callDiversionAs 3 }
 
 cdivAsOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -4100,7 +4305,8 @@ cdivAsOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for the Call Diversion AS."
+                 outgoing SIP transactions for the Call Diversion AS, and the
+                 percentage of attempts that were successful."
     INDEX       { cdivAsOutgoingSIPTransactionsTimeScope,
                   cdivAsOutgoingSIPTransactionsRequestScope }
     ::= { cdivAsOutgoingSIPTransactionsTable 1 }
@@ -4111,7 +4317,8 @@ CdivAsOutgoingSIPTransactionsEntry ::= SEQUENCE
   cdivAsOutgoingSIPTransactionsRequestScope   INTEGER,
   cdivAsOutgoingSIPTransactionsAttempts       Unsigned32,
   cdivAsOutgoingSIPTransactionsSuccesses      Unsigned32,
-  cdivAsOutgoingSIPTransactionsFailures       Unsigned32
+  cdivAsOutgoingSIPTransactionsFailures       Unsigned32,
+  cdivAsOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 cdivAsOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4155,6 +4362,15 @@ cdivAsOutgoingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { cdivAsOutgoingSIPTransactionsEntry 5 }
 
+cdivAsOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 6 }
+
 callDiversionASGroup OBJECT-GROUP
     OBJECTS {
       cdivAsTotal,
@@ -4166,9 +4382,11 @@ callDiversionASGroup OBJECT-GROUP
       cdivAsIncomingSIPTransactionsAttempts,
       cdivAsIncomingSIPTransactionsSuccesses,
       cdivAsIncomingSIPTransactionsFailures,
+      cdivAsIncomingSIPTransactionsSuccessPercent,
       cdivAsOutgoingSIPTransactionsAttempts,
       cdivAsOutgoingSIPTransactionsSuccesses,
-      cdivAsOutgoingSIPTransactionsFailures
+      cdivAsOutgoingSIPTransactionsFailures,
+      cdivAsOutgoingSIPTransactionsSuccessPercent
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Call Diversion AS"
@@ -4380,7 +4598,9 @@ mementoIncomingSIPTransactionsTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for Memento"
+                 of incoming SIP transactions for Memento, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { mementoSIP 4 }
 
 mementoIncomingSIPTransactionsEntry OBJECT-TYPE
@@ -4388,7 +4608,8 @@ mementoIncomingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for Memento"
+                 incoming SIP transactions for Memento, and the percentage
+                 of attempts that were successful."
     INDEX       { mementoIncomingSIPTransactionsTimeScope,
                   mementoIncomingSIPTransactionsRequestScope }
     ::= { mementoIncomingSIPTransactionsTable 1 }
@@ -4399,7 +4620,8 @@ MementoIncomingSIPTransactionsEntry ::= SEQUENCE
   mementoIncomingSIPTransactionsRequestScope   INTEGER,
   mementoIncomingSIPTransactionsAttempts       Unsigned32,
   mementoIncomingSIPTransactionsSuccesses      Unsigned32,
-  mementoIncomingSIPTransactionsFailures       Unsigned32
+  mementoIncomingSIPTransactionsFailures       Unsigned32,
+  mementoIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 mementoIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4443,12 +4665,23 @@ mementoIncomingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { mementoIncomingSIPTransactionsEntry 5 }
 
+mementoIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful."
+    ::= { mementoIncomingSIPTransactionsEntry 6 }
+
 mementoOutgoingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for Memento"
+                 of outgoing SIP transactions for Memento, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { mementoSIP 5 }
 
 mementoOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -4456,7 +4689,8 @@ mementoOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for Memento"
+                 outgoing SIP transactions for Memento, and the percentage
+                 of attempts that were successful."
     INDEX       { mementoOutgoingSIPTransactionsTimeScope,
                   mementoOutgoingSIPTransactionsRequestScope }
     ::= { mementoOutgoingSIPTransactionsTable 1 }
@@ -4467,7 +4701,8 @@ MementoOutgoingSIPTransactionsEntry ::= SEQUENCE
   mementoOutgoingSIPTransactionsRequestScope   INTEGER,
   mementoOutgoingSIPTransactionsAttempts       Unsigned32,
   mementoOutgoingSIPTransactionsSuccesses      Unsigned32,
-  mementoOutgoingSIPTransactionsFailures       Unsigned32
+  mementoOutgoingSIPTransactionsFailures       Unsigned32,
+  mementoOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 mementoOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4510,6 +4745,15 @@ mementoOutgoingSIPTransactionsFailures OBJECT-TYPE
     DESCRIPTION "The number of failed outgoing SIP transactions over the
                  time period."
     ::= { mementoOutgoingSIPTransactionsEntry 5 }
+
+mementoOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { mementoOutgoingSIPTransactionsEntry 6 }
 
 mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
 
@@ -5016,9 +5260,11 @@ mementoGroup OBJECT-GROUP
         mementoIncomingSIPTransactionsAttempts,
         mementoIncomingSIPTransactionsSuccesses,
         mementoIncomingSIPTransactionsFailures,
+        mementoIncomingSIPTransactionsSuccessPercent,
         mementoOutgoingSIPTransactionsAttempts,
         mementoOutgoingSIPTransactionsSuccesses,
-        mementoOutgoingSIPTransactionsFailures
+        mementoOutgoingSIPTransactionsFailures,
+        mementoOutgoingSIPTransactionsSuccessPercent
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Memento"
@@ -5819,7 +6065,9 @@ geminiIncomingSIPTransactionsTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of incoming SIP transactions for Gemini"
+                 of incoming SIP transactions for Gemini, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { gemini 1 }
 
 geminiIncomingSIPTransactionsEntry OBJECT-TYPE
@@ -5827,7 +6075,8 @@ geminiIncomingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 incoming SIP transactions for Gemini"
+                 incoming SIP transactions for Gemini, and the percentage
+                 of attempts that were successful."
     INDEX       { geminiIncomingSIPTransactionsTimeScope,
                   geminiIncomingSIPTransactionsRequestScope }
     ::= { geminiIncomingSIPTransactionsTable 1 }
@@ -5838,7 +6087,8 @@ GeminiIncomingSIPTransactionsEntry ::= SEQUENCE
   geminiIncomingSIPTransactionsRequestScope   INTEGER,
   geminiIncomingSIPTransactionsAttempts       Unsigned32,
   geminiIncomingSIPTransactionsSuccesses      Unsigned32,
-  geminiIncomingSIPTransactionsFailures       Unsigned32
+  geminiIncomingSIPTransactionsFailures       Unsigned32,
+  geminiIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 geminiIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -5882,12 +6132,23 @@ geminiIncomingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { geminiIncomingSIPTransactionsEntry 5 }
 
+geminiIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful."
+    ::= { geminiIncomingSIPTransactionsEntry 6 }
+
 geminiOutgoingSIPTransactionsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF GeminiOutgoingSIPTransactionsEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of outgoing SIP transactions for Gemini."
+                 of outgoing SIP transactions for Gemini, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful."
     ::= { gemini 2 }
 
 geminiOutgoingSIPTransactionsEntry OBJECT-TYPE
@@ -5895,7 +6156,8 @@ geminiOutgoingSIPTransactionsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
-                 outgoing SIP transactions for Gemini."
+                 outgoing SIP transactions for Gemini, and the percentage
+                 of attempts that were successful."
     INDEX       { geminiOutgoingSIPTransactionsTimeScope,
                   geminiOutgoingSIPTransactionsRequestScope }
     ::= { geminiOutgoingSIPTransactionsTable 1 }
@@ -5906,7 +6168,8 @@ GeminiOutgoingSIPTransactionsEntry ::= SEQUENCE
   geminiOutgoingSIPTransactionsRequestScope   INTEGER,
   geminiOutgoingSIPTransactionsAttempts       Unsigned32,
   geminiOutgoingSIPTransactionsSuccesses      Unsigned32,
-  geminiOutgoingSIPTransactionsFailures       Unsigned32
+  geminiOutgoingSIPTransactionsFailures       Unsigned32,
+  geminiOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
 }
 
 geminiOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -5950,14 +6213,25 @@ geminiOutgoingSIPTransactionsFailures OBJECT-TYPE
                  time period."
     ::= { geminiOutgoingSIPTransactionsEntry 5 }
 
+geminiOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      CounterBasedGauge64
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful."
+    ::= { geminiOutgoingSIPTransactionsEntry 6 }
+
 geminiGroup OBJECT-GROUP
     OBJECTS {
       geminiIncomingSIPTransactionsAttempts,
       geminiIncomingSIPTransactionsSuccesses,
       geminiIncomingSIPTransactionsFailures,
+      geminiIncomingSIPTransactionsSuccessPercent,
       geminiOutgoingSIPTransactionsAttempts,
       geminiOutgoingSIPTransactionsSuccesses,
-      geminiOutgoingSIPTransactionsFailures
+      geminiOutgoingSIPTransactionsFailures,
+      geminiOutgoingSIPTransactionsSuccessPercent
     }
     STATUS    current
     DESCRIPTION "Statistics exposed by Gemini"
