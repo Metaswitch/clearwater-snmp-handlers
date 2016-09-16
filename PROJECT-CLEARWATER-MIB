@@ -1211,7 +1211,7 @@ SproutInitialRegistrationEntry ::= SEQUENCE
   sproutInitialRegistrationAttempts       Unsigned32,
   sproutInitialRegistrationSuccesses      Unsigned32,
   sproutInitialRegistrationFailures       Unsigned32,
-  sproutInitialRegistrationSuccessPercent CounterBasedGauge64
+  sproutInitialRegistrationSuccessPercent Unsigned32
 }
 
 sproutInitialRegistrationScope OBJECT-TYPE
@@ -1247,7 +1247,7 @@ sproutInitialRegistrationFailures OBJECT-TYPE
     ::= { sproutInitialRegistrationEntry 4 }
 
 sproutInitialRegistrationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1263,7 +1263,7 @@ sproutReRegistrationTable OBJECT-TYPE
                  of re-registrations, and also (for convenience) provides the
                  percentage of re-registration attempts that were successful.
                  Note that re-registrations that fail authentication are not
-                 tracked in this table".
+                 tracked in this table."
     ::= { sprout 10 }
 
 sproutReRegistrationEntry OBJECT-TYPE
@@ -1282,7 +1282,7 @@ SproutReRegistrationEntry ::= SEQUENCE
   sproutReRegistrationAttempts       Unsigned32,
   sproutReRegistrationSuccesses      Unsigned32,
   sproutReRegistrationFailures       Unsigned32,
-  sproutReRegistrationSuccessPercent CounterBasedGauge64
+  sproutReRegistrationSuccessPercent Unsigned32
 }
 
 sproutReRegistrationScope OBJECT-TYPE
@@ -1318,7 +1318,7 @@ sproutReRegistrationFailures OBJECT-TYPE
     ::= { sproutReRegistrationEntry 4 }
 
 sproutReRegistrationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1351,7 +1351,7 @@ SproutDeRegistrationEntry ::= SEQUENCE
   sproutDeRegistrationAttempts       Unsigned32,
   sproutDeRegistrationSuccesses      Unsigned32,
   sproutDeRegistrationFailures       Unsigned32,
-  sproutDeRegistrationSuccessPercent CounterBasedGauge64
+  sproutDeRegistrationSuccessPercent Unsigned32
 }
 
 sproutDeRegistrationScope OBJECT-TYPE
@@ -1387,7 +1387,7 @@ sproutDeRegistrationFailures OBJECT-TYPE
     ::= { sproutDeRegistrationEntry 4 }
 
 sproutDeRegistrationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1420,7 +1420,7 @@ SproutThirdPartyInitialRegistrationEntry ::= SEQUENCE
   sproutThirdPartyInitialRegistrationAttempts       Unsigned32,
   sproutThirdPartyInitialRegistrationSuccesses      Unsigned32,
   sproutThirdPartyInitialRegistrationFailures       Unsigned32,
-  sproutThirdPartyInitialRegistrationSuccessPercent CounterBasedGauge64
+  sproutThirdPartyInitialRegistrationSuccessPercent Unsigned32
 }
 
 sproutThirdPartyInitialRegistrationScope OBJECT-TYPE
@@ -1459,7 +1459,7 @@ sproutThirdPartyInitialRegistrationFailures OBJECT-TYPE
     ::= { sproutThirdPartyInitialRegistrationEntry 4 }
 
 sproutThirdPartyInitialRegistrationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1492,7 +1492,7 @@ SproutThirdPartyReRegistrationEntry ::= SEQUENCE
   sproutThirdPartyReRegistrationAttempts       Unsigned32,
   sproutThirdPartyReRegistrationSuccesses      Unsigned32,
   sproutThirdPartyReRegistrationFailures       Unsigned32,
-  sproutThirdPartyReRegistrationSuccessPercent CounterBasedGauge64
+  sproutThirdPartyReRegistrationSuccessPercent Unsigned32
 }
 
 sproutThirdPartyReRegistrationScope OBJECT-TYPE
@@ -1531,7 +1531,7 @@ period."
     ::= { sproutThirdPartyReRegistrationEntry 4 }
 
 sproutThirdPartyReRegistrationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1564,7 +1564,7 @@ SproutThirdPartyDeRegistrationEntry ::= SEQUENCE
   sproutThirdPartyDeRegistrationAttempts       Unsigned32,
   sproutThirdPartyDeRegistrationSuccesses      Unsigned32,
   sproutThirdPartyDeRegistrationFailures       Unsigned32,
-  sproutThirdPartyDeRegistrationSuccessPercent CounterBasedGauge64
+  sproutThirdPartyDeRegistrationSuccessPercent Unsigned32
 }
 
 sproutThirdPartyDeRegistrationScope OBJECT-TYPE
@@ -1603,7 +1603,7 @@ period."
     ::= { sproutThirdPartyDeRegistrationEntry 4 }
 
 sproutThirdPartyDeRegistrationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1636,7 +1636,7 @@ SproutSIPDigestAuthenticationEntry ::= SEQUENCE
   sproutSIPDigestAuthenticationAttempts       Unsigned32,
   sproutSIPDigestAuthenticationSuccesses      Unsigned32,
   sproutSIPDigestAuthenticationFailures       Unsigned32,
-  sproutSIPDigestAuthenticationSuccessPercent CounterBasedGauge64
+  sproutSIPDigestAuthenticationSuccessPercent Unsigned32
 }
 
 sproutSIPDigestAuthenticationScope OBJECT-TYPE
@@ -1675,7 +1675,7 @@ sproutSIPDigestAuthenticationFailures OBJECT-TYPE
     ::= { sproutSIPDigestAuthenticationEntry 4 }
 
 sproutSIPDigestAuthenticationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1709,7 +1709,7 @@ SproutAKAAuthenticationEntry ::= SEQUENCE
   sproutAKAAuthenticationAttempts       Unsigned32,
   sproutAKAAuthenticationSuccesses      Unsigned32,
   sproutAKAAuthenticationFailures       Unsigned32,
-  sproutAKAAuthenticationSuccessPercent CounterBasedGauge64
+  sproutAKAAuthenticationSuccessPercent Unsigned32
 }
 
 sproutAKAAuthenticationScope OBJECT-TYPE
@@ -1748,7 +1748,7 @@ sproutAKAAuthenticationFailures OBJECT-TYPE
     ::= { sproutAKAAuthenticationEntry 4 }
 
 sproutAKAAuthenticationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1781,7 +1781,7 @@ SproutNonRegisterAuthenticationEntry ::= SEQUENCE
   sproutNonRegisterAuthenticationAttempts       Unsigned32,
   sproutNonRegisterAuthenticationSuccesses      Unsigned32,
   sproutNonRegisterAuthenticationFailures       Unsigned32,
-  sproutNonRegisterAuthenticationSuccessPercent CounterBasedGauge64
+  sproutNonRegisterAuthenticationSuccessPercent Unsigned32
 }
 
 sproutNonRegisterAuthenticationScope OBJECT-TYPE
@@ -1820,7 +1820,7 @@ sproutNonRegisterAuthenticationFailures OBJECT-TYPE
     ::= { sproutNonRegisterAuthenticationEntry 4 }
 
 sproutNonRegisterAuthenticationSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1856,7 +1856,7 @@ SproutICSCFIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutICSCFIncomingSIPTransactionsAttempts       Unsigned32,
   sproutICSCFIncomingSIPTransactionsSuccesses      Unsigned32,
   sproutICSCFIncomingSIPTransactionsFailures       Unsigned32,
-  sproutICSCFIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutICSCFIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutICSCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -1901,7 +1901,7 @@ sproutICSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutICSCFIncomingSIPTransactionsEntry 5 }
 
 sproutICSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -1937,7 +1937,7 @@ SproutICSCFOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutICSCFOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutICSCFOutgoingSIPTransactionsSuccesses      Unsigned32,
   sproutICSCFOutgoingSIPTransactionsFailures       Unsigned32,
-  sproutICSCFOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutICSCFOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutICSCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -1982,7 +1982,7 @@ sproutICSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutICSCFOutgoingSIPTransactionsEntry 5 }
 
 sproutICSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2019,7 +2019,7 @@ SproutSCSCFIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutSCSCFIncomingSIPTransactionsAttempts       Unsigned32,
   sproutSCSCFIncomingSIPTransactionsSuccesses      Unsigned32,
   sproutSCSCFIncomingSIPTransactionsFailures       Unsigned32,
-  sproutSCSCFIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutSCSCFIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutSCSCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2064,7 +2064,7 @@ sproutSCSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutSCSCFIncomingSIPTransactionsEntry 5 }
 
 sproutSCSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2100,7 +2100,7 @@ SproutSCSCFOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutSCSCFOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutSCSCFOutgoingSIPTransactionsSuccesses      Unsigned32,
   sproutSCSCFOutgoingSIPTransactionsFailures       Unsigned32,
-  sproutSCSCFOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutSCSCFOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutSCSCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2145,7 +2145,7 @@ sproutSCSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutSCSCFOutgoingSIPTransactionsEntry 5 }
 
 sproutSCSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2181,7 +2181,7 @@ SproutBGCFIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutBGCFIncomingSIPTransactionsAttempts       Unsigned32,
   sproutBGCFIncomingSIPTransactionsSuccesses      Unsigned32,
   sproutBGCFIncomingSIPTransactionsFailures       Unsigned32,
-  sproutBGCFIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutBGCFIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutBGCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2226,7 +2226,7 @@ sproutBGCFIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutBGCFIncomingSIPTransactionsEntry 5 }
 
 sproutBGCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2262,7 +2262,7 @@ SproutBGCFOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutBGCFOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutBGCFOutgoingSIPTransactionsSuccesses      Unsigned32,
   sproutBGCFOutgoingSIPTransactionsFailures       Unsigned32,
-  sproutBGCFOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutBGCFOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutBGCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2307,7 +2307,7 @@ sproutBGCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutBGCFOutgoingSIPTransactionsEntry 5 }
 
 sproutBGCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2343,7 +2343,7 @@ SproutMMTelIncomingSIPTransactionsEntry ::= SEQUENCE
   sproutMMTelIncomingSIPTransactionsAttempts       Unsigned32,
   sproutMMTelIncomingSIPTransactionsSuccesses      Unsigned32,
   sproutMMTelIncomingSIPTransactionsFailures       Unsigned32,
-  sproutMMTelIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutMMTelIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutMMTelIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2388,7 +2388,7 @@ sproutMMTelIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutMMTelIncomingSIPTransactionsEntry 5 }
 
 sproutMMTelIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2424,7 +2424,7 @@ SproutMMTelOutgoingSIPTransactionsEntry ::= SEQUENCE
   sproutMMTelOutgoingSIPTransactionsAttempts       Unsigned32,
   sproutMMTelOutgoingSIPTransactionsSuccesses      Unsigned32,
   sproutMMTelOutgoingSIPTransactionsFailures       Unsigned32,
-  sproutMMTelOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  sproutMMTelOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 sproutMMTelOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -2469,7 +2469,7 @@ sproutMMTelOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { sproutMMTelOutgoingSIPTransactionsEntry 5 }
 
 sproutMMTelOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2895,7 +2895,7 @@ SproutICSCFSessionEstablishmentEntry ::= SEQUENCE
   sproutICSCFSessionEstablishmentAttempts       Unsigned32,
   sproutICSCFSessionEstablishmentSuccesses      Unsigned32,
   sproutICSCFSessionEstablishmentFailures       Unsigned32,
-  sproutICSCFSessionEstablishmentSuccessPercent CounterBasedGauge64
+  sproutICSCFSessionEstablishmentSuccessPercent Unsigned32
 }
 
 sproutICSCFSessionEstablishmentScope OBJECT-TYPE
@@ -2933,7 +2933,7 @@ sproutICSCFSessionEstablishmentFailures OBJECT-TYPE
     ::= { sproutICSCFSessionEstablishmentEntry 4 }
 
 sproutICSCFSessionEstablishmentSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -2977,7 +2977,7 @@ SproutICSCFSessionEstablishmentNetworkEntry ::= SEQUENCE
   sproutICSCFSessionEstablishmentNetworkAttempts       Unsigned32,
   sproutICSCFSessionEstablishmentNetworkSuccesses      Unsigned32,
   sproutICSCFSessionEstablishmentNetworkFailures       Unsigned32,
-  sproutICSCFSessionEstablishmentNetworkSuccessPercent CounterBasedGauge64
+  sproutICSCFSessionEstablishmentNetworkSuccessPercent Unsigned32
 }
 
 sproutICSCFSessionEstablishmentNetworkScope OBJECT-TYPE
@@ -3015,7 +3015,7 @@ sproutICSCFSessionEstablishmentNetworkFailures OBJECT-TYPE
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 4 }
 
 sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -3153,7 +3153,7 @@ sproutGroup OBJECT-GROUP
       sproutSCSCFAudioSessionSetupTimeVariance,
       sproutSCSCFAudioSessionSetupTimeHWM,
       sproutSCSCFAudioSessionSetupTimeLWM,
-      sproutSCSCFAudioSessionSetupTimeCount
+      sproutSCSCFAudioSessionSetupTimeCount,
       sproutSCSCFVideoSessionSetupTimeAverage,
       sproutSCSCFVideoSessionSetupTimeVariance,
       sproutSCSCFVideoSessionSetupTimeHWM,
@@ -4237,7 +4237,7 @@ CdivAsIncomingSIPTransactionsEntry ::= SEQUENCE
   cdivAsIncomingSIPTransactionsAttempts       Unsigned32,
   cdivAsIncomingSIPTransactionsSuccesses      Unsigned32,
   cdivAsIncomingSIPTransactionsFailures       Unsigned32,
-  cdivAsIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  cdivAsIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 cdivAsIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4282,7 +4282,7 @@ cdivAsIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { cdivAsIncomingSIPTransactionsEntry 5 }
 
 cdivAsIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -4318,7 +4318,7 @@ CdivAsOutgoingSIPTransactionsEntry ::= SEQUENCE
   cdivAsOutgoingSIPTransactionsAttempts       Unsigned32,
   cdivAsOutgoingSIPTransactionsSuccesses      Unsigned32,
   cdivAsOutgoingSIPTransactionsFailures       Unsigned32,
-  cdivAsOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  cdivAsOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 cdivAsOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4363,7 +4363,7 @@ cdivAsOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { cdivAsOutgoingSIPTransactionsEntry 5 }
 
 cdivAsOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -4621,7 +4621,7 @@ MementoIncomingSIPTransactionsEntry ::= SEQUENCE
   mementoIncomingSIPTransactionsAttempts       Unsigned32,
   mementoIncomingSIPTransactionsSuccesses      Unsigned32,
   mementoIncomingSIPTransactionsFailures       Unsigned32,
-  mementoIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  mementoIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 mementoIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4666,7 +4666,7 @@ mementoIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { mementoIncomingSIPTransactionsEntry 5 }
 
 mementoIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -4702,7 +4702,7 @@ MementoOutgoingSIPTransactionsEntry ::= SEQUENCE
   mementoOutgoingSIPTransactionsAttempts       Unsigned32,
   mementoOutgoingSIPTransactionsSuccesses      Unsigned32,
   mementoOutgoingSIPTransactionsFailures       Unsigned32,
-  mementoOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  mementoOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 mementoOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -4747,7 +4747,7 @@ mementoOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { mementoOutgoingSIPTransactionsEntry 5 }
 
 mementoOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -6088,7 +6088,7 @@ GeminiIncomingSIPTransactionsEntry ::= SEQUENCE
   geminiIncomingSIPTransactionsAttempts       Unsigned32,
   geminiIncomingSIPTransactionsSuccesses      Unsigned32,
   geminiIncomingSIPTransactionsFailures       Unsigned32,
-  geminiIncomingSIPTransactionsSuccessPercent CounterBasedGauge64
+  geminiIncomingSIPTransactionsSuccessPercent Unsigned32
 }
 
 geminiIncomingSIPTransactionsTimeScope OBJECT-TYPE
@@ -6133,7 +6133,7 @@ geminiIncomingSIPTransactionsFailures OBJECT-TYPE
     ::= { geminiIncomingSIPTransactionsEntry 5 }
 
 geminiIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
@@ -6169,7 +6169,7 @@ GeminiOutgoingSIPTransactionsEntry ::= SEQUENCE
   geminiOutgoingSIPTransactionsAttempts       Unsigned32,
   geminiOutgoingSIPTransactionsSuccesses      Unsigned32,
   geminiOutgoingSIPTransactionsFailures       Unsigned32,
-  geminiOutgoingSIPTransactionsSuccessPercent CounterBasedGauge64
+  geminiOutgoingSIPTransactionsSuccessPercent Unsigned32
 }
 
 geminiOutgoingSIPTransactionsTimeScope OBJECT-TYPE
@@ -6214,7 +6214,7 @@ geminiOutgoingSIPTransactionsFailures OBJECT-TYPE
     ::= { geminiOutgoingSIPTransactionsEntry 5 }
 
 geminiOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
-    SYNTAX      CounterBasedGauge64
+    SYNTAX      Unsigned32
     UNITS       "/ 10000 %"
     MAX-ACCESS  read-only
     STATUS      current
