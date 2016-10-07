@@ -3037,9 +3037,10 @@ sproutICSCFSessionEstablishmentNetworkSuccesses OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of terminating session attempts over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
-                 the value will be 1000000 to represent 100%.from a network perspective."
+                 period that were successful from a network perspective.
+                 Reported in units of tens of thousands of a percent.
+                 When there are zero attempts made the value will be 
+                 1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 3 }
 
 sproutICSCFSessionEstablishmentNetworkFailures OBJECT-TYPE
@@ -3056,9 +3057,10 @@ sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of terminating session attempts over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
-                 the value will be 1000000 to represent 100%.from a network perspective."
+                 period that were successful from a network perspective. 
+                 Reported in units of tens of thousands of a percent.
+                 When there are zero attempts made the value will be 
+                 1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 5 }
 
 sproutGroup OBJECT-GROUP
