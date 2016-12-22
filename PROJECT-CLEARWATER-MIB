@@ -3063,6 +3063,45 @@ sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 5 }
 
+sproutINVITEsForkedTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutINVITEsForkedEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of extra INVITEs created due to multiple registrations."
+    ::= { sprout 38 }
+
+sproutINVITEsForkedEntry OBJECT-TYPE
+    SYNTAX      SproutINVITEsForkedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of extra INVITEs created due to multiple registrations."
+    INDEX       { sproutINVITEsForkedScope }
+    ::= { sproutINVITEsForkedTable 1 }
+
+SproutINVITEsForkedEntry ::= SEQUENCE
+{
+  sproutINVITEsForkedScope        INTEGER,
+  sproutINVITEsForkedCount        Unsigned32
+}
+
+sproutINVITEsForkedScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutINVITEsForkedEntry 1 }
+
+sproutINVITEsForkedCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of extra INVITEs created due to multiple registrations."
+    ::= { sproutINVITEsForkedEntry 2 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -3206,7 +3245,8 @@ sproutGroup OBJECT-GROUP
       sproutICSCFSessionEstablishmentNetworkAttempts,
       sproutICSCFSessionEstablishmentNetworkSuccesses,
       sproutICSCFSessionEstablishmentNetworkFailures,
-      sproutICSCFSessionEstablishmentNetworkSuccessPercent
+      sproutICSCFSessionEstablishmentNetworkSuccessPercent,
+      sproutINVITEsForkedCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
