@@ -136,12 +136,14 @@ bonoLatencyEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of SIP message
                  latency"
-    INDEX       { bonoLatencyScope }
+    INDEX       { bonoLatencyTimeFrame,
+                  bonoLatencyScope }
     ::= { bonoLatencyTable 1 }
 
 BonoLatencyEntry ::= SEQUENCE
 {
-  bonoLatencyScope          INTEGER,
+  bonoLatencyTimeFrame      INTEGER,
+  bonoLatencyScope          OCTET STRING,
   bonoLatencyAverage        Unsigned32,
   bonoLatencyVariance       Unsigned32,
   bonoLatencyHWM            Unsigned32,
@@ -149,7 +151,7 @@ BonoLatencyEntry ::= SEQUENCE
   bonoLatencyCount          Unsigned32
 }
 
-bonoLatencyScope OBJECT-TYPE
+bonoLatencyTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -160,40 +162,47 @@ bonoLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { bonoLatencyEntry 1 }
 
+bonoLatencyScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { bonoLatencyEntry 2 }
+
 bonoLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { bonoLatencyEntry 2 }
+    ::= { bonoLatencyEntry 3 }
 
 bonoLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { bonoLatencyEntry 3 }
+    ::= { bonoLatencyEntry 4 }
 
 bonoLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { bonoLatencyEntry 4 }
+    ::= { bonoLatencyEntry 5 }
 
 bonoLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { bonoLatencyEntry 5 }
+    ::= { bonoLatencyEntry 6 }
 
 bonoLatencyCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total requests over the period."
-    ::= { bonoLatencyEntry 6 }
+    ::= { bonoLatencyEntry 7 }
 
 core OBJECT IDENTIFIER ::= { bono 3 }
 
@@ -256,16 +265,18 @@ bonoIncomingRequestsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The total number of incoming requests"
-    INDEX       { bonoIncomingRequestsScope }
+    INDEX       { bonoIncomingRequestsTimeFrame,
+                  bonoIncomingRequestsScope }
     ::= { bonoIncomingRequestsTable 1 }
 
 BonoIncomingRequestsEntry ::= SEQUENCE
 {
-  bonoIncomingRequestsScope          INTEGER,
+  bonoIncomingRequestsTimeFrame      INTEGER,
+  bonoIncomingRequestsScope          OCTET STRING,
   bonoIncomingRequestsCount          Unsigned32
 }
 
-bonoIncomingRequestsScope OBJECT-TYPE
+bonoIncomingRequestsTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -276,12 +287,19 @@ bonoIncomingRequestsScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { bonoIncomingRequestsEntry 1 }
 
+bonoIncomingRequestsScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { bonoIncomingRequestsEntry 2 }
+
 bonoIncomingRequestsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of incoming requests over the period."
-    ::= { bonoIncomingRequestsEntry 2 }
+    ::= { bonoIncomingRequestsEntry 3 }
 
 bonoRejectedOverloadTable OBJECT-TYPE
     SYNTAX SEQUENCE OF BonoRejectedOverloadEntry
@@ -296,16 +314,18 @@ bonoRejectedOverloadEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The total number of requests rejected due to overload"
-    INDEX       { bonoRejectedOverloadScope }
+    INDEX       { bonoRejectedOverloadTimeFrame,
+                  bonoRejectedOverloadScope }
     ::= { bonoRejectedOverloadTable 1 }
 
 BonoRejectedOverloadEntry ::= SEQUENCE
 {
-  bonoRejectedOverloadScope          INTEGER,
+  bonoRejectedOverloadTimeFrame      INTEGER,
+  bonoRejectedOverloadScope          OCTET STRING,
   bonoRejectedOverloadCount          Unsigned32
 }
 
-bonoRejectedOverloadScope OBJECT-TYPE
+bonoRejectedOverloadTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -316,13 +336,20 @@ bonoRejectedOverloadScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { bonoRejectedOverloadEntry 1 }
 
+bonoRejectedOverloadScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { bonoRejectedOverloadEntry 2 }
+
 bonoRejectedOverloadCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of rejected requests due to overload over the
                  period."
-    ::= { bonoRejectedOverloadEntry 2 }
+    ::= { bonoRejectedOverloadEntry 3 }
 
 bonoQueueSizeTable OBJECT-TYPE
     SYNTAX SEQUENCE OF BonoQueueSizeEntry
@@ -336,12 +363,14 @@ bonoQueueSizeEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request queue size"
-    INDEX       { bonoQueueSizeScope }
+    INDEX       { bonoQueueSizeTimeFrame,
+                  bonoQueueSizeScope }
     ::= { bonoQueueSizeTable 1 }
 
 BonoQueueSizeEntry ::= SEQUENCE
 {
-  bonoQueueSizeScope          INTEGER,
+  bonoQueueSizeTimeFrame      INTEGER,
+  bonoQueueSizeScope          OCTET STRING,
   bonoQueueSizeAverage        Unsigned32,
   bonoQueueSizeVariance       Unsigned32,
   bonoQueueSizeHWM            Unsigned32,
@@ -349,7 +378,7 @@ BonoQueueSizeEntry ::= SEQUENCE
   bonoQueueSizeCount          Unsigned32
 }
 
-bonoQueueSizeScope OBJECT-TYPE
+bonoQueueSizeTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -360,40 +389,47 @@ bonoQueueSizeScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { bonoQueueSizeEntry 1 }
 
+bonoQueueSizeScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { bonoQueueSizeEntry 2 }
+
 bonoQueueSizeAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average request queue size over the period."
-    ::= { bonoQueueSizeEntry 2 }
+    ::= { bonoQueueSizeEntry 3 }
 
 bonoQueueSizeVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the queue size over the period."
-    ::= { bonoQueueSizeEntry 3 }
+    ::= { bonoQueueSizeEntry 4 }
 
 bonoQueueSizeHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest queue size over the period."
-    ::= { bonoQueueSizeEntry 4 }
+    ::= { bonoQueueSizeEntry 5 }
 
 bonoQueueSizeLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest queue size over the period."
-    ::= { bonoQueueSizeEntry 5 }
+    ::= { bonoQueueSizeEntry 6 }
 
 bonoQueueSizeCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total requests over the period."
-    ::= { bonoQueueSizeEntry 6 }
+    ::= { bonoQueueSizeEntry 7 }
 
 bonoGroup OBJECT-GROUP
     OBJECTS {
@@ -433,12 +469,14 @@ sproutLatencyEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of SIP message
                  latency"
-    INDEX       { sproutLatencyScope }
+    INDEX       { sproutLatencyTimeFrame,
+                  sproutLatencyScope }
     ::= { sproutLatencyTable 1 }
 
 SproutLatencyEntry ::= SEQUENCE
 {
-  sproutLatencyScope          INTEGER,
+  sproutLatencyTimeFrame      INTEGER,
+  sproutLatencyScope          OCTET STRING,
   sproutLatencyAverage        Unsigned32,
   sproutLatencyVariance       Unsigned32,
   sproutLatencyHWM            Unsigned32,
@@ -446,7 +484,7 @@ SproutLatencyEntry ::= SEQUENCE
   sproutLatencyCount          Unsigned32
 }
 
-sproutLatencyScope OBJECT-TYPE
+sproutLatencyTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -457,40 +495,47 @@ sproutLatencyScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutLatencyEntry 1 }
 
+sproutLatencyScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutLatencyEntry 2 }
+
 sproutLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { sproutLatencyEntry 2 }
+    ::= { sproutLatencyEntry 3 }
 
 sproutLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { sproutLatencyEntry 3 }
+    ::= { sproutLatencyEntry 4 }
 
 sproutLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { sproutLatencyEntry 4 }
+    ::= { sproutLatencyEntry 5 }
 
 sproutLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { sproutLatencyEntry 5 }
+    ::= { sproutLatencyEntry 6 }
 
 sproutLatencyCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total requests over the period."
-    ::= { sproutLatencyEntry 6 }
+    ::= { sproutLatencyEntry 7 }
 
 xdm OBJECT IDENTIFIER ::= { sprout 2 }
 
@@ -1045,16 +1090,18 @@ sproutIncomingRequestsEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The total number of incoming requests"
-    INDEX       { sproutIncomingRequestsScope }
+    INDEX       { sproutIncomingRequestsTimeFrame,
+                  sproutIncomingRequestsScope }
     ::= { sproutIncomingRequestsTable 1 }
 
 SproutIncomingRequestsEntry ::= SEQUENCE
 {
-  sproutIncomingRequestsScope          INTEGER,
+  sproutIncomingRequestsTimeFrame      INTEGER,
+  sproutIncomingRequestsScope          OCTET STRING,
   sproutIncomingRequestsCount          Unsigned32
 }
 
-sproutIncomingRequestsScope OBJECT-TYPE
+sproutIncomingRequestsTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1065,12 +1112,19 @@ sproutIncomingRequestsScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutIncomingRequestsEntry 1 }
 
+sproutIncomingRequestsScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutIncomingRequestsEntry 2 }
+
 sproutIncomingRequestsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of incoming requests over the period."
-    ::= { sproutIncomingRequestsEntry 2 }
+    ::= { sproutIncomingRequestsEntry 3 }
 
 sproutRejectedOverloadTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutRejectedOverloadEntry
@@ -1085,16 +1139,18 @@ sproutRejectedOverloadEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The total number of requests rejected due to overload"
-    INDEX       { sproutRejectedOverloadScope }
+    INDEX       { sproutRejectedOverloadTimeFrame,
+                  sproutRejectedOverloadScope }
     ::= { sproutRejectedOverloadTable 1 }
 
 SproutRejectedOverloadEntry ::= SEQUENCE
 {
-  sproutRejectedOverloadScope          INTEGER,
+  sproutRejectedOverloadTimeFrame      INTEGER,
+  sproutRejectedOverloadScope          OCTET STRING,
   sproutRejectedOverloadCount          Unsigned32
 }
 
-sproutRejectedOverloadScope OBJECT-TYPE
+sproutRejectedOverloadTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1105,13 +1161,20 @@ sproutRejectedOverloadScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutRejectedOverloadEntry 1 }
 
+sproutRejectedOverloadScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutRejectedOverloadEntry 2 }
+
 sproutRejectedOverloadCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total number of rejected requests due to overload over the
                  period."
-    ::= { sproutRejectedOverloadEntry 2 }
+    ::= { sproutRejectedOverloadEntry 3 }
 
 sproutQueueSizeTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutQueueSizeEntry
@@ -1125,12 +1188,14 @@ sproutQueueSizeEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request queue size"
-    INDEX       { sproutQueueSizeScope }
+    INDEX       { sproutQueueSizeTimeFrame,
+                  sproutQueueSizeScope }
     ::= { sproutQueueSizeTable 1 }
 
 SproutQueueSizeEntry ::= SEQUENCE
 {
-  sproutQueueSizeScope          INTEGER,
+  sproutQueueSizeTimeFrame      INTEGER,
+  sproutQueueSizeScope          OCTET STRING,
   sproutQueueSizeAverage        Unsigned32,
   sproutQueueSizeVariance       Unsigned32,
   sproutQueueSizeHWM            Unsigned32,
@@ -1138,7 +1203,7 @@ SproutQueueSizeEntry ::= SEQUENCE
   sproutQueueSizeCount          Unsigned32
 }
 
-sproutQueueSizeScope OBJECT-TYPE
+sproutQueueSizeTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -1149,40 +1214,47 @@ sproutQueueSizeScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutQueueSizeEntry 1 }
 
+sproutQueueSizeScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutQueueSizeEntry 2 }
+
 sproutQueueSizeAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average request queue size over the period."
-    ::= { sproutQueueSizeEntry 2 }
+    ::= { sproutQueueSizeEntry 3 }
 
 sproutQueueSizeVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the queue size over the period."
-    ::= { sproutQueueSizeEntry 3 }
+    ::= { sproutQueueSizeEntry 4 }
 
 sproutQueueSizeHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest queue size over the period."
-    ::= { sproutQueueSizeEntry 4 }
+    ::= { sproutQueueSizeEntry 5 }
 
 sproutQueueSizeLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest queue size over the period."
-    ::= { sproutQueueSizeEntry 5 }
+    ::= { sproutQueueSizeEntry 6 }
 
 sproutQueueSizeCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total requests over the period."
-    ::= { sproutQueueSizeEntry 6 }
+    ::= { sproutQueueSizeEntry 7 }
 
 sproutInitialRegistrationTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutInitialRegistrationEntry
@@ -1252,8 +1324,8 @@ sproutInitialRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of initial registrations over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutInitialRegistrationEntry 5 }
 
@@ -1325,8 +1397,8 @@ sproutReRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of re-registrations attempts over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutReRegistrationEntry 5 }
 
@@ -1468,8 +1540,8 @@ sproutThirdPartyInitialRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of third-party initial registration attempts
-                 over the time period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 over the time period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutThirdPartyInitialRegistrationEntry 5 }
 
@@ -1542,8 +1614,8 @@ sproutThirdPartyReRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of third-party re-registration attempts
-                 over the time period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 over the time period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutThirdPartyReRegistrationEntry 5 }
 
@@ -1616,8 +1688,8 @@ sproutThirdPartyDeRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of third-party de-registration attempts
-                 over the time period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 over the time period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutThirdPartyDeRegistrationEntry 5 }
 
@@ -1690,8 +1762,8 @@ sproutSIPDigestAuthenticationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of SIP digest authentication attempts over
-                 the time period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 the time period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutSIPDigestAuthenticationEntry 5 }
 
@@ -1765,8 +1837,8 @@ sproutAKAAuthenticationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of AKA authentication attempts over
-                 the time period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 the time period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutAKAAuthenticationEntry 5 }
 
@@ -1839,8 +1911,8 @@ sproutNonRegisterAuthenticationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of non-register authentication attempts over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutNonRegisterAuthenticationEntry 5 }
 
@@ -1922,8 +1994,8 @@ sproutICSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutICSCFIncomingSIPTransactionsEntry 6 }
 
@@ -2005,8 +2077,8 @@ sproutICSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutICSCFOutgoingSIPTransactionsEntry 6 }
 
@@ -2089,8 +2161,8 @@ sproutSCSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the time
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFIncomingSIPTransactionsEntry 6 }
 
@@ -2172,8 +2244,8 @@ sproutSCSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFOutgoingSIPTransactionsEntry 6 }
 
@@ -2255,8 +2327,8 @@ sproutBGCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutBGCFIncomingSIPTransactionsEntry 6 }
 
@@ -2338,8 +2410,8 @@ sproutBGCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutBGCFOutgoingSIPTransactionsEntry 6 }
 
@@ -2421,8 +2493,8 @@ sproutMMTelIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutMMTelIncomingSIPTransactionsEntry 6 }
 
@@ -2504,8 +2576,8 @@ sproutMMTelOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutMMTelOutgoingSIPTransactionsEntry 6 }
 
@@ -2566,12 +2638,14 @@ sproutPRREntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, HWM, LWM and count of the permitted request rate"
-    INDEX       { sproutPRRScope }
+    INDEX       { sproutPRRTimeFrame,
+                  sproutPRRScope }
     ::= { sproutPRRTable 1 }
 
 SproutPRREntry ::= SEQUENCE
 {
-  sproutPRRScope          INTEGER,
+  sproutPRRTimeFrame      INTEGER,
+  sproutPRRScope          OCTET STRING,
   sproutPRRAverage        Unsigned32,
   sproutPRRVariance       Unsigned32,
   sproutPRRHWM            Unsigned32,
@@ -2579,7 +2653,7 @@ SproutPRREntry ::= SEQUENCE
   sproutPRRCount          Unsigned32
 }
 
-sproutPRRScope OBJECT-TYPE
+sproutPRRTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2590,33 +2664,40 @@ sproutPRRScope OBJECT-TYPE
     DESCRIPTION "The period over which the statistics were collected."
     ::= { sproutPRREntry 1 }
 
+sproutPRRScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutPRREntry 2 }
+
 sproutPRRAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average permitted request rate over the period."
-    ::= { sproutPRREntry 2 }
+    ::= { sproutPRREntry 3 }
 
 sproutPRRVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the permitted request rate over the period."
-    ::= { sproutPRREntry 3 }
+    ::= { sproutPRREntry 4 }
 
 sproutPRRHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest permitted request rate over the period."
-    ::= { sproutPRREntry 4 }
+    ::= { sproutPRREntry 5 }
 
 sproutPRRLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest permitted request rate over the period."
-    ::= { sproutPRREntry 5 }
+    ::= { sproutPRREntry 6 }
 
 sproutPRRCount OBJECT-TYPE
     SYNTAX      Unsigned32
@@ -2624,43 +2705,155 @@ sproutPRRCount OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The total number of permitted request rate
                  updates over the period."
-    ::= { sproutPRREntry 6 }
+    ::= { sproutPRREntry 7 }
+
+sproutSmoothedLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSmoothedLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION "The smoothed latency at last PRR update.
+                 The permitted request rate (PRR) is an estimate for the
+                 sustainable request rate without causing large latency."
+    ::= { sprout 28 }
+
+sproutSmoothedLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutSmoothedLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The smoothed latency."
+    INDEX       { sproutSmoothedLatencyScope }
+    ::= { sproutSmoothedLatencyTable 1 }
+
+SproutSmoothedLatencyEntry ::= SEQUENCE
+{
+  sproutSmoothedLatencyScope          OCTET STRING,
+  sproutSmoothedLatencyValue          Unsigned32
+}
+
+sproutSmoothedLatencyScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutSmoothedLatencyEntry 1 }
 
 sproutSmoothedLatencyValue OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The smoothed latency value at last PRR update.
-                 The permitted request rate (PRR) is an estimate for the
-                 sustainable request rate without causing large latency."
-    ::= { sprout 28 }
+    DESCRIPTION "The smoothed latency at last PRR update."
+    ::= { sproutSmoothedLatencyEntry 2 }
+
+sproutTargetLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutTargetLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION "The maximum acceptable latency that
+    should be experienced by requests."
+    ::= { sprout 29 }
+
+sproutTargetLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutTargetLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The target latency."
+    INDEX       { sproutTargetLatencyScope }
+    ::= { sproutTargetLatencyTable 1 }
+
+SproutTargetLatencyEntry ::= SEQUENCE
+{
+  sproutTargetLatencyScope          OCTET STRING,
+  sproutTargetLatencyValue          Unsigned32
+}
+
+sproutTargetLatencyScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutTargetLatencyEntry 1 }
 
 sproutTargetLatencyValue OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The maximum acceptable latency that
-                 should be experienced by requests."
-    ::= { sprout 29 }
+    DESCRIPTION "The target latency."
+    ::= { sproutTargetLatencyEntry 2 }
 
-sproutPenaltiesValue OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
+sproutPenaltiesTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutPenaltiesEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
     DESCRIPTION "The number of overload responses
                  Sprout received from upstream at last PRR update.
                  The permitted request rate (PRR) is an estimate for the
                  sustainable request rate without causing large latency."
     ::= { sprout 30 }
 
-sproutPRRCurrentValue OBJECT-TYPE
+sproutPenaltiesEntry OBJECT-TYPE
+    SYNTAX      SproutPenaltiesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The penalty value."
+    INDEX       { sproutPenaltiesScope }
+    ::= { sproutPenaltiesTable 1 }
+
+SproutPenaltiesEntry ::= SEQUENCE
+{
+  sproutPenaltiesScope        OCTET STRING,
+  sproutPenaltiesValue        Unsigned32
+}
+
+sproutPenaltiesScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutPenaltiesEntry 1 }
+
+sproutPenaltiesValue OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
+    DESCRIPTION "The number of overload responses."
+    ::= { sproutPenaltiesEntry 2 }
+
+sproutPRRCurrentTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutPRRCurrentEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
     DESCRIPTION "The curent permitted request rate.
                  The permitted request rate (PRR) is an estimate for the
                  sustainable request rate without causing large latency."
     ::= { sprout 31 }
+
+sproutPRRCurrentEntry OBJECT-TYPE
+    SYNTAX      SproutPRRCurrentEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The smoothed latency."
+    INDEX       { sproutPRRCurrentScope }
+    ::= { sproutPRRCurrentTable 1 }
+
+SproutPRRCurrentEntry ::= SEQUENCE
+{
+  sproutPRRCurrentScope          OCTET STRING,
+  sproutPRRCurrentValue          Unsigned32
+}
+
+sproutPRRCurrentScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Node type of the node being queried."
+    ::= { sproutPRRCurrentEntry 1 }
+
+sproutPRRCurrentValue OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The current permitted request rate."
+    ::= { sproutPRRCurrentEntry 2 }
 
 sproutINVITEsCancelledBefore1xxTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutINVITEsCancelledBefore1xxEntry
@@ -2970,8 +3163,8 @@ sproutICSCFSessionEstablishmentSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of terminating session attempts over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentEntry 5 }
 
@@ -3039,7 +3232,7 @@ sproutICSCFSessionEstablishmentNetworkSuccesses OBJECT-TYPE
     DESCRIPTION "The number of terminating session attempts over the
                  period that were successful from a network perspective.
                  Reported in units of tens of thousands of a percent.
-                 When there are zero attempts made the value will be 
+                 When there are zero attempts made the value will be
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 3 }
 
@@ -3057,9 +3250,9 @@ sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of terminating session attempts over the
-                 period that were successful from a network perspective. 
+                 period that were successful from a network perspective.
                  Reported in units of tens of thousands of a percent.
-                 When there are zero attempts made the value will be 
+                 When there are zero attempts made the value will be
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 5 }
 
@@ -4367,8 +4560,8 @@ cdivAsIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { cdivAsIncomingSIPTransactionsEntry 6 }
 
@@ -4450,8 +4643,8 @@ cdivAsOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { cdivAsOutgoingSIPTransactionsEntry 6 }
 
@@ -4755,8 +4948,8 @@ mementoIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { mementoIncomingSIPTransactionsEntry 6 }
 
@@ -4838,8 +5031,8 @@ mementoOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { mementoOutgoingSIPTransactionsEntry 6 }
 
@@ -6226,8 +6419,8 @@ geminiIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { geminiIncomingSIPTransactionsEntry 6 }
 
@@ -6309,8 +6502,8 @@ geminiOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of 
-                 thousands of a percent. When there are zero attempts made 
+                 period that were successful. Reported in units of tens of
+                 thousands of a percent. When there are zero attempts made
                  the value will be 1000000 to represent 100%."
     ::= { geminiOutgoingSIPTransactionsEntry 6 }
 
