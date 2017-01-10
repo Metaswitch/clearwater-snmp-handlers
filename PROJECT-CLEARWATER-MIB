@@ -163,7 +163,7 @@ bonoLatencyTimeFrame OBJECT-TYPE
     ::= { bonoLatencyEntry 1 }
 
 bonoLatencyScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -288,7 +288,7 @@ bonoIncomingRequestsTimeFrame OBJECT-TYPE
     ::= { bonoIncomingRequestsEntry 1 }
 
 bonoIncomingRequestsScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -337,7 +337,7 @@ bonoRejectedOverloadTimeFrame OBJECT-TYPE
     ::= { bonoRejectedOverloadEntry 1 }
 
 bonoRejectedOverloadScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -390,7 +390,7 @@ bonoQueueSizeTimeFrame OBJECT-TYPE
     ::= { bonoQueueSizeEntry 1 }
 
 bonoQueueSizeScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -496,7 +496,7 @@ sproutLatencyTimeFrame OBJECT-TYPE
     ::= { sproutLatencyEntry 1 }
 
 sproutLatencyScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -1113,7 +1113,7 @@ sproutIncomingRequestsTimeFrame OBJECT-TYPE
     ::= { sproutIncomingRequestsEntry 1 }
 
 sproutIncomingRequestsScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -1162,7 +1162,7 @@ sproutRejectedOverloadTimeFrame OBJECT-TYPE
     ::= { sproutRejectedOverloadEntry 1 }
 
 sproutRejectedOverloadScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -1215,7 +1215,7 @@ sproutQueueSizeTimeFrame OBJECT-TYPE
     ::= { sproutQueueSizeEntry 1 }
 
 sproutQueueSizeScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -2665,7 +2665,7 @@ sproutPRRTimeFrame OBJECT-TYPE
     ::= { sproutPRREntry 1 }
 
 sproutPRRScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -2731,7 +2731,7 @@ SproutSmoothedLatencyEntry ::= SEQUENCE
 }
 
 sproutSmoothedLatencyScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -2767,7 +2767,7 @@ SproutTargetLatencyEntry ::= SEQUENCE
 }
 
 sproutTargetLatencyScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -2805,7 +2805,7 @@ SproutPenaltiesEntry ::= SEQUENCE
 }
 
 sproutPenaltiesScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
@@ -2842,7 +2842,7 @@ SproutPRRCurrentEntry ::= SEQUENCE
 }
 
 sproutPRRCurrentScope OBJECT-TYPE
-    SYNTAX      OCTET STRING (SIZE(1..256))
+    SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Node type of the node being queried."
