@@ -90,7 +90,7 @@ static void usage(void)
     puts("Options:\n"
          "\n"
          " --local-ip <ip>            Local IP address of this node\n"
-         " --hostname <name>       Hostname to identify this node in enterprise alarms\n"
+         " --hostname <name>          Hostname to identify this node in enterprise alarms\n"
          " --snmp-ips <ip>,<ip>       Send SNMP notifications to the specified IPs\n"
          " --community <name>         Include the given community string on notifications\n"
          " --snmp-notification-types  Sends SNMP notifiations with the specified format\n"
