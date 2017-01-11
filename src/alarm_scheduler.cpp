@@ -66,11 +66,12 @@ void SingleAlarmManager::change_schedule(AlarmDef::Severity new_severity,
 }
 
 AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
-                               std::set<NotificationType> snmp_notifications) :
+                               std::set<NotificationType> snmp_notifications,
+                               std::string hostname) :
   _terminated(false),
   _alarm_table_defs(alarm_table_defs)
 {
-  AlarmTrapSender::get_instance().initialise(this, snmp_notifications);
+  AlarmTrapSender::get_instance().initialise(this, snmp_notifications, hostname);
 
   // Create the lock/condition variables.
   pthread_mutex_init(&_lock, NULL);
