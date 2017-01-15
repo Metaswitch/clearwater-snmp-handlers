@@ -200,7 +200,7 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   static const oid alarm_cause_oid[] = {1,3,6,1,4,1,19444,12,2,0,8};
   static const oid alarm_effect_oid[] = {1,3,6,1,4,1,19444,12,2,0,9};
   static const oid alarm_action_oid[] = {1,3,6,1,4,1,19444,12,2,0,10};
-  static const oid alarm_hostname_oid[] = {1,3,6,1,4,1,19444,12,2,0,11};
+  static const oid alarm_hostname_oid[] = {1,3,6,1,4,1,19444,12,2,0,12};
   
   // We create variable lists, wipe them clean and then link them to each other
   // so only the first needs to be passed to sent_v2trap
