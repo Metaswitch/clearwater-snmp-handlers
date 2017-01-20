@@ -96,7 +96,7 @@ TEST_F(AlarmTableDefsTest, ValidTableDefLookup)
   EXPECT_TRUE(_def.is_valid());
   EXPECT_THAT((int)_def.state(), Eq(6));
   EXPECT_THAT((int)_def.alarm_cause(), Eq(AlarmDef::SOFTWARE_ERROR));
-  EXPECT_THAT(_def.name(), StrEq("Process fail"));
+  EXPECT_THAT(_def.name(), StrEq("PROCESS_FAIL"));
   EXPECT_THAT(_def.description(), StrEq("Process failure"));
   EXPECT_THAT(_def.details(), StartsWith("Monit has detected that the process has failed"));
   EXPECT_THAT(_def.cause(), StrEq("Cause"));
