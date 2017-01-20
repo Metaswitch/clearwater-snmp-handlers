@@ -149,7 +149,8 @@ public:
 
   // Constructor/Destructor
   AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
-                 std::set<NotificationType> snmp_notifications);
+                 std::set<NotificationType> snmp_notifications,
+                 std::string hostname);
   virtual ~AlarmScheduler();
 
   // Generates an alarmActiveState inform if the identified alarm is not

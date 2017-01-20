@@ -48,10 +48,10 @@ get_daemon_args()
   # Don't try and load MIBS at startup - we don't need them and this just causes lots of
   # "missing MIB" error logs.
   export MIBS=""
-  ption=value
   DAEMON_ARGS="
                --snmp-ips=$snmp_ip 
-               --local_ip=$local_ip
+               --local-ip=$local_ip
+               --hostname=$public_hostname
                --community=$snmp_community 
                --snmp-notification-types=$snmp_notification_types
                --log-dir=$log_directory 

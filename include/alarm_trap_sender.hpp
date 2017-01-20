@@ -58,9 +58,11 @@ class AlarmTrapSender
 {
 public:
   void initialise(AlarmScheduler* alarm_scheduler,
-                  std::set<NotificationType> snmp_notifications)
+                  std::set<NotificationType> snmp_notifications,
+                  std::string hostname)
     { _alarm_scheduler    = alarm_scheduler;
-      _snmp_notifications = snmp_notifications; }
+      _snmp_notifications = snmp_notifications;
+      _hostname = hostname; }
 
   void send_trap(const AlarmTableDef& alarm_table_def);
 
@@ -78,6 +80,7 @@ private:
   AlarmTrapSender() : _alarm_scheduler(NULL) {}
   AlarmScheduler* _alarm_scheduler;
   std::set<NotificationType> _snmp_notifications;
+  std::string _hostname;
   static AlarmTrapSender _instance;
   // Sends an RFC3877 compliant trap based upon the specified alarm definition.
   // net-snmp will handle the retries if needed. 

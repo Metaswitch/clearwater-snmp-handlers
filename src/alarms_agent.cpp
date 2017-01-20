@@ -68,6 +68,7 @@ enum OptionTypes
   OPT_COMMUNITY=256+1,
   OPT_SNMP_NOTIFICATION_TYPE,
   OPT_LOCAL_IP,
+  OPT_HOSTNAME,
   OPT_SNMP_IPS,
   OPT_LOG_LEVEL,
   OPT_LOG_DIR
@@ -78,7 +79,8 @@ const static struct option long_opt[] =
   { "community",                       required_argument, 0, OPT_COMMUNITY},
   { "snmp-notification-types",         required_argument, 0, OPT_SNMP_NOTIFICATION_TYPE},
   { "snmp-ips",                        required_argument, 0, OPT_SNMP_IPS},
-  { "local_ip",                        required_argument, 0, OPT_LOCAL_IP},
+  { "local-ip",                        required_argument, 0, OPT_LOCAL_IP},
+  { "hostname",                        required_argument, 0, OPT_HOSTNAME},
   { "log-level",                       required_argument, 0, OPT_LOG_LEVEL},
   { "log-dir",                         required_argument, 0, OPT_LOG_DIR},
 };
@@ -87,6 +89,8 @@ static void usage(void)
 {
     puts("Options:\n"
          "\n"
+         " --local-ip <ip>            Local IP address of this node\n"
+         " --hostname <name>          Hostname to identify this node in enterprise alarms\n"
          " --snmp-ips <ip>,<ip>       Send SNMP notifications to the specified IPs\n"
          " --community <name>         Include the given community string on notifications\n"
          " --snmp-notification-types  Sends SNMP notifiations with the specified format\n"
@@ -102,6 +106,7 @@ int main (int argc, char **argv)
   char* community = NULL;
   std::set<NotificationType> snmp_notifications;
   std::string local_ip = "0.0.0.0";
+  std::string hostname = "";
   std::string logdir = "";
   int loglevel = 4;
   int c;
@@ -142,7 +147,10 @@ int main (int argc, char **argv)
         Utils::split_string(optarg, ',', trap_ips);
         break;
       case OPT_LOCAL_IP:
-        local_ip = optarg;       
+        local_ip = optarg;
+        break;
+      case OPT_HOSTNAME:
+        hostname = optarg;
         break;
       case OPT_LOG_LEVEL:
         loglevel = atoi(optarg);
@@ -189,7 +197,7 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications);
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications, hostname);
   AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
 
   init_alarmModelTable(*alarm_table_defs);

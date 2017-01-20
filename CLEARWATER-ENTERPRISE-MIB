@@ -102,7 +102,8 @@ alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 0 }
                    alarmTrapDetails,
                    alarmTrapCause,
                    alarmTrapEffect,
-                   alarmTrapAction
+                   alarmTrapAction,
+                   alarmTrapHostname
                    }
     STATUS       current
     DESCRIPTION  "A collection of objects providing information about the
@@ -118,7 +119,8 @@ alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 0 }
                    alarmTrapDetails,
                    alarmTrapCause,
                    alarmTrapEffect,
-                   alarmTrapAction
+                   alarmTrapAction,
+                   alarmTrapHostname
                    }
     STATUS       current
     DESCRIPTION  "This is the alarm trap table for Clearwater.  A
@@ -192,6 +194,15 @@ alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 0 }
     STATUS       current
     DESCRIPTION  "Suggested actions that you can take to resolve the problem."
     ::= { alarmTrapsPrefix 10 }
+
+  -- alarmTrapsPrefix 11 is used for alarmTrapGroup above
+
+  alarmTrapHostname OBJECT-TYPE
+    SYNTAX       DisplayString (SIZE (1..4096))
+    MAX-ACCESS   read-write
+    STATUS       current
+    DESCRIPTION  "Hostname of the network element raising this alarm."
+    ::= { alarmTrapsPrefix 12 }
 
 END
 

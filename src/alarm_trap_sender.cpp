@@ -200,6 +200,7 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   static const oid alarm_cause_oid[] = {1,3,6,1,4,1,19444,12,2,0,8};
   static const oid alarm_effect_oid[] = {1,3,6,1,4,1,19444,12,2,0,9};
   static const oid alarm_action_oid[] = {1,3,6,1,4,1,19444,12,2,0,10};
+  static const oid alarm_hostname_oid[] = {1,3,6,1,4,1,19444,12,2,0,12};
   
   // We create variable lists, wipe them clean and then link them to each other
   // so only the first needs to be passed to sent_v2trap
@@ -214,6 +215,7 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   CREATE_NETSNMP_LIST(var_alarm_cause);
   CREATE_NETSNMP_LIST(var_alarm_effect);
   CREATE_NETSNMP_LIST(var_alarm_action);
+  CREATE_NETSNMP_LIST(var_alarm_hostname);
   
   var_trap.next_variable = &var_MIB_version;
   var_MIB_version.next_variable = &var_alarm_name;
@@ -225,7 +227,8 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   var_alarm_details.next_variable = &var_alarm_cause;
   var_alarm_cause.next_variable = &var_alarm_effect;
   var_alarm_effect.next_variable = &var_alarm_action;
-  var_alarm_action.next_variable = NULL;
+  var_alarm_action.next_variable = &var_alarm_hostname;
+  var_alarm_hostname.next_variable = NULL;
 
   // Sets the object id of each of the variable lists to the OIDs defined above,
   // these can be thought of as the keys for each of the variable bindings.
@@ -240,6 +243,7 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_alarm_cause, alarm_cause_oid, OID_LENGTH(alarm_cause_oid));
   snmp_set_var_objid(&var_alarm_effect, alarm_effect_oid, OID_LENGTH(alarm_effect_oid));
   snmp_set_var_objid(&var_alarm_action, alarm_action_oid, OID_LENGTH(alarm_action_oid));
+  snmp_set_var_objid(&var_alarm_hostname, alarm_hostname_oid, OID_LENGTH(alarm_hostname_oid));
 
   // Sets the value of each of the variable lists, these can be thought of as
   // the values which correspond to the above keys in the variable bindings.
@@ -279,6 +283,9 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_typed_value(&var_alarm_action, ASN_OCTET_STR, 
                            alarm_table_def.action().c_str(), 
                            alarm_table_def.action().length());
+  snmp_set_var_typed_value(&var_alarm_hostname, ASN_OCTET_STR,
+                           _hostname.c_str(),
+                           _hostname.length());
 
   // Sends the trap passing the function the first of the linked lists.
   send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def);
