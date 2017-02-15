@@ -2093,7 +2093,7 @@ sproutSCSCFIncomingSIPTransactionsTable OBJECT-TYPE
                  convenience) provides the percentage of incoming transaction
                  attempts that were successful.  Note that the following
                  transactions are not currently tracked in this table:
-                 - CANCELs
+                 - CANCELs (see specific Cancel stats instead)
                  - REGISTERs (see specific Registration stats instead)
                  - Requests that fail authentication (see specific
                    Authentication stats instead)
@@ -2181,8 +2181,10 @@ sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the SCSCF, and (for
                  convenience) provides the percentage of attempts that were
-                 successful.  Note that reg-event NOTIFYs are not currently
-                 tracked by this table."
+                 successful.  Note that the following transactions are not
+                 currently tracked by this table:
+                 - CANCELs
+                 - reg-event NOTIFYs."
     ::= { sprout 21 }
 
 sproutSCSCFOutgoingSIPTransactionsEntry OBJECT-TYPE
