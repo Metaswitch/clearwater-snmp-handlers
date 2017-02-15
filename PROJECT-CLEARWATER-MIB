@@ -1257,7 +1257,7 @@ sproutQueueSizeCount OBJECT-TYPE
     ::= { sproutQueueSizeEntry 7 }
 
 sproutSCSCFInitialRegistrationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutInitialRegistrationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFInitialRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1268,7 +1268,7 @@ sproutSCSCFInitialRegistrationTable OBJECT-TYPE
     ::= { sprout 9 }
 
 sproutSCSCFInitialRegistrationEntry OBJECT-TYPE
-    SYNTAX      SproutInitialRegistrationEntry
+    SYNTAX      SproutSCSCFInitialRegistrationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1277,7 +1277,7 @@ sproutSCSCFInitialRegistrationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFInitialRegistrationScope }
     ::= { sproutSCSCFInitialRegistrationTable 1 }
 
-SproutInitialRegistrationEntry ::= SEQUENCE
+SproutSCSCFInitialRegistrationEntry ::= SEQUENCE
 {
   sproutSCSCFInitialRegistrationScope          INTEGER,
   sproutSCSCFInitialRegistrationAttempts       Unsigned32,
@@ -1330,7 +1330,7 @@ sproutSCSCFInitialRegistrationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFInitialRegistrationEntry 5 }
 
 sproutSCSCFReRegistrationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutReRegistrationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFReRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1341,7 +1341,7 @@ sproutSCSCFReRegistrationTable OBJECT-TYPE
     ::= { sprout 10 }
 
 sproutSCSCFReRegistrationEntry OBJECT-TYPE
-    SYNTAX      SproutReRegistrationEntry
+    SYNTAX      SproutSCSCFReRegistrationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1350,7 +1350,7 @@ sproutSCSCFReRegistrationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFReRegistrationScope }
     ::= { sproutSCSCFReRegistrationTable 1 }
 
-SproutReRegistrationEntry ::= SEQUENCE
+SproutSCSCFReRegistrationEntry ::= SEQUENCE
 {
   sproutSCSCFReRegistrationScope          INTEGER,
   sproutSCSCFReRegistrationAttempts       Unsigned32,
@@ -1403,7 +1403,7 @@ sproutSCSCFReRegistrationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFReRegistrationEntry 5 }
 
 sproutSCSCFDeRegistrationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutDeRegistrationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFDeRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1412,7 +1412,7 @@ sproutSCSCFDeRegistrationTable OBJECT-TYPE
     ::= { sprout 11 }
 
 sproutSCSCFDeRegistrationEntry OBJECT-TYPE
-    SYNTAX      SproutDeRegistrationEntry
+    SYNTAX      SproutSCSCFDeRegistrationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1421,7 +1421,7 @@ sproutSCSCFDeRegistrationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFDeRegistrationScope }
     ::= { sproutSCSCFDeRegistrationTable 1 }
 
-SproutDeRegistrationEntry ::= SEQUENCE
+SproutSCSCFDeRegistrationEntry ::= SEQUENCE
 {
   sproutSCSCFDeRegistrationScope          INTEGER,
   sproutSCSCFDeRegistrationAttempts       Unsigned32,
@@ -1472,7 +1472,7 @@ sproutSCSCFDeRegistrationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFDeRegistrationEntry 5 }
 
 sproutSCSCFThirdPartyInitialRegistrationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutThirdPartyInitialRegistrationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFThirdPartyInitialRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1481,7 +1481,7 @@ sproutSCSCFThirdPartyInitialRegistrationTable OBJECT-TYPE
     ::= { sprout 12 }
 
 sproutSCSCFThirdPartyInitialRegistrationEntry OBJECT-TYPE
-    SYNTAX      SproutThirdPartyInitialRegistrationEntry
+    SYNTAX      SproutSCSCFThirdPartyInitialRegistrationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1490,7 +1490,7 @@ sproutSCSCFThirdPartyInitialRegistrationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFThirdPartyInitialRegistrationScope }
     ::= { sproutSCSCFThirdPartyInitialRegistrationTable 1 }
 
-SproutThirdPartyInitialRegistrationEntry ::= SEQUENCE
+SproutSCSCFThirdPartyInitialRegistrationEntry ::= SEQUENCE
 {
   sproutSCSCFThirdPartyInitialRegistrationScope          INTEGER,
   sproutSCSCFThirdPartyInitialRegistrationAttempts       Unsigned32,
@@ -1546,7 +1546,7 @@ sproutSCSCFThirdPartyInitialRegistrationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFThirdPartyInitialRegistrationEntry 5 }
 
 sproutSCSCFThirdPartyReRegistrationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutThirdPartyReRegistrationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFThirdPartyReRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1555,7 +1555,7 @@ sproutSCSCFThirdPartyReRegistrationTable OBJECT-TYPE
     ::= { sprout 13 }
 
 sproutSCSCFThirdPartyReRegistrationEntry OBJECT-TYPE
-    SYNTAX      SproutThirdPartyReRegistrationEntry
+    SYNTAX      SproutSCSCFThirdPartyReRegistrationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1564,7 +1564,7 @@ sproutSCSCFThirdPartyReRegistrationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFThirdPartyReRegistrationScope }
     ::= { sproutSCSCFThirdPartyReRegistrationTable 1 }
 
-SproutThirdPartyReRegistrationEntry ::= SEQUENCE
+SproutSCSCFThirdPartyReRegistrationEntry ::= SEQUENCE
 {
   sproutSCSCFThirdPartyReRegistrationScope          INTEGER,
   sproutSCSCFThirdPartyReRegistrationAttempts       Unsigned32,
@@ -1620,7 +1620,7 @@ sproutSCSCFThirdPartyReRegistrationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFThirdPartyReRegistrationEntry 5 }
 
 sproutSCSCFThirdPartyDeRegistrationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutThirdPartyDeRegistrationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFThirdPartyDeRegistrationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1629,7 +1629,7 @@ sproutSCSCFThirdPartyDeRegistrationTable OBJECT-TYPE
     ::= { sprout 14 }
 
 sproutSCSCFThirdPartyDeRegistrationEntry OBJECT-TYPE
-    SYNTAX      SproutThirdPartyDeRegistrationEntry
+    SYNTAX      SproutSCSCFThirdPartyDeRegistrationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1638,7 +1638,7 @@ sproutSCSCFThirdPartyDeRegistrationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFThirdPartyDeRegistrationScope }
     ::= { sproutSCSCFThirdPartyDeRegistrationTable 1 }
 
-SproutThirdPartyDeRegistrationEntry ::= SEQUENCE
+SproutSCSCFThirdPartyDeRegistrationEntry ::= SEQUENCE
 {
   sproutSCSCFThirdPartyDeRegistrationScope          INTEGER,
   sproutSCSCFThirdPartyDeRegistrationAttempts       Unsigned32,
@@ -1694,7 +1694,7 @@ sproutSCSCFThirdPartyDeRegistrationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFThirdPartyDeRegistrationEntry 5 }
 
 sproutSCSCFSIPDigestAuthenticationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutSIPDigestAuthenticationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFSIPDigestAuthenticationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1703,7 +1703,7 @@ sproutSCSCFSIPDigestAuthenticationTable OBJECT-TYPE
     ::= { sprout 15 }
 
 sproutSCSCFSIPDigestAuthenticationEntry OBJECT-TYPE
-    SYNTAX      SproutSIPDigestAuthenticationEntry
+    SYNTAX      SproutSCSCFSIPDigestAuthenticationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1712,7 +1712,7 @@ sproutSCSCFSIPDigestAuthenticationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFSIPDigestAuthenticationScope }
     ::= { sproutSCSCFSIPDigestAuthenticationTable 1 }
 
-SproutSIPDigestAuthenticationEntry ::= SEQUENCE
+SproutSCSCFSIPDigestAuthenticationEntry ::= SEQUENCE
 {
   sproutSCSCFSIPDigestAuthenticationScope          INTEGER,
   sproutSCSCFSIPDigestAuthenticationAttempts       Unsigned32,
@@ -1768,7 +1768,7 @@ sproutSCSCFSIPDigestAuthenticationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFSIPDigestAuthenticationEntry 5 }
 
 sproutSCSCFAKAAuthenticationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutAKAAuthenticationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFAKAAuthenticationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1778,7 +1778,7 @@ sproutSCSCFAKAAuthenticationTable OBJECT-TYPE
     ::= { sprout 16 }
 
 sproutSCSCFAKAAuthenticationEntry OBJECT-TYPE
-    SYNTAX      SproutAKAAuthenticationEntry
+    SYNTAX      SproutSCSCFAKAAuthenticationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1787,7 +1787,7 @@ sproutSCSCFAKAAuthenticationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFAKAAuthenticationScope }
     ::= { sproutSCSCFAKAAuthenticationTable 1 }
 
-SproutAKAAuthenticationEntry ::= SEQUENCE
+SproutSCSCFAKAAuthenticationEntry ::= SEQUENCE
 {
   sproutSCSCFAKAAuthenticationScope          INTEGER,
   sproutSCSCFAKAAuthenticationAttempts       Unsigned32,
@@ -1843,7 +1843,7 @@ sproutSCSCFAKAAuthenticationSuccessPercent OBJECT-TYPE
     ::= { sproutSCSCFAKAAuthenticationEntry 5 }
 
 sproutSCSCFNonRegisterAuthenticationTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutNonRegisterAuthenticationEntry
+    SYNTAX SEQUENCE OF SproutSCSCFNonRegisterAuthenticationEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
@@ -1853,7 +1853,7 @@ sproutSCSCFNonRegisterAuthenticationTable OBJECT-TYPE
     ::= { sprout 17 }
 
 sproutSCSCFNonRegisterAuthenticationEntry OBJECT-TYPE
-    SYNTAX      SproutNonRegisterAuthenticationEntry
+    SYNTAX      SproutSCSCFNonRegisterAuthenticationEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of attempts, successes and failures for
@@ -1861,7 +1861,7 @@ sproutSCSCFNonRegisterAuthenticationEntry OBJECT-TYPE
     INDEX       { sproutSCSCFNonRegisterAuthenticationScope }
     ::= { sproutSCSCFNonRegisterAuthenticationTable 1 }
 
-SproutNonRegisterAuthenticationEntry ::= SEQUENCE
+SproutSCSCFNonRegisterAuthenticationEntry ::= SEQUENCE
 {
   sproutSCSCFNonRegisterAuthenticationScope          INTEGER,
   sproutSCSCFNonRegisterAuthenticationAttempts       Unsigned32,
@@ -2871,7 +2871,7 @@ sproutPRRCurrentValue OBJECT-TYPE
     ::= { sproutPRRCurrentEntry 2 }
 
 sproutSCSCFINVITEsCancelledBefore1xxTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutINVITEsCancelledBefore1xxEntry
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsCancelledBefore1xxEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Number of INVITE transactions that were cancelled before a 1xx
@@ -2879,7 +2879,7 @@ sproutSCSCFINVITEsCancelledBefore1xxTable OBJECT-TYPE
     ::= { sprout 32 }
 
 sproutSCSCFINVITEsCancelledBefore1xxEntry OBJECT-TYPE
-    SYNTAX      SproutINVITEsCancelledBefore1xxEntry
+    SYNTAX      SproutSCSCFINVITEsCancelledBefore1xxEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of INVITE transactions that were cancelled before a
@@ -2887,7 +2887,7 @@ sproutSCSCFINVITEsCancelledBefore1xxEntry OBJECT-TYPE
     INDEX       { sproutSCSCFINVITEsCancelledBefore1xxScope }
     ::= { sproutSCSCFINVITEsCancelledBefore1xxTable 1 }
 
-SproutINVITEsCancelledBefore1xxEntry ::= SEQUENCE
+SproutSCSCFINVITEsCancelledBefore1xxEntry ::= SEQUENCE
 {
   sproutSCSCFINVITEsCancelledBefore1xxScope        INTEGER,
   sproutSCSCFINVITEsCancelledBefore1xxCount        Unsigned32
@@ -2913,7 +2913,7 @@ sproutSCSCFINVITEsCancelledBefore1xxCount OBJECT-TYPE
     ::= { sproutSCSCFINVITEsCancelledBefore1xxEntry 2 }
 
 sproutSCSCFINVITEsCancelledAfter1xxTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutINVITEsCancelledAfter1xxEntry
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsCancelledAfter1xxEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Number of INVITE transactions that were cancelled before a 1xx
@@ -2921,7 +2921,7 @@ sproutSCSCFINVITEsCancelledAfter1xxTable OBJECT-TYPE
     ::= { sprout 33 }
 
 sproutSCSCFINVITEsCancelledAfter1xxEntry OBJECT-TYPE
-    SYNTAX      SproutINVITEsCancelledAfter1xxEntry
+    SYNTAX      SproutSCSCFINVITEsCancelledAfter1xxEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of INVITE transactions that were cancelled after a
@@ -2929,7 +2929,7 @@ sproutSCSCFINVITEsCancelledAfter1xxEntry OBJECT-TYPE
     INDEX       { sproutSCSCFINVITEsCancelledAfter1xxScope }
     ::= { sproutSCSCFINVITEsCancelledAfter1xxTable 1 }
 
-SproutINVITEsCancelledAfter1xxEntry ::= SEQUENCE
+SproutSCSCFINVITEsCancelledAfter1xxEntry ::= SEQUENCE
 {
   sproutSCSCFINVITEsCancelledAfter1xxScope        INTEGER,
   sproutSCSCFINVITEsCancelledAfter1xxCount        Unsigned32
@@ -3272,21 +3272,21 @@ sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 5 }
 
 sproutSCSCFINVITEsForkedTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutINVITEsForkedEntry
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsForkedEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Number of extra INVITEs created due to multiple registrations."
     ::= { sprout 38 }
 
 sproutSCSCFINVITEsForkedEntry OBJECT-TYPE
-    SYNTAX      SproutINVITEsForkedEntry
+    SYNTAX      SproutSCSCFINVITEsForkedEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The number of extra INVITEs created due to multiple registrations."
     INDEX       { sproutSCSCFINVITEsForkedScope }
     ::= { sproutSCSCFINVITEsForkedTable 1 }
 
-SproutINVITEsForkedEntry ::= SEQUENCE
+SproutSCSCFINVITEsForkedEntry ::= SEQUENCE
 {
   sproutSCSCFINVITEsForkedScope        INTEGER,
   sproutSCSCFINVITEsForkedCount        Unsigned32
