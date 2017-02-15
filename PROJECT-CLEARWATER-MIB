@@ -2182,7 +2182,8 @@ sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
                  of outgoing SIP transactions for the SCSCF, and (for
                  convenience) provides the percentage of attempts that were
                  successful.  Note that the following transactions are not
-                 currently tracked by this table:
+                 currently tracked in this table:
+                 tracked in this table."
                  - CANCELs
                  - reg-event NOTIFYs."
     ::= { sprout 21 }
