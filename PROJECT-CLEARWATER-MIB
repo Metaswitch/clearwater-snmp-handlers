@@ -2183,7 +2183,6 @@ sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
                  convenience) provides the percentage of attempts that were
                  successful.  Note that the following transactions are not
                  currently tracked in this table:
-                 tracked in this table."
                  - CANCELs
                  - reg-event NOTIFYs."
     ::= { sprout 21 }
