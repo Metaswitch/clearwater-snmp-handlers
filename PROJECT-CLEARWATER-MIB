@@ -1624,7 +1624,7 @@ sproutSCSCFThirdPartyDeRegistrationTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Counts the number of attempts, successes and failures
-                 of third-party de-registrationsm and also (for convenience)
+                 of third-party de-registrations and also (for convenience)
                  provides the percentage of attempts that were successful."
     ::= { sprout 14 }
 
