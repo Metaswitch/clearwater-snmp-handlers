@@ -166,7 +166,7 @@ bonoLatencyScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { bonoLatencyEntry 2 }
 
 bonoLatencyAverage OBJECT-TYPE
@@ -291,7 +291,7 @@ bonoIncomingRequestsScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { bonoIncomingRequestsEntry 2 }
 
 bonoIncomingRequestsCount OBJECT-TYPE
@@ -340,7 +340,7 @@ bonoRejectedOverloadScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { bonoRejectedOverloadEntry 2 }
 
 bonoRejectedOverloadCount OBJECT-TYPE
@@ -393,7 +393,7 @@ bonoQueueSizeScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { bonoQueueSizeEntry 2 }
 
 bonoQueueSizeAverage OBJECT-TYPE
@@ -499,7 +499,7 @@ sproutLatencyScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutLatencyEntry 2 }
 
 sproutLatencyAverage OBJECT-TYPE
@@ -1116,7 +1116,7 @@ sproutIncomingRequestsScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutIncomingRequestsEntry 2 }
 
 sproutIncomingRequestsCount OBJECT-TYPE
@@ -1165,7 +1165,7 @@ sproutRejectedOverloadScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutRejectedOverloadEntry 2 }
 
 sproutRejectedOverloadCount OBJECT-TYPE
@@ -1218,7 +1218,7 @@ sproutQueueSizeScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutQueueSizeEntry 2 }
 
 sproutQueueSizeAverage OBJECT-TYPE
@@ -2683,7 +2683,7 @@ sproutPRRScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutPRREntry 2 }
 
 sproutPRRAverage OBJECT-TYPE
@@ -2749,7 +2749,7 @@ sproutSmoothedLatencyScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutSmoothedLatencyEntry 1 }
 
 sproutSmoothedLatencyValue OBJECT-TYPE
@@ -2785,7 +2785,7 @@ sproutTargetLatencyScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutTargetLatencyEntry 1 }
 
 sproutTargetLatencyValue OBJECT-TYPE
@@ -2823,7 +2823,7 @@ sproutPenaltiesScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutPenaltiesEntry 1 }
 
 sproutPenaltiesValue OBJECT-TYPE
@@ -2860,7 +2860,7 @@ sproutPRRCurrentScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Node type of the node being queried."
+    DESCRIPTION "Statistic scope - should always take the value: node."
     ::= { sproutPRRCurrentEntry 1 }
 
 sproutPRRCurrentValue OBJECT-TYPE
