@@ -1324,9 +1324,9 @@ sproutSCSCFInitialRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of initial registrations over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFInitialRegistrationEntry 5 }
 
 sproutSCSCFReRegistrationTable OBJECT-TYPE
@@ -1397,9 +1397,9 @@ sproutSCSCFReRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of re-registrations attempts over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFReRegistrationEntry 5 }
 
 sproutSCSCFDeRegistrationTable OBJECT-TYPE
@@ -1540,9 +1540,9 @@ sproutSCSCFThirdPartyInitialRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of third-party initial registration attempts
-                 over the time period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 over the time period that were successful. Reported in units
+                 of ten thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFThirdPartyInitialRegistrationEntry 5 }
 
 sproutSCSCFThirdPartyReRegistrationTable OBJECT-TYPE
@@ -1614,9 +1614,9 @@ sproutSCSCFThirdPartyReRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of third-party re-registration attempts
-                 over the time period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 over the time period that were successful. Reported in units
+                 of ten thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFThirdPartyReRegistrationEntry 5 }
 
 sproutSCSCFThirdPartyDeRegistrationTable OBJECT-TYPE
@@ -1688,9 +1688,9 @@ sproutSCSCFThirdPartyDeRegistrationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of third-party de-registration attempts
-                 over the time period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 over the time period that were successful. Reported in units
+                 of ten thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFThirdPartyDeRegistrationEntry 5 }
 
 sproutSCSCFSIPDigestAuthenticationTable OBJECT-TYPE
@@ -1762,9 +1762,9 @@ sproutSCSCFSIPDigestAuthenticationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of SIP digest authentication attempts over
-                 the time period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 the time period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFSIPDigestAuthenticationEntry 5 }
 
 sproutSCSCFAKAAuthenticationTable OBJECT-TYPE
@@ -1837,9 +1837,9 @@ sproutSCSCFAKAAuthenticationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of AKA authentication attempts over
-                 the time period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 the time period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFAKAAuthenticationEntry 5 }
 
 sproutSCSCFNonRegisterAuthenticationTable OBJECT-TYPE
@@ -1911,9 +1911,9 @@ sproutSCSCFNonRegisterAuthenticationSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of non-register authentication attempts over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFNonRegisterAuthenticationEntry 5 }
 
 sproutICSCFIncomingSIPTransactionsTable OBJECT-TYPE
@@ -1995,9 +1995,9 @@ sproutICSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutICSCFIncomingSIPTransactionsEntry 6 }
 
 sproutICSCFOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -2079,9 +2079,9 @@ sproutICSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutICSCFOutgoingSIPTransactionsEntry 6 }
 
 sproutSCSCFIncomingSIPTransactionsTable OBJECT-TYPE
@@ -2169,9 +2169,9 @@ sproutSCSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the time
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFIncomingSIPTransactionsEntry 6 }
 
 sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -2255,9 +2255,9 @@ sproutSCSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutSCSCFOutgoingSIPTransactionsEntry 6 }
 
 sproutBGCFIncomingSIPTransactionsTable OBJECT-TYPE
@@ -2339,9 +2339,9 @@ sproutBGCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutBGCFIncomingSIPTransactionsEntry 6 }
 
 sproutBGCFOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -2423,9 +2423,9 @@ sproutBGCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutBGCFOutgoingSIPTransactionsEntry 6 }
 
 sproutMMTelIncomingSIPTransactionsTable OBJECT-TYPE
@@ -2507,9 +2507,9 @@ sproutMMTelIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutMMTelIncomingSIPTransactionsEntry 6 }
 
 sproutMMTelOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -2591,9 +2591,9 @@ sproutMMTelOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutMMTelOutgoingSIPTransactionsEntry 6 }
 
 sproutSCSCFRequestsRoutedByPreloadedRouteTable OBJECT-TYPE
@@ -3178,9 +3178,9 @@ sproutICSCFSessionEstablishmentSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of terminating session attempts over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentEntry 5 }
 
 sproutICSCFSessionEstablishmentNetworkTable OBJECT-TYPE
@@ -3246,8 +3246,8 @@ sproutICSCFSessionEstablishmentNetworkSuccesses OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The number of terminating session attempts over the
                  period that were successful from a network perspective.
-                 Reported in units of tens of thousands of a percent.
-                 When there are zero attempts made the value will be
+                 Reported in units of ten thousandths of a percentage point.
+                 When there are zeroattempts made the value will be
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 3 }
 
@@ -3266,8 +3266,8 @@ sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
     STATUS      current
     DESCRIPTION "The percentage of terminating session attempts over the
                  period that were successful from a network perspective.
-                 Reported in units of tens of thousands of a percent.
-                 When there are zero attempts made the value will be
+                 Reported in units of ten thousandths of a percentage point.
+                 When there are zeroattempts made the value will be
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 5 }
 
@@ -4576,9 +4576,9 @@ cdivAsIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { cdivAsIncomingSIPTransactionsEntry 6 }
 
 cdivAsOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -4660,9 +4660,9 @@ cdivAsOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { cdivAsOutgoingSIPTransactionsEntry 6 }
 
 callDiversionASGroup OBJECT-GROUP
@@ -4966,9 +4966,9 @@ mementoIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { mementoIncomingSIPTransactionsEntry 6 }
 
 mementoOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -5050,9 +5050,9 @@ mementoOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { mementoOutgoingSIPTransactionsEntry 6 }
 
 mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
@@ -6439,9 +6439,9 @@ geminiIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of incoming SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { geminiIncomingSIPTransactionsEntry 6 }
 
 geminiOutgoingSIPTransactionsTable OBJECT-TYPE
@@ -6523,9 +6523,9 @@ geminiOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The percentage of outgoing SIP transactions over the
-                 period that were successful. Reported in units of tens of
-                 thousands of a percent. When there are zero attempts made
-                 the value will be 1000000 to represent 100%."
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
     ::= { geminiOutgoingSIPTransactionsEntry 6 }
 
 geminiGroup OBJECT-GROUP
