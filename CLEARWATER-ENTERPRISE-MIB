@@ -141,7 +141,7 @@ alarmTrapsPrefix OBJECT IDENTIFIER ::= { clearwaterTraps 0 }
     SYNTAX       OBJECT IDENTIFIER 
     MAX-ACCESS   read-write
     STATUS       current
-    DESCRIPTION  "The OID of the alarmed obect.  Gets and Sets on
+    DESCRIPTION  "The OID of the alarm.  Gets and Sets on
                   this OID are supported. "
     ::= { alarmTrapsPrefix 3 }
 
