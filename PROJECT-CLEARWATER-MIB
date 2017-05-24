@@ -3259,7 +3259,7 @@ sproutICSCFSessionEstablishmentNetworkSuccesses OBJECT-TYPE
     DESCRIPTION "The number of terminating session attempts over the
                  period that were successful from a network perspective.
                  Reported in units of ten thousandths of a percentage point.
-                 When there are zeroattempts made the value will be
+                 When there are zero attempts made the value will be
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 3 }
 
@@ -3279,7 +3279,7 @@ sproutICSCFSessionEstablishmentNetworkSuccessPercent OBJECT-TYPE
     DESCRIPTION "The percentage of terminating session attempts over the
                  period that were successful from a network perspective.
                  Reported in units of ten thousandths of a percentage point.
-                 When there are zeroattempts made the value will be
+                 When there are zero attempts made the value will be
                  1000000 to represent 100%."
     ::= { sproutICSCFSessionEstablishmentNetworkEntry 5 }
 
