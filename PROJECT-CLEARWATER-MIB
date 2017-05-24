@@ -1315,7 +1315,8 @@ sproutSCSCFInitialRegistrationFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of initial registration failures over the period."
+    DESCRIPTION "The number of initial registration failures over the period.
+                 Note that 3xx responses are counted as failures."
     ::= { sproutSCSCFInitialRegistrationEntry 4 }
 
 sproutSCSCFInitialRegistrationSuccessPercent OBJECT-TYPE
@@ -1388,7 +1389,8 @@ sproutSCSCFReRegistrationFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of re-registration failures over the period."
+    DESCRIPTION "The number of re-registration failures over the period. Note
+                 that 3xx responses are counted as failures."
     ::= { sproutSCSCFReRegistrationEntry 4 }
 
 sproutSCSCFReRegistrationSuccessPercent OBJECT-TYPE
@@ -1459,7 +1461,8 @@ sproutSCSCFDeRegistrationFailures OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "The number of de-registration failures over the period."
+    DESCRIPTION "The number of de-registration failures over the period. Note
+                 that 3xx responses are counted as failures."
     ::= { sproutSCSCFDeRegistrationEntry 4 }
 
 sproutSCSCFDeRegistrationSuccessPercent OBJECT-TYPE
@@ -1531,7 +1534,7 @@ sproutSCSCFThirdPartyInitialRegistrationFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party initial registration failures over
-                 the period."
+                 the period. Note that 3xx responses are counted as failures."
     ::= { sproutSCSCFThirdPartyInitialRegistrationEntry 4 }
 
 sproutSCSCFThirdPartyInitialRegistrationSuccessPercent OBJECT-TYPE
@@ -1589,7 +1592,7 @@ sproutSCSCFThirdPartyReRegistrationAttempts OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party re-registration attempts over the
-period."
+                 period."
     ::= { sproutSCSCFThirdPartyReRegistrationEntry 2 }
 
 sproutSCSCFThirdPartyReRegistrationSuccesses OBJECT-TYPE
@@ -1597,7 +1600,7 @@ sproutSCSCFThirdPartyReRegistrationSuccesses OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party re-registration successes over the
-period."
+                 period."
     ::= { sproutSCSCFThirdPartyReRegistrationEntry 3 }
 
 sproutSCSCFThirdPartyReRegistrationFailures OBJECT-TYPE
@@ -1605,7 +1608,7 @@ sproutSCSCFThirdPartyReRegistrationFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party re-registration failures over the
-period."
+                 period. Note that 3xx responses are counted as failures."
     ::= { sproutSCSCFThirdPartyReRegistrationEntry 4 }
 
 sproutSCSCFThirdPartyReRegistrationSuccessPercent OBJECT-TYPE
@@ -1663,7 +1666,7 @@ sproutSCSCFThirdPartyDeRegistrationAttempts OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party de-registration attempts over the
-period."
+                 period."
     ::= { sproutSCSCFThirdPartyDeRegistrationEntry 2 }
 
 sproutSCSCFThirdPartyDeRegistrationSuccesses OBJECT-TYPE
@@ -1671,7 +1674,7 @@ sproutSCSCFThirdPartyDeRegistrationSuccesses OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party de-registration successes over the
-period."
+                 period."
     ::= { sproutSCSCFThirdPartyDeRegistrationEntry 3 }
 
 sproutSCSCFThirdPartyDeRegistrationFailures OBJECT-TYPE
@@ -1679,7 +1682,7 @@ sproutSCSCFThirdPartyDeRegistrationFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of third-party de-registration failures over the
-period."
+                 period. Note that 3xx responses are counted as failures."
     ::= { sproutSCSCFThirdPartyDeRegistrationEntry 4 }
 
 sproutSCSCFThirdPartyDeRegistrationSuccessPercent OBJECT-TYPE
@@ -1986,7 +1989,8 @@ sproutICSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { sproutICSCFIncomingSIPTransactionsEntry 5 }
 
 sproutICSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2070,7 +2074,8 @@ sproutICSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { sproutICSCFOutgoingSIPTransactionsEntry 5 }
 
 sproutICSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2160,7 +2165,8 @@ sproutSCSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { sproutSCSCFIncomingSIPTransactionsEntry 5 }
 
 sproutSCSCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2246,7 +2252,8 @@ sproutSCSCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { sproutSCSCFOutgoingSIPTransactionsEntry 5 }
 
 sproutSCSCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2330,7 +2337,8 @@ sproutBGCFIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { sproutBGCFIncomingSIPTransactionsEntry 5 }
 
 sproutBGCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2414,7 +2422,8 @@ sproutBGCFOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { sproutBGCFOutgoingSIPTransactionsEntry 5 }
 
 sproutBGCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2498,7 +2507,8 @@ sproutMMTelIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { sproutMMTelIncomingSIPTransactionsEntry 5 }
 
 sproutMMTelIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -2582,7 +2592,8 @@ sproutMMTelOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { sproutMMTelOutgoingSIPTransactionsEntry 5 }
 
 sproutMMTelOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -3169,7 +3180,8 @@ sproutICSCFSessionEstablishmentFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed terminating session attempts over the
-                 period."
+                 period. Note that 3xx responses are counted as session
+                 establishment failures."
     ::= { sproutICSCFSessionEstablishmentEntry 4 }
 
 sproutICSCFSessionEstablishmentSuccessPercent OBJECT-TYPE
@@ -4567,7 +4579,8 @@ cdivAsIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { cdivAsIncomingSIPTransactionsEntry 5 }
 
 cdivAsIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -4651,7 +4664,8 @@ cdivAsOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { cdivAsOutgoingSIPTransactionsEntry 5 }
 
 cdivAsOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -4957,7 +4971,8 @@ mementoIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { mementoIncomingSIPTransactionsEntry 5 }
 
 mementoIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -5041,7 +5056,8 @@ mementoOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { mementoOutgoingSIPTransactionsEntry 5 }
 
 mementoOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -6430,7 +6446,8 @@ geminiIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as 
+                 transaction failures."
     ::= { geminiIncomingSIPTransactionsEntry 5 }
 
 geminiIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
@@ -6514,7 +6531,8 @@ geminiOutgoingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed outgoing SIP transactions over the
-                 time period."
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
     ::= { geminiOutgoingSIPTransactionsEntry 5 }
 
 geminiOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
