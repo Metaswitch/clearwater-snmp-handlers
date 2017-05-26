@@ -3322,6 +3322,123 @@ sproutSCSCFINVITEsForkedCount OBJECT-TYPE
     DESCRIPTION "The number of extra INVITEs created due to multiple registrations."
     ::= { sproutSCSCFINVITEsForkedEntry 2 }
 
+sproutSCSCFINVITEsNoMatchingDefaultIFCsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoMatchingDefaultIFCsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of initial requests that attempted to use default IFCs but had no matching ones."
+    ::= { sprout 39 }
+
+sproutSCSCFINVITEsNoMatchingDefaultIFCsEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFINVITEsNoMatchingDefaultIFCsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Number of initial requests that attempted to use default IFCs but had no matching ones."
+    INDEX       { sproutSCSCFINVITEsNoMatchingDefaultIFCsScope }
+    ::= { sproutSCSCFINVITEsNoMatchingDefaultIFCsTable 1 }
+
+SproutSCSCFINVITEsNoMatchingDefaultIFCsEntry ::= SEQUENCE
+{
+  sproutSCSCFINVITEsNoMatchingDefaultIFCsScope        INTEGER,
+  sproutSCSCFINVITEsNoMatchingDefaultIFCsCount        Unsigned32
+}
+
+sproutSCSCFINVITEsNoMatchingDefaultIFCsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutSCSCFINVITEsNoMatchingDefaultIFCsEntry 1 }
+
+sproutSCSCFINVITEsNoMatchingDefaultIFCsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of initial requests that attempted to use default IFCs but had no matching ones."
+    ::= { sproutSCSCFINVITEsNoMatchingDefaultIFCsEntry 2 }
+
+sproutSCSCFINVITEsNoSharedIFCsSetTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoSharedIFCsSetEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of shared IFC set IDs retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    ::= { sprout 40 }
+
+sproutSCSCFINVITEsNoSharedIFCsSetEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFINVITEsNoSharedIFCsSetEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Number of shared IFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    INDEX       { sproutSCSCFINVITEsNoSharedIFCsSetScope }
+    ::= { sproutSCSCFINVITEsNoSharedIFCsSetTable 1 }
+
+SproutSCSCFINVITEsNoSharedIFCsSetEntry ::= SEQUENCE
+{
+  sproutSCSCFINVITEsNoSharedIFCsSetScope        INTEGER,
+  sproutSCSCFINVITEsNoSharedIFCsSetCount        Unsigned32
+}
+
+sproutSCSCFINVITEsNoSharedIFCsSetScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutSCSCFINVITEsNoSharedIFCsSetEntry 1 }
+
+sproutSCSCFINVITEsNoSharedIFCsSetCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of shared IFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    ::= { sproutSCSCFINVITEsNoSharedIFCsSetEntry 2 }
+
+sproutSCSCFINVITEsNoMatchingIFCsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoMatchingIFCsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
+    ::= { sprout 41 }
+
+sproutSCSCFINVITEsNoMatchingIFCsEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFINVITEsNoMatchingIFCsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
+    INDEX       { sproutSCSCFINVITEsNoMatchingIFCsScope }
+    ::= { sproutSCSCFINVITEsNoMatchingIFCsTable 1 }
+
+SproutSCSCFINVITEsNoMatchingIFCsEntry ::= SEQUENCE
+{
+  sproutSCSCFINVITEsNoMatchingIFCsScope        INTEGER,
+  sproutSCSCFINVITEsNoMatchingIFCsCount        Unsigned32
+}
+
+sproutSCSCFINVITEsNoMatchingIFCsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutSCSCFINVITEsNoMatchingIFCsEntry 1 }
+
+sproutSCSCFINVITEsNoMatchingIFCsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
+    ::= { sproutSCSCFINVITEsNoMatchingIFCsEntry 2 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -3466,7 +3583,10 @@ sproutGroup OBJECT-GROUP
       sproutICSCFSessionEstablishmentNetworkSuccesses,
       sproutICSCFSessionEstablishmentNetworkFailures,
       sproutICSCFSessionEstablishmentNetworkSuccessPercent,
-      sproutSCSCFINVITEsForkedCount
+      sproutSCSCFINVITEsForkedCount,
+      sproutSCSCFINVITEsNoMatchingDefaultIFCsCount,
+      sproutSCSCFINVITEsNoSharedIFCsSetCount,
+      sproutSCSCFINVITEsNoMatchingIFCsCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
