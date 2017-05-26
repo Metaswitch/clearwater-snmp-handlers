@@ -236,6 +236,7 @@ void AlarmTrapSender::send_enterprise_trap(const AlarmTableDef& alarm_table_def)
                            sizeof(model_row_oid));
 
   var_alarm_oid.val.objid[ALARMMODELTABLEROW_INDEX] = alarm_table_def.alarm_index();
+  var_alarm_oid.val.objid[ALARMMODELTABLEROW_STATE] = alarm_table_def.state();
   
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, 
                            (u_char*) zero_dot_zero, 
