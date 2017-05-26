@@ -3365,7 +3365,7 @@ sproutSCSCFINVITEsNoSharedIFCsSetTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoSharedIFCsSetEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Number of shared IFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    DESCRIPTION "Number of shared IFC set IDs retrieved from the HSS where the S-CSCF has no matching set of IFCs."
     ::= { sprout 40 }
 
 sproutSCSCFINVITEsNoSharedIFCsSetEntry OBJECT-TYPE
