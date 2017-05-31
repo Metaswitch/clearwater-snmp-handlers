@@ -1989,7 +1989,7 @@ sproutICSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { sproutICSCFIncomingSIPTransactionsEntry 5 }
 
@@ -2165,7 +2165,7 @@ sproutSCSCFIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { sproutSCSCFIncomingSIPTransactionsEntry 5 }
 
@@ -2337,7 +2337,7 @@ sproutBGCFIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { sproutBGCFIncomingSIPTransactionsEntry 5 }
 
@@ -2507,7 +2507,7 @@ sproutMMTelIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { sproutMMTelIncomingSIPTransactionsEntry 5 }
 
@@ -3439,6 +3439,45 @@ sproutSCSCFINVITEsNoMatchingIFCsCount OBJECT-TYPE
     DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
     ::= { sproutSCSCFINVITEsNoMatchingIFCsEntry 2 }
 
+sproutSCSCFBarredRequestsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFBarredRequestsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of requests rejected because an identity was barred."
+    ::= { sprout 42 }
+
+sproutSCSCFBarredRequestsEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFBarredRequestsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Number of requests rejected because an identity was barred."
+    INDEX       { sproutSCSCFBarredRequestsScope }
+    ::= { sproutSCSCFBarredRequestsTable 1 }
+
+SproutSCSCFBarredRequestsEntry ::= SEQUENCE
+{
+  sproutSCSCFBarredRequestsScope        INTEGER,
+  sproutSCSCFBarredRequestsCount        Unsigned32
+}
+
+sproutSCSCFBarredRequestsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutSCSCFBarredRequestsEntry 1 }
+
+sproutSCSCFBarredRequestsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of requests rejected because an identity was barred."
+    ::= { sproutSCSCFBarredRequestsEntry 2 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -3586,7 +3625,8 @@ sproutGroup OBJECT-GROUP
       sproutSCSCFINVITEsForkedCount,
       sproutSCSCFINVITEsNoMatchingDefaultIFCsCount,
       sproutSCSCFINVITEsNoSharedIFCsSetCount,
-      sproutSCSCFINVITEsNoMatchingIFCsCount
+      sproutSCSCFINVITEsNoMatchingIFCsCount,
+      sproutSCSCFBarredRequestsCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
@@ -4699,7 +4739,7 @@ cdivAsIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { cdivAsIncomingSIPTransactionsEntry 5 }
 
@@ -5091,7 +5131,7 @@ mementoIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { mementoIncomingSIPTransactionsEntry 5 }
 
@@ -6566,7 +6606,7 @@ geminiIncomingSIPTransactionsFailures OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The number of failed incoming SIP transactions over the
-                 time period. Note that 3xx responses are counted as 
+                 time period. Note that 3xx responses are counted as
                  transaction failures."
     ::= { geminiIncomingSIPTransactionsEntry 5 }
 
