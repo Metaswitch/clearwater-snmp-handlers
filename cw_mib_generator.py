@@ -24,9 +24,11 @@ CWC_MIB_PATH = "../cwc-build/METASWITCH-CLEARWATER-CORE-MIB"
 # Statement added to top of auto-generated MIBs
 EDIT_STATEMENT = "THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
 
-def print_err_and_Exit(error_text):
+
+def print_err_and_exit(error_text):
     sys.stderr.write("ERROR: {}".format(error_text))
     sys.exit(1)
+
 
 def generate_title(mib_file_path):
     # Extract the MIB file name from the file path.
