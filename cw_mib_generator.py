@@ -13,7 +13,7 @@ import os.path
 from string import Template
 
 # MIB fragment file paths
-COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMONS"
+COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMON"
 PC_EXTRAS_PATH = "./CLEARWATER-MIB-PC-EXTRAS"
 CWC_EXTRAS_PATH = "../cwc-build/CLEARWATER-MIB-CWC-EXTRAS"
 
@@ -34,7 +34,7 @@ def print_err_and_exit(error_text):
 def generate_title(mib_file_path):
     # Extract the MIB file name from the file path.
     try:
-        name = re.search(r"[A-Z\-]+$", mib_file_path).group(0)
+        name = re.search(r"[\w\-]+$", mib_file_path).group(0)
     except AttributeError:
         print_err_and_exit(
             "Could not find a valid MIB file name in file path: '{}'"
