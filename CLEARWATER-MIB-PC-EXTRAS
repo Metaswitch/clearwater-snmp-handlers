@@ -1,3 +1,5 @@
+-- Project Clearwater-specific MIB entries
+--
 -- Project Clearwater Module Compliance
 
 projectClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 20 }

@@ -1,94 +1,107 @@
-# @file cwc_mib_generator.py
-#
-# Copyright (C) 2016  Metaswitch Networks Ltd
+# Copyright (C) Metaswitch Networks 2017
+# If license terms are provided to you in a COPYING file in the root directory
+# of the source code repository by which you are accessing this code, then
+# the license outlined in that COPYING file applies to your use.
+# Otherwise no rights are granted except for those provided to you by
+# Metaswitch Networks in a separate written agreement.
 
 import re
+import sys
 import os.path
+from string import Template
 
-COMMON_MIB = "./CLEARWATER-MIB-COMMON"
-PC_EXTRAS = "./CLEARWATER-MIB-PC-EXTRAS"
-CWC_EXTRAS = "../CLEARWATER-MIB-CWC-EXTRAS"
+# MIB fragment file paths
+COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMON"
+PC_EXTRAS_PATH = "./CLEARWATER-MIB-PC-EXTRAS"
+CWC_EXTRAS_PATH = "../cwc-build/CLEARWATER-MIB-CWC-EXTRAS"
 
-PC_MIB_NAME = "./PROJECT-CLEARWATER-MIB"
-CWC_MIB_NAME = "../METASWITCH-CLEARWATER-CORE-MIB"
+# File paths for output MIBs
+PC_MIB_PATH = "./PROJECT-CLEARWATER-MIB"
+CWC_MIB_PATH = "../cwc-build/METASWITCH-CLEARWATER-CORE-MIB"
 
+# Statement added to top of auto-generated MIBs
+EDIT_STATEMENT = "THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
 
-def find_header(data, header_regex):
-    header_index = None
-    for i, line in enumerate(data):
-        if header_regex.match(line):
-            header_index = i
-            break
+def print_err_and_Exit(error_text):
+    sys.stderr.write("ERROR: {}".format(error_text))
+    sys.exit(1)
 
-    return header_index
+def generate_title(mib_file_path):
+    # Extract the MIB file name from the file path.
+    try:
+        name = re.search(r"[A-Z\-]+$", mib_file_path).group(0)
+    except AttributeError:
+        print_err_and_exit(
+            "Could not find a valid MIB file name in file path: '{}'\n"
+            .format(mib_file_path))
 
-
-def find_end_statement(data):
-    end_regex = re.compile(r"^END")
-    return find_header(data, end_regex)
-
-
-def find_section(data, section_regex):
-    generic_header_regex = re.compile(r"(^\-\- [\w ]+|^END)")
-
-    module_start_index = find_header(data, section_regex)
-    module_end_index = module_start_index + \
-                       find_header(data[module_start_index+1:], 
-                                   generic_header_regex)
-
-    return module_start_index, module_end_index
+    return name + " DEFINITIONS ::= BEGIN"
 
 
-def append_compliance(data, compliance_objects):
-    compliance_regex = re.compile(r"\-\- Module Compliance")
-    compliance_section = find_section(data, compliance_regex)
-    data[compliance_section[1]:compliance_section[1]] = compliance_objects[1:]
+def generate_mib(extras_file_path, mib_file_path):
+    # Read in the common and specific MIB fragments, fill in templated lines
+    # and write the complete MIB file.
+    full_common_mib_path = os.path.abspath(COMMON_MIB_PATH)
+    try:
+        with open(full_common_mib_path, "r") as common_mib:
+            common_src_template = Template(common_mib.read())
+    except IOError:
+        print_err_and_exit(
+            "Could not read from common MIB fragment at: '{}'\n"
+            .format(full_common_mib_path))
 
+    substitute_dict = { 'title_statement' : generate_title(mib_file_path),
+                        'direct_edit_statement' : EDIT_STATEMENT }
 
-def append_at_end(data, extra_objects):
-    end_index = find_end_statement(data)
-    data[end_index:end_index] = extra_objects
+    try:
+        common_src = common_src_template.substitute(substitute_dict)
+    except ValueError as ve:
+        print_err_and_exit(
+            "Common MIB fragment contains an invalid placeholder:\n - {}\n"
+            .format(ve))
+    except KeyError as ke:
+        print_err_and_exit(
+            "Common MIB fragment contains unrecognised placeholder: '{}'\n"
+            .format(ke))
 
+    try:
+        with open(extras_file_path, "r") as extras_mib:
+            extras_src = extras_mib.read()
+    except IOError:
+        print_err_and_exit(
+            "Could not read from extra MIB fragment at path: '{}'\n"
+            .format(extras_file_path))
 
-def split_compliance_and_entries(extras_data):
-    extras_compliance_regex = re.compile(r"\-\- [\w ]+ Module Compliance")
-    compliance_section = find_section(extras_data, extras_compliance_regex)
-
-    if not compliance_section[0] == 0:
-        raise Exception("Badly formatted extras MIB file")
-
-    end_index = find_end_statement(extras_data)
-
-    compliance_data = extras_data[0:compliance_section[1]]
-    entry_data = extras_data[compliance_section[1]:end_index]
-
-    return compliance_data, entry_data
-
-
-def update_title(data, mib_file_name):
-    name = re.search(r"[A-Z\-]+$", mib_file_name).group(0)
-    data[0] = name + " DEFINITIONS ::= BEGIN\n"
-
-
-def generate_mib(extras_file_name, mib_file_name):
-    with open(COMMON_MIB, "r") as common_mib:
-        mib_lines = common_mib.readlines()
-
-    with open(extras_file_name, "r") as extras:
-        extras_data = extras.readlines()
-        extras_compliance, extras_entries = split_compliance_and_entries(
-                                                                  extras_data)
-
-    update_title(mib_lines, mib_file_name)
-    append_compliance(mib_lines, extras_compliance)
-    append_at_end(mib_lines, extras_entries)
-
-    with open(mib_file_name, "w") as mib_file:
-        mib_file.writelines(mib_lines)
-
+    try:
+        with open(mib_file_path, "w") as mib_file:
+            mib_file.write(common_src + extras_src)
+    except IOError:
+        print_err_and_exit(
+            "Could not write MIB file at path: '{}'\n".format(mib_file_path))
 
 if __name__ == "__main__":
-    generate_mib(PC_EXTRAS, PC_MIB_NAME)
+    # Always generate PC MIB. If CWC fragment is found, generate CWC MIB.
+    # For debugging purposes, find the full file path for each file.
+    full_pc_output_mib_path = os.path.abspath(PC_MIB_PATH)
+    full_pc_fragment_path = os.path.abspath(PC_EXTRAS_PATH)
 
-    if os.path.isfile(CWC_EXTRAS): 
-        generate_mib(CWC_EXTRAS, CWC_MIB_NAME)
+    sys.stdout.write("Generating Project Clearwater MIB at: '{}'\n"
+                     .format(full_pc_output_mib_path))
+
+    generate_mib(full_pc_fragment_path, full_pc_output_mib_path)
+
+    sys.stdout.write("Successfully generated Project Clearwater MIB!\n")
+
+    full_cwc_fragment_path = os.path.abspath(CWC_EXTRAS_PATH)
+
+    if os.path.isfile(full_cwc_fragment_path):
+        full_cwc_output_mib_path = os.path.abspath(CWC_MIB_PATH)
+
+        sys.stdout.write("Generating Clearwater Core MIB at: '{}'\n"
+                         .format(full_cwc_output_mib_path))
+
+        generate_mib(full_cwc_fragment_path, full_cwc_output_mib_path)
+
+        sys.stdout.write("Successfully generated Clearwater Core MIB!\n")
+
+    sys.exit(0)

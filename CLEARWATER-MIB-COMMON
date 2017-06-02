@@ -1,4 +1,6 @@
-CLEARWATER-MIB-COMMON DEFINITIONS ::= BEGIN
+$title_statement
+
+-- $direct_edit_statement
 
 IMPORTS
         MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
@@ -51,7 +53,7 @@ dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
 houdini         OBJECT IDENTIFIER ::= { dataConnection 13 }
 weatherwax      OBJECT IDENTIFIER ::= { dataConnection 14 }
 
--- Module Compliance
+-- Common Clearwater Module Compliance
 commonClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 0 }
 commonClearwaterCompliance MODULE-COMPLIANCE
     STATUS current
@@ -4545,4 +4547,5 @@ chronosGroup OBJECT-GROUP
     DESCRIPTION "Statistics exposed by Chronos"
     ::= { commonClearwaterObjectGroups 7 }
 
-END
+-- End of common Clearwater MIB entries
+

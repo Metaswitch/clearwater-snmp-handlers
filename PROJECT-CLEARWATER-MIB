@@ -1,5 +1,7 @@
 PROJECT-CLEARWATER-MIB DEFINITIONS ::= BEGIN
 
+-- THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!
+
 IMPORTS
         MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
         MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
@@ -51,7 +53,7 @@ dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
 houdini         OBJECT IDENTIFIER ::= { dataConnection 13 }
 weatherwax      OBJECT IDENTIFIER ::= { dataConnection 14 }
 
--- Module Compliance
+-- Common Clearwater Module Compliance
 commonClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 0 }
 commonClearwaterCompliance MODULE-COMPLIANCE
     STATUS current
@@ -68,25 +70,6 @@ commonClearwaterCompliance MODULE-COMPLIANCE
     DESCRIPTION "The chronosGroup must be exposed by nodes running Chronos"
     ::= { commonClearwaterConformance 1 }
 commonClearwaterObjectGroups OBJECT IDENTIFIER ::= { projectClearwater 1 }
-
-projectClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 20 }
-projectClearwaterCompliance MODULE-COMPLIANCE
-    STATUS current
-    DESCRIPTION "Compliance statement for Project Clearwater-specific
-                 components."
-    MODULE
-    GROUP bonoGroup
-    DESCRIPTION "The bonoGroup must be exposed by Bono nodes"
-    GROUP sproutPCGroup
-    DESCRIPTION "The sproutPCGroup must be exposed by Sprout nodes"
-    GROUP callDiversionASGroup
-    DESCRIPTION "The callDiversionASGroup must be exposed by Call Diversion AS nodes"
-    GROUP mementoGroup
-    DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
-    GROUP geminiGroup
-    DESCRIPTION "The geminiGroup must be exposed by nodes running Gemini"
-    ::= { projectClearwaterConformance 1 }
-projectClearwaterObjectGroups OBJECT IDENTIFIER ::= { projectClearwater 21 }
 
 -- Node roles
 --
@@ -4564,6 +4547,30 @@ chronosGroup OBJECT-GROUP
     DESCRIPTION "Statistics exposed by Chronos"
     ::= { commonClearwaterObjectGroups 7 }
 
+-- End of common Clearwater MIB entries
+
+-- Project Clearwater-specific MIB entries
+--
+-- Project Clearwater Module Compliance
+
+projectClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 20 }
+projectClearwaterCompliance MODULE-COMPLIANCE
+    STATUS current
+    DESCRIPTION "Compliance statement for Project Clearwater-specific
+                 components."
+    MODULE
+    GROUP bonoGroup
+    DESCRIPTION "The bonoGroup must be exposed by Bono nodes"
+    GROUP sproutPCGroup
+    DESCRIPTION "The sproutPCGroup must be exposed by Sprout nodes"
+    GROUP callDiversionASGroup
+    DESCRIPTION "The callDiversionASGroup must be exposed by Call Diversion AS nodes"
+    GROUP mementoGroup
+    DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
+    GROUP geminiGroup
+    DESCRIPTION "The geminiGroup must be exposed by nodes running Gemini"
+    ::= { projectClearwaterConformance 1 }
+projectClearwaterObjectGroups OBJECT IDENTIFIER ::= { projectClearwater 21 }
 
 -- Bono entries
 
