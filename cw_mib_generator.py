@@ -66,7 +66,7 @@ def generate_mib(extras_file_path, mib_file_path):
             .format(ve))
     except KeyError as ke:
         print_err_and_exit(
-            "Common MIB fragment contains unrecognised placeholder: '{}'"
+            "Common MIB fragment contains unrecognised placeholder: {}"
             .format(ke))
 
     try:
