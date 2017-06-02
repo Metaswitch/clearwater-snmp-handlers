@@ -13,7 +13,7 @@ import os.path
 from string import Template
 
 # MIB fragment file paths
-COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMON"
+COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMONS"
 PC_EXTRAS_PATH = "./CLEARWATER-MIB-PC-EXTRAS"
 CWC_EXTRAS_PATH = "../cwc-build/CLEARWATER-MIB-CWC-EXTRAS"
 
@@ -26,7 +26,8 @@ EDIT_STATEMENT = "THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
 
 
 def print_err_and_exit(error_text):
-    sys.stderr.write("ERROR: {}".format(error_text))
+    sys.stderr.write("ERROR: {}\nFailed to generate MIB, exiting\n"
+                     .format(error_text))
     sys.exit(1)
 
 
@@ -36,7 +37,7 @@ def generate_title(mib_file_path):
         name = re.search(r"[A-Z\-]+$", mib_file_path).group(0)
     except AttributeError:
         print_err_and_exit(
-            "Could not find a valid MIB file name in file path: '{}'\n"
+            "Could not find a valid MIB file name in file path: '{}'"
             .format(mib_file_path))
 
     return name + " DEFINITIONS ::= BEGIN"
@@ -51,7 +52,7 @@ def generate_mib(extras_file_path, mib_file_path):
             common_src_template = Template(common_mib.read())
     except IOError:
         print_err_and_exit(
-            "Could not read from common MIB fragment at: '{}'\n"
+            "Could not read from common MIB fragment at: '{}'"
             .format(full_common_mib_path))
 
     substitute_dict = { 'title_statement' : generate_title(mib_file_path),
@@ -61,11 +62,11 @@ def generate_mib(extras_file_path, mib_file_path):
         common_src = common_src_template.substitute(substitute_dict)
     except ValueError as ve:
         print_err_and_exit(
-            "Common MIB fragment contains an invalid placeholder:\n - {}\n"
+            "Common MIB fragment contains an invalid placeholder:\n - {}"
             .format(ve))
     except KeyError as ke:
         print_err_and_exit(
-            "Common MIB fragment contains unrecognised placeholder: '{}'\n"
+            "Common MIB fragment contains unrecognised placeholder: '{}'"
             .format(ke))
 
     try:
@@ -73,7 +74,7 @@ def generate_mib(extras_file_path, mib_file_path):
             extras_src = extras_mib.read()
     except IOError:
         print_err_and_exit(
-            "Could not read from extra MIB fragment at path: '{}'\n"
+            "Could not read from extra MIB fragment at path: '{}'"
             .format(extras_file_path))
 
     try:
@@ -81,7 +82,7 @@ def generate_mib(extras_file_path, mib_file_path):
             mib_file.write(common_src + extras_src)
     except IOError:
         print_err_and_exit(
-            "Could not write MIB file at path: '{}'\n".format(mib_file_path))
+            "Could not write MIB file at path: '{}'".format(mib_file_path))
 
 if __name__ == "__main__":
     # Always generate PC MIB. If CWC fragment is found, generate CWC MIB.
