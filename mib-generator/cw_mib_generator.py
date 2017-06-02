@@ -7,19 +7,28 @@
 # Otherwise no rights are granted except for those provided to you by
 # Metaswitch Networks in a separate written agreement.
 
+"""Metaswitch Clearwater MIB Generator
+Usage:
+  cw_mib_generator.py [--cwc-mib-dir=DIR]
+
+Options:
+  --cwc-mib-dir=DIR  Directory containing Clearwater Core MIB fragment
+"""
+
 import re
 import sys
 import os.path
 from string import Template
+from docopt import docopt, DocoptExit
 
-# MIB fragment file paths
+# Project Clearwater MIB paths
 COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMON"
 PC_EXTRAS_PATH = "./CLEARWATER-MIB-PC-EXTRAS"
-CWC_EXTRAS_PATH = "../cwc-build/CLEARWATER-MIB-CWC-EXTRAS"
+PC_MIB_OUTPUT_PATH = "../PROJECT-CLEARWATER-MIB"
 
-# File paths for output MIBs
-PC_MIB_PATH = "./PROJECT-CLEARWATER-MIB"
-CWC_MIB_PATH = "../cwc-build/METASWITCH-CLEARWATER-CORE-MIB"
+# Clearwater Core MIB names
+CWC_EXTRAS_NAME = "CLEARWATER-MIB-CWC-EXTRAS"
+CWC_MIB_OUTPUT_NAME = "METASWITCH-CLEARWATER-CORE-MIB"
 
 # Statement added to top of auto-generated MIBs
 EDIT_STATEMENT = "THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
@@ -94,9 +103,33 @@ def generate_mib(extras_file_path, output_mib_path):
 
 
 if __name__ == "__main__":
-    # Always generate PC MIB. If CWC fragment is found, generate CWC MIB.
-    # For debugging purposes, find the full file path for each file.
-    full_pc_output_mib_path = os.path.abspath(PC_MIB_PATH)
+    args = sys.argv[1:]
+
+    # If args are supplied, try to parse the CWC MIB directory.
+    if args:
+        try:
+            arguments = docopt(__doc__, argv=args)
+        except DocoptExit:
+            sys.stderr.write(
+                "Invalid argument. Takes '--cwc-mib-dir=DIR' or no args.\n")
+            sys.exit(1)
+
+        # Validate the parsed directory.
+        cwc_dir = os.path.abspath(arguments['--cwc-mib-dir'])
+        full_cwc_fragment_path = os.path.join(cwc_dir, CWC_EXTRAS_NAME)
+        full_cwc_output_mib_path = os.path.join(cwc_dir, CWC_MIB_OUTPUT_NAME)
+
+        if not os.path.isfile(full_cwc_fragment_path):
+            print_err_and_exit(
+                "Supplied cwc-mib-dir does not contain CWC MIB fragment '{}'"
+                .format(CWC_EXTRAS_NAME))
+
+    else:
+        cwc_dir = None
+        sys.stdout.write("No Clearwater Core MIB directory supplied, building "
+                         "Project Clearwater MIB only\n")
+
+    full_pc_output_mib_path = os.path.abspath(PC_MIB_OUTPUT_PATH)
     full_pc_fragment_path = os.path.abspath(PC_EXTRAS_PATH)
 
     sys.stdout.write("Generating Project Clearwater MIB at: '{}'\n"
@@ -106,10 +139,7 @@ if __name__ == "__main__":
 
     sys.stdout.write("Successfully generated Project Clearwater MIB!\n")
 
-    full_cwc_output_mib_path = os.path.abspath(CWC_MIB_PATH)
-    full_cwc_fragment_path = os.path.abspath(CWC_EXTRAS_PATH)
-
-    if os.path.isfile(full_cwc_fragment_path):
+    if cwc_dir is not None:
         sys.stdout.write("Generating Clearwater Core MIB at: '{}'\n"
                          .format(full_cwc_output_mib_path))
 
