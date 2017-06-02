@@ -19,7 +19,7 @@ import re
 import sys
 import os.path
 from string import Template
-from docopt import docopt, DocoptExit
+from docopt import docopt
 
 # Project Clearwater MIB paths
 COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMON"
@@ -107,12 +107,7 @@ if __name__ == "__main__":
 
     # If args are supplied, try to parse the CWC MIB directory.
     if args:
-        try:
-            arguments = docopt(__doc__, argv=args)
-        except DocoptExit:
-            sys.stderr.write(
-                "Invalid argument. Takes '--cwc-mib-dir=DIR' or no args.\n")
-            sys.exit(1)
+        arguments = docopt(__doc__, argv=args)
 
         # Validate the parsed directory.
         cwc_dir = os.path.abspath(arguments['--cwc-mib-dir'])
