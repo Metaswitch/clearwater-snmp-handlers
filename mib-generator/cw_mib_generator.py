@@ -52,7 +52,7 @@ def main(args):
 
     print("Generating Project Clearwater MIB at {}".format(pc_dir))
     generate_mib(common_dir, pc_dir, COMMON_MIB, PC_EXTRAS, PC_OUTPUT_MIB)
-    print("Successfully generated Clearwater Core MIB!")
+    print("Successfully generated Project Clearwater MIB!")
 
 
 def generate_mib(common_dir, extras_dir, common_mib, extras_mib, output_mib):
