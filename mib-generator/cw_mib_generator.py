@@ -15,30 +15,75 @@ Options:
   --cwc-mib-dir=DIR  Directory containing Clearwater Core MIB fragment
 """
 
-import re
+from __future__ import print_function
 import sys
 import os.path
 from string import Template
 from docopt import docopt
 
-# Project Clearwater MIB paths
-COMMON_MIB_PATH = "./CLEARWATER-MIB-COMMON"
-PC_EXTRAS_PATH = "./CLEARWATER-MIB-PC-EXTRAS"
-PC_MIB_OUTPUT_PATH = "../PROJECT-CLEARWATER-MIB"
+# MIB names
+COMMON_MIB = "CLEARWATER-MIB-COMMON"
+PC_EXTRAS = "CLEARWATER-MIB-PC-EXTRAS"
+PC_OUTPUT_MIB = "PROJECT-CLEARWATER-MIB"
 
-# Clearwater Core MIB names
-CWC_EXTRAS_NAME = "CLEARWATER-MIB-CWC-EXTRAS"
-CWC_MIB_OUTPUT_NAME = "METASWITCH-CLEARWATER-CORE-MIB"
+CWC_EXTRAS = "CLEARWATER-MIB-CWC-EXTRAS"
+CWC_OUTPUT_MIB = "METASWITCH-CLEARWATER-CORE-MIB"
 
 # Statement added to top of auto-generated MIBs
-EDIT_STATEMENT = "THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
+EDIT_STATEMENT = "-- THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
 
 
-def print_err_and_exit(error_text):
-    # Prints an error message with the specified text, and exits with code 1.
-    sys.stderr.write("ERROR: {}\nFailed to generate MIB, exiting\n"
-                     .format(error_text))
-    sys.exit(1)
+def main(args):
+    common_dir = os.path.dirname(os.path.realpath(__file__))
+
+    if args['--cwc-mib-dir']:
+        cwc_dir = os.path.abspath(args['--cwc-mib-dir'])
+
+        print("Generating Clearwater Core MIB at {}".format(cwc_dir))
+        generate_mib(
+            common_dir, cwc_dir, COMMON_MIB, CWC_EXTRAS, CWC_OUTPUT_MIB)
+        print("Successfully generated Clearwater Core MIB!")
+    else:
+        print("No Clearwater Core MIB directory supplied, building Project "
+              "Clearwater MIB only")
+
+    pc_dir = common_dir
+
+    print("Generating Project Clearwater MIB at {}".format(pc_dir))
+    generate_mib(common_dir, pc_dir, COMMON_MIB, PC_EXTRAS, PC_OUTPUT_MIB)
+    print("Successfully generated Clearwater Core MIB!")
+
+
+def generate_mib(common_dir, extras_dir, common_mib, extras_mib, output_mib):
+    # Find full paths for the fragments and output MIB file
+    common_mib_path = os.path.join(common_dir, common_mib)
+    extras_mib_path = os.path.join(extras_dir, extras_mib)
+    output_mib_path = os.path.join(extras_dir, output_mib)
+
+    # Read common MIB, and fill in templated data
+    raw_common_data = read_mib_fragment(common_mib_path)
+    common_src_template = Template(raw_common_data)
+
+    substitute_dict = {'title_statement': generate_title(output_mib),
+                       'edit_statement': EDIT_STATEMENT}
+
+    try:
+        common_src = common_src_template.substitute(substitute_dict)
+    except ValueError:
+        print("ERROR - Common MIB fragment contains an invalid placeholder!")
+        raise
+    except KeyError:
+        print("ERROR: Common MIB fragment contains unrecognised placeholder!")
+        raise
+
+    # Read extras MIB, append to common data, and write the output MIB
+    extras_src = read_mib_fragment(extras_mib_path)
+    full_mib_data = common_src + extras_src
+    write_mib_file(output_mib_path, full_mib_data)
+
+
+def generate_title(mib_name):
+    return "{} DEFINITIONS ::= BEGIN\n\n{}".format(mib_name, EDIT_STATEMENT)
 
 
 def read_mib_fragment(mib_path):
@@ -47,9 +92,9 @@ def read_mib_fragment(mib_path):
     try:
         with open(mib_path, "r") as mib:
             mib_data = mib.read()
-    except IOError as ioe:
-        print_err_and_exit("Could not read from MIB fragment:\n - {}"
-                           .format(ioe))
+    except IOError:
+        print("ERROR: Could not read from MIB fragment!")
+        raise
 
     return mib_data
 
@@ -59,87 +104,12 @@ def write_mib_file(mib_path, mib_contents):
     try:
         with open(mib_path, "w") as mib_file:
             mib_file.write(mib_contents)
-    except IOError as ioe:
-        print_err_and_exit("Could not write MIB file:\n - {}".format(ioe))
-
-
-def generate_title(mib_file_path):
-    # Try to extract MIB name from the file path, and append definitions
-    # statement.
-    try:
-        name = re.search(r"[\w\-]+$", mib_file_path).group(0)
-    except AttributeError:
-        print_err_and_exit("Could not find a valid MIB file name in: '{}'"
-                           .format(mib_file_path))
-
-    return name + " DEFINITIONS ::= BEGIN"
-
-
-def generate_mib(extras_file_path, output_mib_path):
-    # Read in the common and specific MIB fragments, fill in templated lines
-    # and write the complete MIB file.
-    full_common_mib_path = os.path.abspath(COMMON_MIB_PATH)
-    raw_common_data = read_mib_fragment(full_common_mib_path)
-    common_src_template = Template(raw_common_data)
-
-    substitute_dict = { 'title_statement' : generate_title(output_mib_path),
-                        'direct_edit_statement' : EDIT_STATEMENT }
-
-    try:
-        common_src = common_src_template.substitute(substitute_dict)
-    except ValueError as ve:
-        print_err_and_exit(
-            "Common MIB fragment contains an invalid placeholder:\n - {}"
-            .format(ve))
-    except KeyError as ke:
-        print_err_and_exit(
-            "Common MIB fragment contains unrecognised placeholder: {}"
-            .format(ke))
-
-    extras_src = read_mib_fragment(extras_file_path)
-
-    full_mib_data = common_src + extras_src
-    write_mib_file(output_mib_path, full_mib_data)
+    except IOError:
+        print("ERROR: Could not write MIB file!")
+        raise
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-
-    # If args are supplied, try to parse the CWC MIB directory.
-    if args:
-        arguments = docopt(__doc__, argv=args)
-
-        # Validate the parsed directory.
-        cwc_dir = os.path.abspath(arguments['--cwc-mib-dir'])
-        full_cwc_fragment_path = os.path.join(cwc_dir, CWC_EXTRAS_NAME)
-        full_cwc_output_mib_path = os.path.join(cwc_dir, CWC_MIB_OUTPUT_NAME)
-
-        if not os.path.isfile(full_cwc_fragment_path):
-            print_err_and_exit(
-                "Supplied cwc-mib-dir does not contain CWC MIB fragment '{}'"
-                .format(CWC_EXTRAS_NAME))
-
-    else:
-        cwc_dir = None
-        sys.stdout.write("No Clearwater Core MIB directory supplied, building "
-                         "Project Clearwater MIB only\n")
-
-    full_pc_output_mib_path = os.path.abspath(PC_MIB_OUTPUT_PATH)
-    full_pc_fragment_path = os.path.abspath(PC_EXTRAS_PATH)
-
-    sys.stdout.write("Generating Project Clearwater MIB at: '{}'\n"
-                     .format(full_pc_output_mib_path))
-
-    generate_mib(full_pc_fragment_path, full_pc_output_mib_path)
-
-    sys.stdout.write("Successfully generated Project Clearwater MIB!\n")
-
-    if cwc_dir is not None:
-        sys.stdout.write("Generating Clearwater Core MIB at: '{}'\n"
-                         .format(full_cwc_output_mib_path))
-
-        generate_mib(full_cwc_fragment_path, full_cwc_output_mib_path)
-
-        sys.stdout.write("Successfully generated Clearwater Core MIB!\n")
-
+    args = docopt(__doc__)
+    main(args)
     sys.exit(0)
