@@ -50,7 +50,11 @@ EDIT_STATEMENT = "-- THIS MIB IS BUILT FROM A TEMPLATE - DO NOT EDIT DIRECTLY!"
 
 
 def main(args):
-    """@TODO Docstring"""
+    """
+    Generates the MIB for Project Clearwater. If a directory containing the
+    Clearwater Core fragment is supplied in args, also generates the MIB
+    for Clearwater Core.
+    """
     common_dir = os.path.dirname(os.path.realpath(__file__))
 
     if args['--cwc-mib-dir']:
