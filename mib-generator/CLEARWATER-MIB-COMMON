@@ -59,9 +59,9 @@ commonClearwaterCompliance MODULE-COMPLIANCE
                  Clearwater and Clearwater Core."
     MODULE
     GROUP sproutGroup
-    DESCRIPTION "The sproutGroup must be exposed by Sprout nodes"
+    DESCRIPTION "The sproutGroup must be exposed by nodes running Sprout"
     GROUP homesteadGroup
-    DESCRIPTION "The homesteadGroup must be exposed by Homestead nodes"
+    DESCRIPTION "The homesteadGroup must be exposed by nodes running Homestead"
     GROUP astaireGroup
     DESCRIPTION "The astaireGroup must be exposed by nodes running Astaire"
     GROUP chronosGroup
@@ -114,7 +114,7 @@ sproutLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of SIP requests handled by this Sprout
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { sprout 1 }
 
@@ -198,7 +198,7 @@ sproutConnectedHomesteadsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutConnectedHomesteadsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for each connected upstream Homestead node"
+    DESCRIPTION "Statistics for each connected upstream Homestead instance"
     ::= { hss 1 }
 
 sproutConnectedHomesteadsEntry OBJECT-TYPE
@@ -235,9 +235,8 @@ sproutHomesteadConnectionCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Current count of TCP connections from Sprout to the
-                 Homestead node, may include connections in setting-
-                 up state"
+    DESCRIPTION "Current count of TCP connections from Sprout to the Homestead
+                 instance. May include connections in setting-up state"
     ::= { sproutConnectedHomesteadsEntry 3 }
 
 sproutHomesteadLatencyTable OBJECT-TYPE
@@ -245,7 +244,7 @@ sproutHomesteadLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of Homestead requests made by this Sprout
-                 over a the given period.  Latency measured in
+                 over a the given period. Latency measured in
                  microseconds"
     ::= { hss 2 }
 
@@ -319,7 +318,7 @@ sproutMARLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for MARs made by this Sprout
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { hss 3 }
 
@@ -393,7 +392,7 @@ sproutSARLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for SARs made by this Sprout
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { hss 4 }
 
@@ -467,7 +466,7 @@ sproutUARLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for user authentication made by this Sprout
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { hss 5 }
 
@@ -541,7 +540,7 @@ sproutLIRLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of location requests made by this Sprout
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { hss 6 }
 
@@ -796,7 +795,7 @@ sproutSCSCFInitialRegistrationTable OBJECT-TYPE
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of initial registrations, and also (for convenience) provides
                  the percentage of initial registration attempts that were
-                 successful.  Note that registrations that fail authentication
+                 successful. Note that registrations that fail authentication
                  are not tracked in this table."
     ::= { sprout 9 }
 
@@ -1544,7 +1543,7 @@ sproutICSCFOutgoingSIPTransactionsTable OBJECT-TYPE
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the ICSCF, and (for
                  convenience) provides the percentage of attempts that were
-                 successful.  Note that CANCEL transactions are not currently
+                 successful. Note that CANCEL transactions are not currently
                  tracked in this table."
     ::= { sprout 19 }
 
@@ -1629,7 +1628,7 @@ sproutSCSCFIncomingSIPTransactionsTable OBJECT-TYPE
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of incoming SIP transactions for the SCSCF, and also (for
                  convenience) provides the percentage of incoming transaction
-                 attempts that were successful.  Note that the following
+                 attempts that were successful. Note that the following
                  transactions are not currently tracked in this table:
                  - CANCELs (see specific Cancel stats instead)
                  - REGISTERs (see specific Registration stats instead)
@@ -1720,7 +1719,7 @@ sproutSCSCFOutgoingSIPTransactionsTable OBJECT-TYPE
     DESCRIPTION "Counts the number of attempts, successes and failures
                  of outgoing SIP transactions for the SCSCF, and (for
                  convenience) provides the percentage of attempts that were
-                 successful.  Note that the following transactions are not
+                 successful. Note that the following transactions are not
                  currently tracked in this table:
                  - CANCELs
                  - reg-event NOTIFYs."
@@ -2164,7 +2163,7 @@ sproutSCSCFAudioSessionSetupTimeTable OBJECT-TYPE
     STATUS current
     DESCRIPTION "Stats for audio calls regarding the time between originating
                  INVITEs being received and first successful response (e.g. 180
-                 RINGING or 200 OK).  For the purposes of these stats a call is
+                 RINGING or 200 OK). For the purposes of these stats a call is
                  considered to be an audio call if video is not specified in the
                  SDP on the initial INVITE."
     ::= { sprout 34 }
@@ -2240,7 +2239,7 @@ sproutSCSCFVideoSessionSetupTimeTable OBJECT-TYPE
     STATUS current
     DESCRIPTION "Stats for video calls regarding the time between originating
                  INVITEs being received and first successful response (e.g. 180
-                 RINGING or 200 OK).  For the purposes of these stats a call is
+                 RINGING or 200 OK). For the purposes of these stats a call is
                  considered to be a video call if video is specified in the SDP
                  on the initial INVITE (irrespective of whether the call
                  actually ends up using video)."
@@ -2393,7 +2392,7 @@ sproutICSCFSessionEstablishmentNetworkTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Stats regarding attempts to establish terminating sessions at
-                 the I-CSCF.  This provides stats about the same set of events
+                 the I-CSCF. This provides stats about the same set of events
                  as the sproutICSCFSessionEstablishmentTable, but this time
                  only considering whether the request was successful from a
                  network perspective.
@@ -2810,7 +2809,7 @@ homesteadLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of HTTP requests handled by this Homestead
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { homestead 1 }
 
@@ -2884,7 +2883,7 @@ homesteadHSSLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of HSS requests made by this Homestead
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { homestead 2 }
 
@@ -2958,7 +2957,7 @@ homesteadCacheLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of cache requests made by this Homestead
-                 over a the given period.  Latency measured in
+                 over a the given period. Latency measured in
                  microseconds"
     ::= { homestead 3 }
 
@@ -3032,7 +3031,7 @@ homesteadDigestLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for Digests made by this Homestead
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { homestead 4 }
 
@@ -3106,7 +3105,7 @@ homesteadSubscriptionLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of requests for Subscriptions made by this Homestead
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { homestead 5 }
 
@@ -3764,7 +3763,7 @@ astaireBucketsNeedingResync OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Count of buckets needing to be synchronized for the current
-                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation. Set to 0 if there is no outstanding
                  resynchronization operation - in particular, if it has already
                  completed."
     ::= { astaire 1 }
@@ -3774,7 +3773,7 @@ astaireBucketsResynchronized OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Number of buckets already resynchronized during the current
-                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation. Set to 0 if there is no outstanding
                  resynchronization operation - in particular, if it has already
                  completed."
     ::= { astaire 2 }
@@ -3784,7 +3783,7 @@ astaireEntriesResynchronized OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Number of entries already resynchronized during the current
-                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation. Set to 0 if there is no outstanding
                  resynchronization operation - in particular, if it has already
                  completed."
     ::= { astaire 3 }
@@ -3794,7 +3793,7 @@ astaireDataResynchronized OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Amout of data (in bytes) already resynchronized during the current
-                 resynchronization operation.  Set to 0 if there is no outstanding
+                 resynchronization operation. Set to 0 if there is no outstanding
                  resynchronization operation - in particular, if it has already
                  completed."
     ::= { astaire 4 }
@@ -3847,7 +3846,7 @@ astaireConnectionEntry OBJECT-TYPE
     SYNTAX      AstaireConnectionEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Resynchronization statistics for a specific connection.  Entries only
+    DESCRIPTION "Resynchronization statistics for a specific connection. Entries only
                  exist while the connection is established - once it terminates, the entry
                  is deleted."
     INDEX { astaireConnectionInetAddrType,
@@ -4234,9 +4233,7 @@ chronosCallTable OBJECT-TYPE
     STATUS             current
     DESCRIPTION        "The total number of CALL timers this Chronos node
                        is managing. This includes timers for which this node
-                       is primary, and timers for which this node is a backup.
-                       These statistics are only valid on Chronos nodes in the
-                       Ralf cluster."
+                       is primary, and timers for which this node is a backup."
     ::= { chronos 6 }
 
 chronosCallEntry OBJECT-TYPE
@@ -4444,9 +4441,7 @@ chronosRegTable OBJECT-TYPE
     STATUS             current
     DESCRIPTION        "The total number of REG timers this Chronos node
                        is managing. This includes REG timers for which this node
-                       is primary, and timers for which this node is a backup.
-                       These statistics are only valid on Chronos nodes in the
-                       Sprout cluster."
+                       is primary, and timers for which this node is a backup."
     ::= { chronos 9 }
 
 chronosRegEntry OBJECT-TYPE
