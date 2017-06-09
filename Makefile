@@ -77,12 +77,9 @@ full_test: ${SUBMODULES} cw_alarm_agent_full_test
 
 testall: $(patsubst %, %_test, ${SUBMODULES}) full_test
 
-clean: $(patsubst %, %_clean, ${SUBMODULES}) cw_alarm_agent_clean pyclean envclean
+clean: $(patsubst %, %_clean, ${SUBMODULES}) cw_alarm_agent_clean envclean
 	rm -rf ${ROOT}/usr
 	rm -rf ${ROOT}/build
-
-pyclean:
-	find src -name \*.pyc -exec rm {} \;
 
 envclean:
 	rm -rf $(ENV_DIR)
@@ -99,5 +96,5 @@ include build-infra/cw-rpm.mk
 .PHONY: rpm
 rpm: build rpm-only
 
-.PHONY: all env build test clean pyclean envclean distclean
+.PHONY: all env build test clean envclean distclean
 
