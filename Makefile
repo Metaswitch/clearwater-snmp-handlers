@@ -45,6 +45,9 @@ cw_alarm_agent_clean:
 
 cw_alarm_agent_distclean: CW_ALARM_AGENT_clean
 
+cw_mib:
+	${PYTHON} ${ROOT}/mib-generator/cw_mib_generator.py && mv ${ROOT}/mib-generator/PROJECT-CLEARWATER-MIB ${ROOT}/clearwater-snmp-alarm-agent.root/usr/share/clearwater/mibs/
+
 cdiv_handler.so:
 	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
 
@@ -57,8 +60,8 @@ memento_as_handler.so:
 astaire_handler.so:
 	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
 
-.PHONY: cw_alarm_agent CW_ALARM_AGENT_test cw_alarm_agent_clean cw_alarm_agent_distclean cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so
-build: ${SUBMODULES} cw_alarm_agent
+.PHONY: cw_alarm_agent CW_ALARM_AGENT_test cw_alarm_agent_clean cw_alarm_agent_distclean cw_mib cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so
+build: ${SUBMODULES} cw_alarm_agent cw_mib
 
 test: ${SUBMODULES} cw_alarm_agent_test
 

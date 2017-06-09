@@ -1,0 +1,2214 @@
+-- Project Clearwater-specific MIB entries
+--
+-- Project Clearwater Module Compliance
+
+projectClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 20 }
+projectClearwaterCompliance MODULE-COMPLIANCE
+    STATUS current
+    DESCRIPTION "Compliance statement for Project Clearwater-specific
+                 components."
+    MODULE
+    GROUP bonoGroup
+    DESCRIPTION "The bonoGroup must be exposed by Bono nodes"
+    GROUP sproutPCGroup
+    DESCRIPTION "The sproutPCGroup must be exposed by Sprout nodes"
+    GROUP callDiversionASGroup
+    DESCRIPTION "The callDiversionASGroup must be exposed by Call Diversion AS nodes"
+    GROUP mementoGroup
+    DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
+    GROUP geminiGroup
+    DESCRIPTION "The geminiGroup must be exposed by nodes running Gemini"
+    ::= { projectClearwaterConformance 1 }
+projectClearwaterObjectGroups OBJECT IDENTIFIER ::= { projectClearwater 21 }
+
+-- Bono entries
+
+bonoConnectedClients OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current count of connected upstream clients.
+
+                 This is calculated by counting the allocated
+                 flow records and thus:
+
+                  * Only counts clients if they have attempted
+                    to register (either successfully or not)
+                  * Multiple clients muxed onto a single connection
+                    (e.g. behind a PBX) will be counted as one
+                    client."
+    ::= { bono 1 }
+
+bonoLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Latency of SIP requests handled by this Bono
+                 over the given period.  Latency measured in
+                 microseconds"
+    ::= { bono 2 }
+
+bonoLatencyEntry OBJECT-TYPE
+    SYNTAX      BonoLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of SIP message
+                 latency"
+    INDEX       { bonoLatencyTimeFrame,
+                  bonoLatencyScope }
+    ::= { bonoLatencyTable 1 }
+
+BonoLatencyEntry ::= SEQUENCE
+{
+  bonoLatencyTimeFrame      INTEGER,
+  bonoLatencyScope          OCTET STRING,
+  bonoLatencyAverage        Unsigned32,
+  bonoLatencyVariance       Unsigned32,
+  bonoLatencyHWM            Unsigned32,
+  bonoLatencyLWM            Unsigned32,
+  bonoLatencyCount          Unsigned32
+}
+
+bonoLatencyTimeFrame OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoLatencyEntry 1 }
+
+bonoLatencyScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Statistic scope - should always take the value: node."
+    ::= { bonoLatencyEntry 2 }
+
+bonoLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { bonoLatencyEntry 3 }
+
+bonoLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { bonoLatencyEntry 4 }
+
+bonoLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { bonoLatencyEntry 5 }
+
+bonoLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { bonoLatencyEntry 6 }
+
+bonoLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
+    ::= { bonoLatencyEntry 7 }
+
+core OBJECT IDENTIFIER ::= { bono 3 }
+
+bonoConnectedSproutsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoConnectedSproutsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Statistics for each connected upstream Sprout node"
+    ::= { core 1 }
+
+bonoConnectedSproutsEntry OBJECT-TYPE
+    SYNTAX BonoConnectedSproutsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Statistics for a single connected upstream Sprout"
+    INDEX { bonoSproutInetAddrType,
+            bonoSproutInetAddr      }
+    ::= { bonoConnectedSproutsTable 1 }
+
+BonoConnectedSproutsEntry ::= SEQUENCE
+{
+  bonoSproutInetAddrType    InetAddressType,
+  bonoSproutInetAddr        InetAddress,
+  bonoSproutConnectionCount Unsigned32
+}
+
+bonoSproutInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address type of the upstream Sprout"
+    ::= { bonoConnectedSproutsEntry 1 }
+
+bonoSproutInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the upstream Sprout"
+    ::= { bonoConnectedSproutsEntry 2 }
+
+bonoSproutConnectionCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current count of TCP connections from Bono to the
+                 Sprout node, may include connections in setting-
+                 up state"
+    ::= { bonoConnectedSproutsEntry 3 }
+
+bonoIncomingRequestsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoIncomingRequestsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of incoming requests handled by this Bono over
+                 the given period."
+    ::= { bono 4 }
+
+bonoIncomingRequestsEntry OBJECT-TYPE
+    SYNTAX      BonoIncomingRequestsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of incoming requests"
+    INDEX       { bonoIncomingRequestsTimeFrame,
+                  bonoIncomingRequestsScope }
+    ::= { bonoIncomingRequestsTable 1 }
+
+BonoIncomingRequestsEntry ::= SEQUENCE
+{
+  bonoIncomingRequestsTimeFrame      INTEGER,
+  bonoIncomingRequestsScope          OCTET STRING,
+  bonoIncomingRequestsCount          Unsigned32
+}
+
+bonoIncomingRequestsTimeFrame OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoIncomingRequestsEntry 1 }
+
+bonoIncomingRequestsScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Statistic scope - should always take the value: node."
+    ::= { bonoIncomingRequestsEntry 2 }
+
+bonoIncomingRequestsCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of incoming requests over the period."
+    ::= { bonoIncomingRequestsEntry 3 }
+
+bonoRejectedOverloadTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoRejectedOverloadEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Total number of requests rejected due to overload by
+                 this Bono over the given period."
+    ::= { bono 5 }
+
+bonoRejectedOverloadEntry OBJECT-TYPE
+    SYNTAX      BonoRejectedOverloadEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The total number of requests rejected due to overload"
+    INDEX       { bonoRejectedOverloadTimeFrame,
+                  bonoRejectedOverloadScope }
+    ::= { bonoRejectedOverloadTable 1 }
+
+BonoRejectedOverloadEntry ::= SEQUENCE
+{
+  bonoRejectedOverloadTimeFrame      INTEGER,
+  bonoRejectedOverloadScope          OCTET STRING,
+  bonoRejectedOverloadCount          Unsigned32
+}
+
+bonoRejectedOverloadTimeFrame OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoRejectedOverloadEntry 1 }
+
+bonoRejectedOverloadScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Statistic scope - should always take the value: node."
+    ::= { bonoRejectedOverloadEntry 2 }
+
+bonoRejectedOverloadCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of rejected requests due to overload over the
+                 period."
+    ::= { bonoRejectedOverloadEntry 3 }
+
+bonoQueueSizeTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoQueueSizeEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Average request queue size for this Bono"
+    ::= { bono 6 }
+
+bonoQueueSizeEntry OBJECT-TYPE
+    SYNTAX      BonoQueueSizeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of request queue size"
+    INDEX       { bonoQueueSizeTimeFrame,
+                  bonoQueueSizeScope }
+    ::= { bonoQueueSizeTable 1 }
+
+BonoQueueSizeEntry ::= SEQUENCE
+{
+  bonoQueueSizeTimeFrame      INTEGER,
+  bonoQueueSizeScope          OCTET STRING,
+  bonoQueueSizeAverage        Unsigned32,
+  bonoQueueSizeVariance       Unsigned32,
+  bonoQueueSizeHWM            Unsigned32,
+  bonoQueueSizeLWM            Unsigned32,
+  bonoQueueSizeCount          Unsigned32
+}
+
+bonoQueueSizeTimeFrame OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoQueueSizeEntry 1 }
+
+bonoQueueSizeScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Statistic scope - should always take the value: node."
+    ::= { bonoQueueSizeEntry 2 }
+
+bonoQueueSizeAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average request queue size over the period."
+    ::= { bonoQueueSizeEntry 3 }
+
+bonoQueueSizeVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the queue size over the period."
+    ::= { bonoQueueSizeEntry 4 }
+
+bonoQueueSizeHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest queue size over the period."
+    ::= { bonoQueueSizeEntry 5 }
+
+bonoQueueSizeLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest queue size over the period."
+    ::= { bonoQueueSizeEntry 6 }
+
+bonoQueueSizeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
+    ::= { bonoQueueSizeEntry 7 }
+
+bonoGroup OBJECT-GROUP
+    OBJECTS {
+      bonoConnectedClients,
+      bonoLatencyAverage,
+      bonoLatencyVariance,
+      bonoLatencyHWM,
+      bonoLatencyLWM,
+      bonoLatencyCount,
+      bonoSproutConnectionCount,
+      bonoIncomingRequestsCount,
+      bonoRejectedOverloadCount,
+      bonoQueueSizeAverage,
+      bonoQueueSizeVariance,
+      bonoQueueSizeHWM,
+      bonoQueueSizeLWM,
+      bonoQueueSizeCount
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by Bono"
+    ::= { projectClearwaterObjectGroups 1 }
+
+-- Sprout PC-specific entries
+
+xdm OBJECT IDENTIFIER ::= { sprout 2 }
+
+sproutConnectedHomersTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutConnectedHomersEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Statistics for each connected upstream Homer node"
+    ::= { xdm 1 }
+
+sproutConnectedHomersEntry OBJECT-TYPE
+    SYNTAX SproutConnectedHomersEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Statistics for a single connected upstream Homer"
+    INDEX { sproutHomerInetAddrType,
+            sproutHomerInetAddr      }
+    ::= { sproutConnectedHomersTable 1 }
+
+SproutConnectedHomersEntry ::= SEQUENCE
+{
+  sproutHomerInetAddrType    InetAddressType,
+  sproutHomerInetAddr        InetAddress,
+  sproutHomerConnectionCount Unsigned32
+}
+
+sproutHomerInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address type of the upstream Homer"
+    ::= { sproutConnectedHomersEntry 1 }
+
+sproutHomerInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the upstream Homer"
+    ::= { sproutConnectedHomersEntry 2 }
+
+sproutHomerConnectionCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current count of TCP connections from Sprout to the
+                 Homer node, may include connections in setting-
+                 up state"
+    ::= { sproutConnectedHomersEntry 3 }
+
+sproutHomerLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutHomerLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Latency of Homer requests made by this Sprout
+                 over the given period.  Latency measured in
+                 microseconds"
+    ::= { xdm 2 }
+
+sproutHomerLatencyEntry OBJECT-TYPE
+    SYNTAX      SproutHomerLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of SIP message
+                 latency"
+    INDEX       { sproutHomerLatencyScope }
+    ::= { sproutHomerLatencyTable 1 }
+
+SproutHomerLatencyEntry ::= SEQUENCE
+{
+  sproutHomerLatencyScope          INTEGER,
+  sproutHomerLatencyAverage        Unsigned32,
+  sproutHomerLatencyVariance       Unsigned32,
+  sproutHomerLatencyHWM            Unsigned32,
+  sproutHomerLatencyLWM            Unsigned32,
+  sproutHomerLatencyCount          Unsigned32
+}
+
+sproutHomerLatencyScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutHomerLatencyEntry 1 }
+
+sproutHomerLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { sproutHomerLatencyEntry 2 }
+
+sproutHomerLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { sproutHomerLatencyEntry 3 }
+
+sproutHomerLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { sproutHomerLatencyEntry 4 }
+
+sproutHomerLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { sproutHomerLatencyEntry 5 }
+
+sproutHomerLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
+    ::= { sproutHomerLatencyEntry 6 }
+
+sproutBGCFIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutBGCFIncomingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of incoming SIP transactions for the BGCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { sprout 22 }
+
+sproutBGCFIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutBGCFIncomingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 incoming SIP transactions for the BGCF, and the percentage
+                 of attempts that were successful."
+    INDEX       { sproutBGCFIncomingSIPTransactionsTimeScope,
+                  sproutBGCFIncomingSIPTransactionsRequestScope }
+    ::= { sproutBGCFIncomingSIPTransactionsTable 1 }
+
+SproutBGCFIncomingSIPTransactionsEntry ::= SEQUENCE
+{
+  sproutBGCFIncomingSIPTransactionsTimeScope      INTEGER,
+  sproutBGCFIncomingSIPTransactionsRequestScope   INTEGER,
+  sproutBGCFIncomingSIPTransactionsAttempts       Unsigned32,
+  sproutBGCFIncomingSIPTransactionsSuccesses      Unsigned32,
+  sproutBGCFIncomingSIPTransactionsFailures       Unsigned32,
+  sproutBGCFIncomingSIPTransactionsSuccessPercent Unsigned32
+}
+
+sproutBGCFIncomingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 1 }
+
+sproutBGCFIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the incoming transaction."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 2 }
+
+sproutBGCFIncomingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of incoming SIP transactions over the time period."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 3 }
+
+sproutBGCFIncomingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful incoming SIP transactions over the
+                 time period."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 4 }
+
+sproutBGCFIncomingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed incoming SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 5 }
+
+sproutBGCFIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { sproutBGCFIncomingSIPTransactionsEntry 6 }
+
+sproutBGCFOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutBGCFOutgoingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of outgoing SIP transactions for the BGCF, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { sprout 23 }
+
+sproutBGCFOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutBGCFOutgoingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 outgoing SIP transactions for the BGCF, and the percentage
+                 of attempts that were successful."
+    INDEX       { sproutBGCFOutgoingSIPTransactionsTimeScope,
+                  sproutBGCFOutgoingSIPTransactionsRequestScope }
+    ::= { sproutBGCFOutgoingSIPTransactionsTable 1 }
+
+SproutBGCFOutgoingSIPTransactionsEntry ::= SEQUENCE
+{
+  sproutBGCFOutgoingSIPTransactionsTimeScope      INTEGER,
+  sproutBGCFOutgoingSIPTransactionsRequestScope   INTEGER,
+  sproutBGCFOutgoingSIPTransactionsAttempts       Unsigned32,
+  sproutBGCFOutgoingSIPTransactionsSuccesses      Unsigned32,
+  sproutBGCFOutgoingSIPTransactionsFailures       Unsigned32,
+  sproutBGCFOutgoingSIPTransactionsSuccessPercent Unsigned32
+}
+
+sproutBGCFOutgoingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 1 }
+
+sproutBGCFOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the outgoing transaction."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 2 }
+
+sproutBGCFOutgoingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of outgoing SIP transactions over the time period."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 3 }
+
+sproutBGCFOutgoingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful outgoing SIP transactions over the
+                 time period."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 4 }
+
+sproutBGCFOutgoingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed outgoing SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 5 }
+
+sproutBGCFOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { sproutBGCFOutgoingSIPTransactionsEntry 6 }
+
+sproutMMTelIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutMMTelIncomingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of incoming SIP transactions for the MMTel, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { sprout 24 }
+
+sproutMMTelIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutMMTelIncomingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 incoming SIP transactions for the MMTel, and the percentage
+                 of attempts that were successful."
+    INDEX       { sproutMMTelIncomingSIPTransactionsTimeScope,
+                  sproutMMTelIncomingSIPTransactionsRequestScope }
+    ::= { sproutMMTelIncomingSIPTransactionsTable 1 }
+
+SproutMMTelIncomingSIPTransactionsEntry ::= SEQUENCE
+{
+  sproutMMTelIncomingSIPTransactionsTimeScope      INTEGER,
+  sproutMMTelIncomingSIPTransactionsRequestScope   INTEGER,
+  sproutMMTelIncomingSIPTransactionsAttempts       Unsigned32,
+  sproutMMTelIncomingSIPTransactionsSuccesses      Unsigned32,
+  sproutMMTelIncomingSIPTransactionsFailures       Unsigned32,
+  sproutMMTelIncomingSIPTransactionsSuccessPercent Unsigned32
+}
+
+sproutMMTelIncomingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 1 }
+
+sproutMMTelIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the incoming transaction."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 2 }
+
+sproutMMTelIncomingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of incoming SIP transactions over the time period."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 3 }
+
+sproutMMTelIncomingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful incoming SIP transactions over the
+                 time period."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 4 }
+
+sproutMMTelIncomingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed incoming SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 5 }
+
+sproutMMTelIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { sproutMMTelIncomingSIPTransactionsEntry 6 }
+
+sproutMMTelOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutMMTelOutgoingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of outgoing SIP transactions for the MMTel, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { sprout 25 }
+
+sproutMMTelOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      SproutMMTelOutgoingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 outgoing SIP transactions for the MMTel, and the percentage
+                 of attempts that were successful."
+    INDEX       { sproutMMTelOutgoingSIPTransactionsTimeScope,
+                  sproutMMTelOutgoingSIPTransactionsRequestScope }
+    ::= { sproutMMTelOutgoingSIPTransactionsTable 1 }
+
+SproutMMTelOutgoingSIPTransactionsEntry ::= SEQUENCE
+{
+  sproutMMTelOutgoingSIPTransactionsTimeScope      INTEGER,
+  sproutMMTelOutgoingSIPTransactionsRequestScope   INTEGER,
+  sproutMMTelOutgoingSIPTransactionsAttempts       Unsigned32,
+  sproutMMTelOutgoingSIPTransactionsSuccesses      Unsigned32,
+  sproutMMTelOutgoingSIPTransactionsFailures       Unsigned32,
+  sproutMMTelOutgoingSIPTransactionsSuccessPercent Unsigned32
+}
+
+sproutMMTelOutgoingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 1 }
+
+sproutMMTelOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the outgoing transaction."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 2 }
+
+sproutMMTelOutgoingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of outgoing SIP transactions over the time period."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 3 }
+
+sproutMMTelOutgoingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful outgoing SIP transactions over the
+                 time period."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 4 }
+
+sproutMMTelOutgoingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed outgoing SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 5 }
+
+sproutMMTelOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { sproutMMTelOutgoingSIPTransactionsEntry 6 }
+
+sproutPCGroup OBJECT-GROUP
+    OBJECTS {
+      sproutHomerConnectionCount,
+      sproutHomerLatencyAverage,
+      sproutHomerLatencyVariance,
+      sproutHomerLatencyHWM,
+      sproutHomerLatencyLWM,
+      sproutHomerLatencyCount,
+      sproutBGCFIncomingSIPTransactionsAttempts,
+      sproutBGCFIncomingSIPTransactionsSuccesses,
+      sproutBGCFIncomingSIPTransactionsFailures,
+      sproutBGCFIncomingSIPTransactionsSuccessPercent,
+      sproutBGCFOutgoingSIPTransactionsAttempts,
+      sproutBGCFOutgoingSIPTransactionsSuccesses,
+      sproutBGCFOutgoingSIPTransactionsFailures,
+      sproutBGCFOutgoingSIPTransactionsSuccessPercent,
+      sproutMMTelIncomingSIPTransactionsAttempts,
+      sproutMMTelIncomingSIPTransactionsSuccesses,
+      sproutMMTelIncomingSIPTransactionsFailures,
+      sproutMMTelIncomingSIPTransactionsSuccessPercent,
+      sproutMMTelOutgoingSIPTransactionsAttempts,
+      sproutMMTelOutgoingSIPTransactionsSuccesses,
+      sproutMMTelOutgoingSIPTransactionsFailures,
+      sproutMMTelOutgoingSIPTransactionsSuccessPercent
+    }
+    STATUS      current
+    DESCRIPTION "Project Clearwater-specific statistics exposed by Sprout"
+    ::= { projectClearwaterObjectGroups 3 }
+
+-- Call Diversion AS Entries
+
+cdivAsDiversionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsDiversionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts of diversion reasons by the Call Diversion AS over
+                 the given period."
+    ::= { callDiversionAs 1 }
+
+cdivAsDiversionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsDiversionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of diversion reasons by the Call Diversion AS"
+    INDEX       { cdivAsDiversionsScope }
+    ::= { cdivAsDiversionsTable 1 }
+
+CdivAsDiversionsEntry ::= SEQUENCE
+{
+  cdivAsDiversionsScope          INTEGER,
+  cdivAsTotal                    Unsigned32,
+  cdivAsUnconditional            Unsigned32,
+  cdivAsBusy                     Unsigned32,
+  cdivAsNotRegistered            Unsigned32,
+  cdivAsNoAnswer                 Unsigned32,
+  cdivAsNotReachable             Unsigned32
+}
+
+cdivAsDiversionsScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { cdivAsDiversionsEntry 1 }
+
+cdivAsTotal OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of requests that were diverted."
+    ::= { cdivAsDiversionsEntry 2 }
+
+cdivAsUnconditional OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were unconditionally diverted."
+    ::= { cdivAsDiversionsEntry 3 }
+
+cdivAsBusy OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a busy
+                 condition."
+    ::= { cdivAsDiversionsEntry 4 }
+
+cdivAsNotRegistered OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a not
+                 registered condition."
+    ::= { cdivAsDiversionsEntry 5 }
+
+cdivAsNoAnswer OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a no answer
+                 condition."
+    ::= { cdivAsDiversionsEntry 6 }
+
+cdivAsNotReachable OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of requests that were diverted due to a not
+                 reachable condition."
+    ::= { cdivAsDiversionsEntry 7 }
+
+cdivAsIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsIncomingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of incoming SIP transactions for the Call Diversion AS, and
+                 (for convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { callDiversionAs 2 }
+
+cdivAsIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsIncomingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 incoming SIP transactions for the Call Diversion AS, and the
+                 percentage of attempts that were successful."
+    INDEX       { cdivAsIncomingSIPTransactionsTimeScope,
+                  cdivAsIncomingSIPTransactionsRequestScope }
+    ::= { cdivAsIncomingSIPTransactionsTable 1 }
+
+CdivAsIncomingSIPTransactionsEntry ::= SEQUENCE
+{
+  cdivAsIncomingSIPTransactionsTimeScope      INTEGER,
+  cdivAsIncomingSIPTransactionsRequestScope   INTEGER,
+  cdivAsIncomingSIPTransactionsAttempts       Unsigned32,
+  cdivAsIncomingSIPTransactionsSuccesses      Unsigned32,
+  cdivAsIncomingSIPTransactionsFailures       Unsigned32,
+  cdivAsIncomingSIPTransactionsSuccessPercent Unsigned32
+}
+
+cdivAsIncomingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { cdivAsIncomingSIPTransactionsEntry 1 }
+
+cdivAsIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the incoming transaction."
+    ::= { cdivAsIncomingSIPTransactionsEntry 2 }
+
+cdivAsIncomingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of incoming SIP transactions over the time period."
+    ::= { cdivAsIncomingSIPTransactionsEntry 3 }
+
+cdivAsIncomingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful incoming SIP transactions over the
+                 time period."
+    ::= { cdivAsIncomingSIPTransactionsEntry 4 }
+
+cdivAsIncomingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed incoming SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { cdivAsIncomingSIPTransactionsEntry 5 }
+
+cdivAsIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { cdivAsIncomingSIPTransactionsEntry 6 }
+
+cdivAsOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF CdivAsOutgoingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of outgoing SIP transactions for the Call Diversion AS, and
+                 (for convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { callDiversionAs 3 }
+
+cdivAsOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      CdivAsOutgoingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 outgoing SIP transactions for the Call Diversion AS, and the
+                 percentage of attempts that were successful."
+    INDEX       { cdivAsOutgoingSIPTransactionsTimeScope,
+                  cdivAsOutgoingSIPTransactionsRequestScope }
+    ::= { cdivAsOutgoingSIPTransactionsTable 1 }
+
+CdivAsOutgoingSIPTransactionsEntry ::= SEQUENCE
+{
+  cdivAsOutgoingSIPTransactionsTimeScope      INTEGER,
+  cdivAsOutgoingSIPTransactionsRequestScope   INTEGER,
+  cdivAsOutgoingSIPTransactionsAttempts       Unsigned32,
+  cdivAsOutgoingSIPTransactionsSuccesses      Unsigned32,
+  cdivAsOutgoingSIPTransactionsFailures       Unsigned32,
+  cdivAsOutgoingSIPTransactionsSuccessPercent Unsigned32
+}
+
+cdivAsOutgoingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 1 }
+
+cdivAsOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the outgoing transaction."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 2 }
+
+cdivAsOutgoingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of outgoing SIP transactions over the time period."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 3 }
+
+cdivAsOutgoingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful outgoing SIP transactions over the
+                 time period."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 4 }
+
+cdivAsOutgoingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed outgoing SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 5 }
+
+cdivAsOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { cdivAsOutgoingSIPTransactionsEntry 6 }
+
+callDiversionASGroup OBJECT-GROUP
+    OBJECTS {
+      cdivAsTotal,
+      cdivAsUnconditional,
+      cdivAsBusy,
+      cdivAsNotRegistered,
+      cdivAsNoAnswer,
+      cdivAsNotReachable,
+      cdivAsIncomingSIPTransactionsAttempts,
+      cdivAsIncomingSIPTransactionsSuccesses,
+      cdivAsIncomingSIPTransactionsFailures,
+      cdivAsIncomingSIPTransactionsSuccessPercent,
+      cdivAsOutgoingSIPTransactionsAttempts,
+      cdivAsOutgoingSIPTransactionsSuccesses,
+      cdivAsOutgoingSIPTransactionsFailures,
+      cdivAsOutgoingSIPTransactionsSuccessPercent
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by Call Diversion AS"
+    ::= { projectClearwaterObjectGroups 6 }
+
+-- Memento Entries
+
+mementoSIP OBJECT IDENTIFIER ::= { memento 1 }
+
+mementoCallsRecordedTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoCallsRecordedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of call record creation outcomes for the given period."
+    ::= { mementoSIP 1 }
+
+mementoCallsRecordedEntry OBJECT-TYPE
+    SYNTAX      MementoCallsRecordedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of call record creation outcomes"
+    INDEX       { mementoCallsRecordedScope }
+    ::= { mementoCallsRecordedTable 1 }
+
+MementoCallsRecordedEntry ::= SEQUENCE
+{
+    mementoCallsRecordedScope            INTEGER,
+    mementoCompletedCallsRecorded        Unsigned32,
+    mementoFailedCallsRecorded           Unsigned32,
+    mementoCallsNotRecordedDueToOverload Unsigned32
+}
+
+mementoCallsRecordedScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoCallsRecordedEntry 1 }
+
+mementoCompletedCallsRecorded OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of successful calls recorded."
+    ::= { mementoCallsRecordedEntry 2 }
+
+mementoFailedCallsRecorded OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of failed call attempts recorded."
+    ::= { mementoCallsRecordedEntry 3 }
+
+mementoCallsNotRecordedDueToOverload OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of call records dropped due to overload."
+    ::= { mementoCallsRecordedEntry 4 }
+
+mementoSIPCassandraReadLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoSIPCassandraReadLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
+                 latency reported by the SIP AS component  Latency measured in
+                 microseconds"
+    ::= { mementoSIP 2 }
+
+mementoSIPCassandraReadLatencyEntry OBJECT-TYPE
+    SYNTAX      MementoSIPCassandraReadLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
+                 latency reported by the SIP AS component"
+    INDEX       { mementoSIPCassandraReadLatencyScope }
+    ::= { mementoSIPCassandraReadLatencyTable 1 }
+
+MementoSIPCassandraReadLatencyEntry ::= SEQUENCE
+{
+  mementoSIPCassandraReadLatencyScope          INTEGER,
+  mementoSIPCassandraReadLatencyAverage        Unsigned32,
+  mementoSIPCassandraReadLatencyVariance       Unsigned32,
+  mementoSIPCassandraReadLatencyHWM            Unsigned32,
+  mementoSIPCassandraReadLatencyLWM            Unsigned32,
+  mementoSIPCassandraReadLatencyCount          Unsigned32
+}
+
+mementoSIPCassandraReadLatencyScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoSIPCassandraReadLatencyEntry 1 }
+
+mementoSIPCassandraReadLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { mementoSIPCassandraReadLatencyEntry 2 }
+
+mementoSIPCassandraReadLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { mementoSIPCassandraReadLatencyEntry 3 }
+
+mementoSIPCassandraReadLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { mementoSIPCassandraReadLatencyEntry 4 }
+
+mementoSIPCassandraReadLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { mementoSIPCassandraReadLatencyEntry 5 }
+
+mementoSIPCassandraReadLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of reads over the period."
+    ::= { mementoSIPCassandraReadLatencyEntry 6 }
+
+mementoSIPCassandraWriteLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoSIPCassandraWriteLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The average, variance, LWM and HWM of Cassandra database write
+                 latency reported by the SIP AS component.  Latency measured in
+                 microseconds"
+    ::= { mementoSIP 3 }
+
+mementoSIPCassandraWriteLatencyEntry OBJECT-TYPE
+    SYNTAX      MementoSIPCassandraWriteLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of Cassandra database write
+                 latency reported by the SIP AS component."
+    INDEX       { mementoSIPCassandraWriteLatencyScope }
+    ::= { mementoSIPCassandraWriteLatencyTable 1 }
+
+MementoSIPCassandraWriteLatencyEntry ::= SEQUENCE
+{
+  mementoSIPCassandraWriteLatencyScope          INTEGER,
+  mementoSIPCassandraWriteLatencyAverage        Unsigned32,
+  mementoSIPCassandraWriteLatencyVariance       Unsigned32,
+  mementoSIPCassandraWriteLatencyHWM            Unsigned32,
+  mementoSIPCassandraWriteLatencyLWM            Unsigned32,
+  mementoSIPCassandraWriteLatencyCount          Unsigned32
+}
+
+mementoSIPCassandraWriteLatencyScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoSIPCassandraWriteLatencyEntry 1 }
+
+mementoSIPCassandraWriteLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { mementoSIPCassandraWriteLatencyEntry 2 }
+
+mementoSIPCassandraWriteLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { mementoSIPCassandraWriteLatencyEntry 3 }
+
+mementoSIPCassandraWriteLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { mementoSIPCassandraWriteLatencyEntry 4 }
+
+mementoSIPCassandraWriteLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { mementoSIPCassandraWriteLatencyEntry 5 }
+
+mementoSIPCassandraWriteLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of writes over the period."
+    ::= { mementoSIPCassandraWriteLatencyEntry 6 }
+
+mementoIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoIncomingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of incoming SIP transactions for Memento, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { mementoSIP 4 }
+
+mementoIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      MementoIncomingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 incoming SIP transactions for Memento, and the percentage
+                 of attempts that were successful."
+    INDEX       { mementoIncomingSIPTransactionsTimeScope,
+                  mementoIncomingSIPTransactionsRequestScope }
+    ::= { mementoIncomingSIPTransactionsTable 1 }
+
+MementoIncomingSIPTransactionsEntry ::= SEQUENCE
+{
+  mementoIncomingSIPTransactionsTimeScope      INTEGER,
+  mementoIncomingSIPTransactionsRequestScope   INTEGER,
+  mementoIncomingSIPTransactionsAttempts       Unsigned32,
+  mementoIncomingSIPTransactionsSuccesses      Unsigned32,
+  mementoIncomingSIPTransactionsFailures       Unsigned32,
+  mementoIncomingSIPTransactionsSuccessPercent Unsigned32
+}
+
+mementoIncomingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoIncomingSIPTransactionsEntry 1 }
+
+mementoIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the incoming transaction."
+    ::= { mementoIncomingSIPTransactionsEntry 2 }
+
+mementoIncomingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of incoming SIP transactions over the time period."
+    ::= { mementoIncomingSIPTransactionsEntry 3 }
+
+mementoIncomingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful incoming SIP transactions over the
+                 time period."
+    ::= { mementoIncomingSIPTransactionsEntry 4 }
+
+mementoIncomingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed incoming SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { mementoIncomingSIPTransactionsEntry 5 }
+
+mementoIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { mementoIncomingSIPTransactionsEntry 6 }
+
+mementoOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoOutgoingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of outgoing SIP transactions for Memento, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { mementoSIP 5 }
+
+mementoOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      MementoOutgoingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 outgoing SIP transactions for Memento, and the percentage
+                 of attempts that were successful."
+    INDEX       { mementoOutgoingSIPTransactionsTimeScope,
+                  mementoOutgoingSIPTransactionsRequestScope }
+    ::= { mementoOutgoingSIPTransactionsTable 1 }
+
+MementoOutgoingSIPTransactionsEntry ::= SEQUENCE
+{
+  mementoOutgoingSIPTransactionsTimeScope      INTEGER,
+  mementoOutgoingSIPTransactionsRequestScope   INTEGER,
+  mementoOutgoingSIPTransactionsAttempts       Unsigned32,
+  mementoOutgoingSIPTransactionsSuccesses      Unsigned32,
+  mementoOutgoingSIPTransactionsFailures       Unsigned32,
+  mementoOutgoingSIPTransactionsSuccessPercent Unsigned32
+}
+
+mementoOutgoingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoOutgoingSIPTransactionsEntry 1 }
+
+mementoOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the outgoing transaction."
+    ::= { mementoOutgoingSIPTransactionsEntry 2 }
+
+mementoOutgoingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of outgoing SIP transactions over the time period."
+    ::= { mementoOutgoingSIPTransactionsEntry 3 }
+
+mementoOutgoingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful outgoing SIP transactions over the
+                 time period."
+    ::= { mementoOutgoingSIPTransactionsEntry 4 }
+
+mementoOutgoingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed outgoing SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { mementoOutgoingSIPTransactionsEntry 5 }
+
+mementoOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { mementoOutgoingSIPTransactionsEntry 6 }
+
+mementoHTTP OBJECT IDENTIFIER ::= { memento 2 }
+
+mementoHTTPRequestTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoHTTPRequestEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of HTTP requests and their outcomes for the given
+                 period"
+    ::= { mementoHTTP 1 }
+
+mementoHTTPRequestEntry OBJECT-TYPE
+    SYNTAX      MementoHTTPRequestEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of HTTP requests and their outcomes"
+    INDEX       { mementoHTTPRequestScope }
+    ::= { mementoHTTPRequestTable 1 }
+
+MementoHTTPRequestEntry ::= SEQUENCE
+{
+    mementoHTTPRequestScope            INTEGER,
+    mementoHTTPRequestCount            Unsigned32,
+    mementoHTTPRejectedDueToOverload   Unsigned32
+}
+
+mementoHTTPRequestScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoHTTPRequestEntry 1 }
+
+mementoHTTPRequestCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of HTTP requests received."
+    ::= { mementoHTTPRequestEntry 2 }
+
+mementoHTTPRejectedDueToOverload OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of HTTP requests rejected due to overload."
+    ::= { mementoHTTPRequestEntry 3 }
+
+mementoHTTPRequestLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoHTTPRequestLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Latency of HTTP call record retrieval requests over the given
+                 period.  Latency measured in microseconds"
+    ::= { mementoHTTP 2 }
+
+mementoHTTPRequestLatencyEntry OBJECT-TYPE
+    SYNTAX      MementoHTTPRequestLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of HTTP call retrieval latency"
+    INDEX       { mementoHTTPRequestLatencyScope }
+    ::= { mementoHTTPRequestLatencyTable 1 }
+
+MementoHTTPRequestLatencyEntry ::= SEQUENCE
+{
+  mementoHTTPRequestLatencyScope          INTEGER,
+  mementoHTTPRequestLatencyAverage        Unsigned32,
+  mementoHTTPRequestLatencyVariance       Unsigned32,
+  mementoHTTPRequestLatencyHWM            Unsigned32,
+  mementoHTTPRequestLatencyLWM            Unsigned32,
+  mementoHTTPRequestLatencyCount          Unsigned32
+}
+
+mementoHTTPRequestLatencyScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoHTTPRequestLatencyEntry 1 }
+
+mementoHTTPRequestLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 2 }
+
+mementoHTTPRequestLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 3 }
+
+mementoHTTPRequestLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 4 }
+
+mementoHTTPRequestLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { mementoHTTPRequestLatencyEntry 5 }
+
+mementoHTTPRequestLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total requests over the period."
+    ::= { mementoHTTPRequestLatencyEntry 6 }
+
+mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoHTTPCassandraReadLatencyEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
+                 latency reported by the HTTP component.  Latency measured in
+                 microseconds"
+    ::= { mementoHTTP 3 }
+
+mementoHTTPCassandraReadLatencyEntry OBJECT-TYPE
+    SYNTAX      MementoHTTPCassandraReadLatencyEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
+                 latency reported by the HTTP component."
+    INDEX       { mementoHTTPCassandraReadLatencyScope }
+    ::= { mementoHTTPCassandraReadLatencyTable 1 }
+
+MementoHTTPCassandraReadLatencyEntry ::= SEQUENCE
+{
+  mementoHTTPCassandraReadLatencyScope          INTEGER,
+  mementoHTTPCassandraReadLatencyAverage        Unsigned32,
+  mementoHTTPCassandraReadLatencyVariance       Unsigned32,
+  mementoHTTPCassandraReadLatencyHWM            Unsigned32,
+  mementoHTTPCassandraReadLatencyLWM            Unsigned32,
+  mementoHTTPCassandraReadLatencyCount          Unsigned32
+}
+
+mementoHTTPCassandraReadLatencyScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoHTTPCassandraReadLatencyEntry 1 }
+
+mementoHTTPCassandraReadLatencyAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { mementoHTTPCassandraReadLatencyEntry 2 }
+
+mementoHTTPCassandraReadLatencyVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { mementoHTTPCassandraReadLatencyEntry 3 }
+
+mementoHTTPCassandraReadLatencyHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { mementoHTTPCassandraReadLatencyEntry 4 }
+
+mementoHTTPCassandraReadLatencyLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { mementoHTTPCassandraReadLatencyEntry 5 }
+
+mementoHTTPCassandraReadLatencyCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of reads over the period."
+    ::= { mementoHTTPCassandraReadLatencyEntry 6 }
+
+mementoRetrievedCallRecordSizeTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoRetrievedCallRecordSizeEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Average, variance, HWM and LWM of the size (in kB) of call records
+                 retrieved from the store."
+    ::= { mementoHTTP 4 }
+
+mementoRetrievedCallRecordSizeEntry OBJECT-TYPE
+    SYNTAX      MementoRetrievedCallRecordSizeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Average, variance, HWM and LWM of the size (in kB) of call records
+                 retrieved from the store."
+    INDEX       { mementoRetrievedCallRecordSizeScope }
+    ::= { mementoRetrievedCallRecordSizeTable 1 }
+
+MementoRetrievedCallRecordSizeEntry ::= SEQUENCE
+{
+  mementoRetrievedCallRecordSizeScope          INTEGER,
+  mementoRetrievedCallRecordSizeAverage        Unsigned32,
+  mementoRetrievedCallRecordSizeVariance       Unsigned32,
+  mementoRetrievedCallRecordSizeHWM            Unsigned32,
+  mementoRetrievedCallRecordSizeLWM            Unsigned32,
+  mementoRetrievedCallRecordSizeCount          Unsigned32
+}
+
+mementoRetrievedCallRecordSizeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoRetrievedCallRecordSizeEntry 1 }
+
+mementoRetrievedCallRecordSizeAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average size over the period."
+    ::= { mementoRetrievedCallRecordSizeEntry 2 }
+
+mementoRetrievedCallRecordSizeVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the size over the period."
+    ::= { mementoRetrievedCallRecordSizeEntry 3 }
+
+mementoRetrievedCallRecordSizeHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest size over the period."
+    ::= { mementoRetrievedCallRecordSizeEntry 4 }
+
+mementoRetrievedCallRecordSizeLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest size over the period."
+    ::= { mementoRetrievedCallRecordSizeEntry 5 }
+
+mementoRetrievedCallRecordSizeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of call lists retrieved over the period."
+    ::= { mementoRetrievedCallRecordSizeEntry 6 }
+
+mementoRetrievedCallRecordLengthTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoRetrievedCallRecordLengthEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Average, variance, HWM and LWM of the length (# of records) of call
+                 records retrieved from the store."
+    ::= { mementoHTTP 5 }
+
+mementoRetrievedCallRecordLengthEntry OBJECT-TYPE
+    SYNTAX      MementoRetrievedCallRecordLengthEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Average, variance, HWM and LWM of the length (# of records) of call
+                 records retrieved from the store."
+    INDEX       { mementoRetrievedCallRecordLengthScope }
+    ::= { mementoRetrievedCallRecordLengthTable 1 }
+
+MementoRetrievedCallRecordLengthEntry ::= SEQUENCE
+{
+  mementoRetrievedCallRecordLengthScope          INTEGER,
+  mementoRetrievedCallRecordLengthAverage        Unsigned32,
+  mementoRetrievedCallRecordLengthVariance       Unsigned32,
+  mementoRetrievedCallRecordLengthHWM            Unsigned32,
+  mementoRetrievedCallRecordLengthLWM            Unsigned32,
+  mementoRetrievedCallRecordLengthCount          Unsigned32
+}
+
+mementoRetrievedCallRecordLengthScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoRetrievedCallRecordLengthEntry 1 }
+
+mementoRetrievedCallRecordLengthAverage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The average latency over the period."
+    ::= { mementoRetrievedCallRecordLengthEntry 2 }
+
+mementoRetrievedCallRecordLengthVariance OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The variance of the latency over the period."
+    ::= { mementoRetrievedCallRecordLengthEntry 3 }
+
+mementoRetrievedCallRecordLengthHWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The highest latency over the period."
+    ::= { mementoRetrievedCallRecordLengthEntry 4 }
+
+mementoRetrievedCallRecordLengthLWM OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The lowest latency over the period."
+    ::= { mementoRetrievedCallRecordLengthEntry 5 }
+
+mementoRetrievedCallRecordLengthCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of call lists retrieved over the period."
+    ::= { mementoRetrievedCallRecordLengthEntry 6 }
+
+mementoAuthProxy OBJECT IDENTIFIER ::= { memento 3 }
+
+mementoConnectedHomesteadsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoConnectedHomesteadsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Statistics for each connected upstream Homestead node"
+    ::= { mementoAuthProxy 1 }
+
+mementoConnectedHomesteadsEntry OBJECT-TYPE
+    SYNTAX MementoConnectedHomesteadsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Statistics for a single connected upstream Homestead"
+    INDEX { mementoHomesteadInetAddrType,
+            mementoHomesteadInetAddr      }
+    ::= { mementoConnectedHomesteadsTable 1 }
+
+MementoConnectedHomesteadsEntry ::= SEQUENCE
+{
+  mementoHomesteadInetAddrType    InetAddressType,
+  mementoHomesteadInetAddr        InetAddress,
+  mementoHomesteadConnectionCount Unsigned32
+}
+
+mementoHomesteadInetAddrType OBJECT-TYPE
+    SYNTAX      InetAddressType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address type of the upstream Homestead"
+    ::= { mementoConnectedHomesteadsEntry 1 }
+
+mementoHomesteadInetAddr OBJECT-TYPE
+    SYNTAX      InetAddress (SIZE (1..16))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Inet address of the upstream Homestead"
+    ::= { mementoConnectedHomesteadsEntry 2 }
+
+mementoHomesteadConnectionCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current count of TCP connections from Memento to the
+                 Homestead node, may include connections in setting-
+                 up state"
+    ::= { mementoConnectedHomesteadsEntry 3 }
+
+mementoAuthAttemptTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MementoAuthAttemptEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts of authentication attempts over the given period."
+    ::= { mementoAuthProxy 2 }
+
+mementoAuthAttemptEntry OBJECT-TYPE
+    SYNTAX      MementoAuthAttemptEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Counts of authentication attempts over the given period."
+    INDEX       { mementoAuthAttemptScope }
+    ::= { mementoAuthAttemptTable 1 }
+
+MementoAuthAttemptEntry ::= SEQUENCE
+{
+  mementoAuthAttemptScope          INTEGER,
+  mementoAuthChallengeCount        Unsigned32,
+  mementoAuthAttemptCount          Unsigned32,
+  mementoAuthSuccessCount          Unsigned32,
+  mementoAuthFailureCount          Unsigned32,
+  mementoAuthStaleCount            Unsigned32
+}
+
+mementoAuthAttemptScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { mementoAuthAttemptEntry 1 }
+
+mementoAuthChallengeCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of authentication challenges requested."
+    ::= { mementoAuthAttemptEntry 2 }
+
+mementoAuthAttemptCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of authentication attempts."
+    ::= { mementoAuthAttemptEntry 3 }
+
+mementoAuthSuccessCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of successful authentications."
+    ::= { mementoAuthAttemptEntry 4 }
+
+mementoAuthFailureCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of authentication failures due to incorrect credentials."
+    ::= { mementoAuthAttemptEntry 5 }
+
+mementoAuthStaleCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The count of authentication failures due to stale challenges."
+    ::= { mementoAuthAttemptEntry 6 }
+
+mementoDiskUsage OBJECT IDENTIFIER::= { memento 4 }
+
+mementoDatabaseDiskUsage OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current Memento database disk usage."
+    ::= { mementoDiskUsage 1 }
+
+mementoGroup OBJECT-GROUP
+    OBJECTS {
+        mementoCompletedCallsRecorded,
+        mementoFailedCallsRecorded,
+        mementoCallsNotRecordedDueToOverload,
+        mementoHTTPRequestCount,
+        mementoHTTPRejectedDueToOverload,
+        mementoHTTPRequestLatencyAverage,
+        mementoHTTPRequestLatencyVariance,
+        mementoHTTPRequestLatencyHWM,
+        mementoHTTPRequestLatencyLWM,
+        mementoHTTPRequestLatencyCount,
+        mementoSIPCassandraReadLatencyAverage,
+        mementoSIPCassandraReadLatencyVariance,
+        mementoSIPCassandraReadLatencyHWM,
+        mementoSIPCassandraReadLatencyLWM,
+        mementoSIPCassandraReadLatencyCount,
+        mementoSIPCassandraWriteLatencyAverage,
+        mementoSIPCassandraWriteLatencyVariance,
+        mementoSIPCassandraWriteLatencyHWM,
+        mementoSIPCassandraWriteLatencyLWM,
+        mementoSIPCassandraWriteLatencyCount,
+        mementoHTTPCassandraReadLatencyAverage,
+        mementoHTTPCassandraReadLatencyVariance,
+        mementoHTTPCassandraReadLatencyHWM,
+        mementoHTTPCassandraReadLatencyLWM,
+        mementoHTTPCassandraReadLatencyCount,
+        mementoRetrievedCallRecordSizeAverage,
+        mementoRetrievedCallRecordSizeVariance,
+        mementoRetrievedCallRecordSizeHWM,
+        mementoRetrievedCallRecordSizeLWM,
+        mementoRetrievedCallRecordSizeCount,
+        mementoRetrievedCallRecordLengthAverage,
+        mementoRetrievedCallRecordLengthVariance,
+        mementoRetrievedCallRecordLengthHWM,
+        mementoRetrievedCallRecordLengthLWM,
+        mementoRetrievedCallRecordLengthCount,
+        mementoHomesteadConnectionCount,
+        mementoAuthChallengeCount,
+        mementoAuthAttemptCount,
+        mementoAuthSuccessCount,
+        mementoAuthFailureCount,
+        mementoAuthStaleCount,
+        mementoDatabaseDiskUsage,
+        mementoIncomingSIPTransactionsAttempts,
+        mementoIncomingSIPTransactionsSuccesses,
+        mementoIncomingSIPTransactionsFailures,
+        mementoIncomingSIPTransactionsSuccessPercent,
+        mementoOutgoingSIPTransactionsAttempts,
+        mementoOutgoingSIPTransactionsSuccesses,
+        mementoOutgoingSIPTransactionsFailures,
+        mementoOutgoingSIPTransactionsSuccessPercent
+    }
+    STATUS      current
+    DESCRIPTION "Statistics exposed by Memento"
+    ::= { projectClearwaterObjectGroups 5 }
+
+-- Gemini Entries
+
+geminiIncomingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF GeminiIncomingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of incoming SIP transactions for Gemini, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { gemini 1 }
+
+geminiIncomingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      GeminiIncomingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 incoming SIP transactions for Gemini, and the percentage
+                 of attempts that were successful."
+    INDEX       { geminiIncomingSIPTransactionsTimeScope,
+                  geminiIncomingSIPTransactionsRequestScope }
+    ::= { geminiIncomingSIPTransactionsTable 1 }
+
+GeminiIncomingSIPTransactionsEntry ::= SEQUENCE
+{
+  geminiIncomingSIPTransactionsTimeScope      INTEGER,
+  geminiIncomingSIPTransactionsRequestScope   INTEGER,
+  geminiIncomingSIPTransactionsAttempts       Unsigned32,
+  geminiIncomingSIPTransactionsSuccesses      Unsigned32,
+  geminiIncomingSIPTransactionsFailures       Unsigned32,
+  geminiIncomingSIPTransactionsSuccessPercent Unsigned32
+}
+
+geminiIncomingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { geminiIncomingSIPTransactionsEntry 1 }
+
+geminiIncomingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the incoming transaction."
+    ::= { geminiIncomingSIPTransactionsEntry 2 }
+
+geminiIncomingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of incoming SIP transactions over the time period."
+    ::= { geminiIncomingSIPTransactionsEntry 3 }
+
+geminiIncomingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful incoming SIP transactions over the
+                 time period."
+    ::= { geminiIncomingSIPTransactionsEntry 4 }
+
+geminiIncomingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed incoming SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { geminiIncomingSIPTransactionsEntry 5 }
+
+geminiIncomingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of incoming SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { geminiIncomingSIPTransactionsEntry 6 }
+
+geminiOutgoingSIPTransactionsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF GeminiOutgoingSIPTransactionsEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 of outgoing SIP transactions for Gemini, and (for
+                 convenience) provides the percentage of attempts that were
+                 successful. Note that CANCEL transactions are not currently
+                 tracked in this table."
+    ::= { gemini 2 }
+
+geminiOutgoingSIPTransactionsEntry OBJECT-TYPE
+    SYNTAX      GeminiOutgoingSIPTransactionsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for
+                 outgoing SIP transactions for Gemini, and the percentage
+                 of attempts that were successful."
+    INDEX       { geminiOutgoingSIPTransactionsTimeScope,
+                  geminiOutgoingSIPTransactionsRequestScope }
+    ::= { geminiOutgoingSIPTransactionsTable 1 }
+
+GeminiOutgoingSIPTransactionsEntry ::= SEQUENCE
+{
+  geminiOutgoingSIPTransactionsTimeScope      INTEGER,
+  geminiOutgoingSIPTransactionsRequestScope   INTEGER,
+  geminiOutgoingSIPTransactionsAttempts       Unsigned32,
+  geminiOutgoingSIPTransactionsSuccesses      Unsigned32,
+  geminiOutgoingSIPTransactionsFailures       Unsigned32,
+  geminiOutgoingSIPTransactionsSuccessPercent Unsigned32
+}
+
+geminiOutgoingSIPTransactionsTimeScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { geminiOutgoingSIPTransactionsEntry 1 }
+
+geminiOutgoingSIPTransactionsRequestScope OBJECT-TYPE
+    SYNTAX      RequestType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The method type of the outgoing transaction."
+    ::= { geminiOutgoingSIPTransactionsEntry 2 }
+
+geminiOutgoingSIPTransactionsAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of outgoing SIP transactions over the time period."
+    ::= { geminiOutgoingSIPTransactionsEntry 3 }
+
+geminiOutgoingSIPTransactionsSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of successful outgoing SIP transactions over the
+                 time period."
+    ::= { geminiOutgoingSIPTransactionsEntry 4 }
+
+geminiOutgoingSIPTransactionsFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed outgoing SIP transactions over the
+                 time period. Note that 3xx responses are counted as
+                 transaction failures."
+    ::= { geminiOutgoingSIPTransactionsEntry 5 }
+
+geminiOutgoingSIPTransactionsSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of outgoing SIP transactions over the
+                 period that were successful. Reported in units of ten
+                 thousandths of a percentage point. When there are zero
+                 attempts made, the value will be 1000000 to represent 100%."
+    ::= { geminiOutgoingSIPTransactionsEntry 6 }
+
+geminiGroup OBJECT-GROUP
+    OBJECTS {
+      geminiIncomingSIPTransactionsAttempts,
+      geminiIncomingSIPTransactionsSuccesses,
+      geminiIncomingSIPTransactionsFailures,
+      geminiIncomingSIPTransactionsSuccessPercent,
+      geminiOutgoingSIPTransactionsAttempts,
+      geminiOutgoingSIPTransactionsSuccesses,
+      geminiOutgoingSIPTransactionsFailures,
+      geminiOutgoingSIPTransactionsSuccessPercent
+    }
+    STATUS    current
+    DESCRIPTION "Statistics exposed by Gemini"
+    ::= { projectClearwaterObjectGroups 11  }
+
+END
