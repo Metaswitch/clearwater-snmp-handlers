@@ -18,6 +18,7 @@
 debian/copyright
 build
 cw_alarm_agent
+_env/
 
 # FV tests
 fvtest-snmpd.out

@@ -8,6 +8,8 @@ MK_DIR := ${ROOT}/mk
 PREFIX ?= ${ROOT}/usr
 INSTALL_DIR ?= ${PREFIX}
 MODULE_DIR := ${ROOT}/modules
+ENV_DIR := $(shell pwd)/_env
+PYTHON_BIN := $(shell which python)
 
 PKG_COMPONENT := clearwater-snmp-handlers
 PKG_MAJOR_VERSION ?= 1.0
@@ -45,8 +47,8 @@ cw_alarm_agent_clean:
 
 cw_alarm_agent_distclean: CW_ALARM_AGENT_clean
 
-cw_mib:
-	${PYTHON} ${ROOT}/mib-generator/cw_mib_generator.py && mv ${ROOT}/mib-generator/PROJECT-CLEARWATER-MIB ${ROOT}/clearwater-snmp-alarm-agent.root/usr/share/clearwater/mibs/
+cw_mib: env
+	${ENV_DIR}/bin/python ${ROOT}/mib-generator/cw_mib_generator.py && mv ${ROOT}/mib-generator/PROJECT-CLEARWATER-MIB ${ROOT}/clearwater-snmp-alarm-agent.root/usr/share/clearwater/mibs/
 
 cdiv_handler.so:
 	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
@@ -61,6 +63,13 @@ astaire_handler.so:
 	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
 
 .PHONY: cw_alarm_agent CW_ALARM_AGENT_test cw_alarm_agent_clean cw_alarm_agent_distclean cw_mib cdiv_handler.so memento_handler.so memento_as_handler.so astaire_handler.so
+
+env: $(ENV_DIR)/bin/python
+
+$(ENV_DIR)/bin/python:
+	virtualenv --setuptools --python=$(PYTHON_BIN) $(ENV_DIR)
+	$(ENV_DIR)/bin/easy_install docopt
+
 build: ${SUBMODULES} cw_alarm_agent cw_mib
 
 test: ${SUBMODULES} cw_alarm_agent_test
@@ -69,9 +78,12 @@ full_test: ${SUBMODULES} cw_alarm_agent_full_test
 
 testall: $(patsubst %, %_test, ${SUBMODULES}) full_test
 
-clean: $(patsubst %, %_clean, ${SUBMODULES}) cw_alarm_agent_clean
+clean: $(patsubst %, %_clean, ${SUBMODULES}) cw_alarm_agent_clean envclean
 	rm -rf ${ROOT}/usr
 	rm -rf ${ROOT}/build
+
+envclean:
+	rm -rf $(ENV_DIR)
 
 distclean: $(patsubst %, %_distclean, ${SUBMODULES}) cw_alarm_agent_distclean
 	rm -rf ${ROOT}/usr
@@ -85,5 +97,5 @@ include build-infra/cw-rpm.mk
 .PHONY: rpm
 rpm: build rpm-only
 
-.PHONY: all build test clean distclean
+.PHONY: all env build test clean envclean distclean
 
