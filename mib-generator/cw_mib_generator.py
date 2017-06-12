@@ -9,8 +9,8 @@
 
 """Metaswitch Clearwater MIB Generator
 Generates the complete Project Clearwater MIB from base fragments.
-Optionally takes the location of a Clearwater Core MIB fragment to also
-output a complete Clearwater Core MIB.
+If the location of the Clearwater Core MIB fragment is supplied, the
+Clearwater Core MIB will be generated instead.
 
 Script should be run directly using Python 2.7 or >3.3.
 
