@@ -9,13 +9,13 @@ projectClearwaterCompliance MODULE-COMPLIANCE
                  components."
     MODULE
     GROUP bonoGroup
-    DESCRIPTION "The bonoGroup must be exposed by Bono nodes"
+    DESCRIPTION "The bonoGroup must be exposed by nodes running Bono"
     GROUP sproutPCGroup
-    DESCRIPTION "The sproutPCGroup must be exposed by Sprout nodes"
+    DESCRIPTION "The sproutPCGroup must be exposed by nodes running Sprout"
     GROUP callDiversionASGroup
-    DESCRIPTION "The callDiversionASGroup must be exposed by Call Diversion AS nodes"
+    DESCRIPTION "The callDiversionASGroup must be exposed by nodes running the Call Diversion AS"
     GROUP mementoGroup
-    DESCRIPTION "The mementoGroup must be exposed by Memento nodes"
+    DESCRIPTION "The mementoGroup must be exposed by nodes running Memento"
     GROUP geminiGroup
     DESCRIPTION "The geminiGroup must be exposed by nodes running Gemini"
     ::= { projectClearwaterConformance 1 }
@@ -44,7 +44,7 @@ bonoLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of SIP requests handled by this Bono
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { bono 2 }
 
@@ -128,14 +128,14 @@ bonoConnectedSproutsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF BonoConnectedSproutsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for each connected upstream Sprout node"
+    DESCRIPTION "Statistics for each connected upstream Sprout instance"
     ::= { core 1 }
 
 bonoConnectedSproutsEntry OBJECT-TYPE
     SYNTAX BonoConnectedSproutsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for a single connected upstream Sprout"
+    DESCRIPTION "Statistics for a single connected upstream Sprout instance"
     INDEX { bonoSproutInetAddrType,
             bonoSproutInetAddr      }
     ::= { bonoConnectedSproutsTable 1 }
@@ -165,9 +165,8 @@ bonoSproutConnectionCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Current count of TCP connections from Bono to the
-                 Sprout node, may include connections in setting-
-                 up state"
+    DESCRIPTION "Current count of TCP connections from Bono to the Sprout
+                 instance. May include connections in setting-up state"
     ::= { bonoConnectedSproutsEntry 3 }
 
 bonoIncomingRequestsTable OBJECT-TYPE
@@ -378,14 +377,14 @@ sproutConnectedHomersTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutConnectedHomersEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for each connected upstream Homer node"
+    DESCRIPTION "Statistics for each connected upstream Homer instance"
     ::= { xdm 1 }
 
 sproutConnectedHomersEntry OBJECT-TYPE
     SYNTAX SproutConnectedHomersEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for a single connected upstream Homer"
+    DESCRIPTION "Statistics for a single connected upstream Homer instance"
     INDEX { sproutHomerInetAddrType,
             sproutHomerInetAddr      }
     ::= { sproutConnectedHomersTable 1 }
@@ -416,7 +415,7 @@ sproutHomerConnectionCount OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Current count of TCP connections from Sprout to the
-                 Homer node, may include connections in setting-
+                 Homer instance. May include connections in setting-
                  up state"
     ::= { sproutConnectedHomersEntry 3 }
 
@@ -425,7 +424,7 @@ sproutHomerLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of Homer requests made by this Sprout
-                 over the given period.  Latency measured in
+                 over the given period. Latency measured in
                  microseconds"
     ::= { xdm 2 }
 
@@ -1272,7 +1271,7 @@ mementoSIPCassandraWriteLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database write
-                 latency reported by the SIP AS component.  Latency measured in
+                 latency reported by the SIP AS component. Latency measured in
                  microseconds"
     ::= { mementoSIP 3 }
 
@@ -1562,7 +1561,7 @@ mementoHTTPRequestLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of HTTP call record retrieval requests over the given
-                 period.  Latency measured in microseconds"
+                 period. Latency measured in microseconds"
     ::= { mementoHTTP 2 }
 
 mementoHTTPRequestLatencyEntry OBJECT-TYPE
@@ -1632,7 +1631,7 @@ mementoHTTPCassandraReadLatencyTable OBJECT-TYPE
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "The average, variance, LWM and HWM of Cassandra database read
-                 latency reported by the HTTP component.  Latency measured in
+                 latency reported by the HTTP component. Latency measured in
                  microseconds"
     ::= { mementoHTTP 3 }
 
@@ -1847,14 +1846,14 @@ mementoConnectedHomesteadsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF MementoConnectedHomesteadsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for each connected upstream Homestead node"
+    DESCRIPTION "Statistics for each connected upstream Homestead instance"
     ::= { mementoAuthProxy 1 }
 
 mementoConnectedHomesteadsEntry OBJECT-TYPE
     SYNTAX MementoConnectedHomesteadsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Statistics for a single connected upstream Homestead"
+    DESCRIPTION "Statistics for a single connected upstream Homestead instance"
     INDEX { mementoHomesteadInetAddrType,
             mementoHomesteadInetAddr      }
     ::= { mementoConnectedHomesteadsTable 1 }
@@ -1885,7 +1884,7 @@ mementoHomesteadConnectionCount OBJECT-TYPE
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Current count of TCP connections from Memento to the
-                 Homestead node, may include connections in setting-
+                 Homestead instance. May include connections in setting-
                  up state"
     ::= { mementoConnectedHomesteadsEntry 3 }
 
