@@ -2514,28 +2514,28 @@ sproutSCSCFINVITEsForkedCount OBJECT-TYPE
     DESCRIPTION "The number of extra INVITEs created due to multiple registrations."
     ::= { sproutSCSCFINVITEsForkedEntry 2 }
 
-sproutSCSCFINVITEsNoMatchingDefaultIFCsTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoMatchingDefaultIFCsEntry
+sproutSCSCFINVITEsNoMatchingFallbackIFCsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoMatchingFallbackIFCsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Number of initial requests that attempted to use default IFCs but had no matching ones."
+    DESCRIPTION "Number of initial requests that attempted to use fallback IFCs but had no matching ones."
     ::= { sprout 39 }
 
-sproutSCSCFINVITEsNoMatchingDefaultIFCsEntry OBJECT-TYPE
-    SYNTAX      SproutSCSCFINVITEsNoMatchingDefaultIFCsEntry
+sproutSCSCFINVITEsNoMatchingFallbackIFCsEntry OBJECT-TYPE
+    SYNTAX      SproutSCSCFINVITEsNoMatchingFallbackIFCsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Number of initial requests that attempted to use default IFCs but had no matching ones."
-    INDEX       { sproutSCSCFINVITEsNoMatchingDefaultIFCsScope }
-    ::= { sproutSCSCFINVITEsNoMatchingDefaultIFCsTable 1 }
+    DESCRIPTION "Number of initial requests that attempted to use fallback IFCs but had no matching ones."
+    INDEX       { sproutSCSCFINVITEsNoMatchingFallbackIFCsScope }
+    ::= { sproutSCSCFINVITEsNoMatchingFallbackIFCsTable 1 }
 
-SproutSCSCFINVITEsNoMatchingDefaultIFCsEntry ::= SEQUENCE
+SproutSCSCFINVITEsNoMatchingFallbackIFCsEntry ::= SEQUENCE
 {
-  sproutSCSCFINVITEsNoMatchingDefaultIFCsScope        INTEGER,
-  sproutSCSCFINVITEsNoMatchingDefaultIFCsCount        Unsigned32
+  sproutSCSCFINVITEsNoMatchingFallbackIFCsScope        INTEGER,
+  sproutSCSCFINVITEsNoMatchingFallbackIFCsCount        Unsigned32
 }
 
-sproutSCSCFINVITEsNoMatchingDefaultIFCsScope OBJECT-TYPE
+sproutSCSCFINVITEsNoMatchingFallbackIFCsScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2544,14 +2544,14 @@ sproutSCSCFINVITEsNoMatchingDefaultIFCsScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { sproutSCSCFINVITEsNoMatchingDefaultIFCsEntry 1 }
+    ::= { sproutSCSCFINVITEsNoMatchingFallbackIFCsEntry 1 }
 
-sproutSCSCFINVITEsNoMatchingDefaultIFCsCount OBJECT-TYPE
+sproutSCSCFINVITEsNoMatchingFallbackIFCsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Number of initial requests that attempted to use default IFCs but had no matching ones."
-    ::= { sproutSCSCFINVITEsNoMatchingDefaultIFCsEntry 2 }
+    DESCRIPTION "Number of initial requests that attempted to use fallback IFCs but had no matching ones."
+    ::= { sproutSCSCFINVITEsNoMatchingFallbackIFCsEntry 2 }
 
 sproutSCSCFINVITEsNoSharedIFCsSetTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoSharedIFCsSetEntry
@@ -2793,7 +2793,7 @@ sproutGroup OBJECT-GROUP
       sproutICSCFSessionEstablishmentNetworkFailures,
       sproutICSCFSessionEstablishmentNetworkSuccessPercent,
       sproutSCSCFINVITEsForkedCount,
-      sproutSCSCFINVITEsNoMatchingDefaultIFCsCount,
+      sproutSCSCFINVITEsNoMatchingFallbackIFCsCount,
       sproutSCSCFINVITEsNoSharedIFCsSetCount,
       sproutSCSCFINVITEsNoMatchingIFCsCount,
       sproutSCSCFBarredRequestsCount
