@@ -73,19 +73,16 @@ def main(args):
                      CWC_MIB_NAME)
         print("Successfully generated Clearwater Core MIB!")
     else:
-        print("No Clearwater Core MIB directory supplied, building Project "
-              "Clearwater MIB only")
-
-    # PC MIB fragment is found in the common directory, so supply common_dir
-    # as the extras directory also.
-    print("Generating Project Clearwater MIB at {}".format(common_dir))
-    generate_mib(common_dir,
-                 common_dir,
-                 output_dir,
-                 COMMON_MIB,
-                 PC_EXTRAS,
-                 PC_MIB_NAME)
-    print("Successfully generated Project Clearwater MIB!")
+        # PC MIB fragment is found in the common directory, so supply
+        # common_dir as the extras directory also.
+        print("Generating Project Clearwater MIB at {}".format(common_dir))
+        generate_mib(common_dir,
+                     common_dir,
+                     output_dir,
+                     COMMON_MIB,
+                     PC_EXTRAS,
+                     PC_MIB_NAME)
+        print("Successfully generated Project Clearwater MIB!")
 
 
 def generate_mib(common_dir,
