@@ -64,7 +64,7 @@ def main(args):
     if args['--cwc-mib-dir']:
         cwc_dir = os.path.abspath(args['--cwc-mib-dir'])
 
-        print("Generating Clearwater Core MIB at {}".format(cwc_dir))
+        print("Generating Clearwater Core MIB at {}".format(output_dir))
         generate_mib(common_dir,
                      cwc_dir,
                      output_dir,
@@ -75,7 +75,7 @@ def main(args):
     else:
         # PC MIB fragment is found in the common directory, so supply
         # common_dir as the extras directory also.
-        print("Generating Project Clearwater MIB at {}".format(common_dir))
+        print("Generating Project Clearwater MIB at {}".format(output_dir))
         generate_mib(common_dir,
                      common_dir,
                      output_dir,
