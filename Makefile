@@ -48,7 +48,7 @@ cw_alarm_agent_clean:
 cw_alarm_agent_distclean: CW_ALARM_AGENT_clean
 
 cw_mib: env
-	${ENV_DIR}/bin/python ${ROOT}/mib-generator/cw_mib_generator.py && mv ${ROOT}/mib-generator/PROJECT-CLEARWATER-MIB ${ROOT}/clearwater-snmp-alarm-agent.root/usr/share/clearwater/mibs/
+	${ENV_DIR}/bin/python ${ROOT}/mib-generator/cw_mib_generator.py ${ROOT}/clearwater-snmp-alarm-agent.root/usr/share/clearwater/mibs/
 
 cdiv_handler.so:
 	${MAKE} -C ${CW_ALARM_AGENT_DIR} $@
