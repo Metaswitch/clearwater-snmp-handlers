@@ -8,11 +8,14 @@
 # Metaswitch Networks in a separate written agreement.
 
 """Metaswitch Clearwater MIB Generator
-Generates the complete Project Clearwater MIB from base fragments.
+Generates the complete PROJECT-CLEARWATER-MIB from base fragments.
 If the location of the Clearwater Core MIB fragment is supplied, the
-Clearwater Core MIB will be generated instead.
+METASWITCH-CLEARWATER-CORE-MIB will be generated instead.
 
 Script should be run directly using Python 2.7 or >3.3.
+
+NOTE: If the supplied output directory already contains a file with the same
+name as the output MIB, it will be over-written!
 
 Usage:
   cw_mib_generator.py [--cwc-mib-dir=DIR] OUTPUT_DIR
