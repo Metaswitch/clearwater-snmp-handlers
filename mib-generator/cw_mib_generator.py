@@ -195,7 +195,7 @@ def verify_mib(common_dir, mib_path):
 
     smilint_conf = os.path.join(common_dir, "smilint.conf")
     try:
-        cmd = ['smilint', '-s', '-c', smilint_conf, mib_path]
+        cmd = ['smilint', '-s', '-l', '6', '-c', smilint_conf, mib_path]
 
         # If errors are found in the MIB but smilint doesn't exit abnormally,
         # then it still exits with code 0, so we also need to read the stderr
