@@ -8,14 +8,20 @@
 # Metaswitch Networks in a separate written agreement.
 
 """Metaswitch Clearwater MIB Generator
-Generates the complete Project Clearwater MIB from base fragments.
-Optionally takes the location of a Clearwater Core MIB fragment to also
-output a complete Clearwater Core MIB.
+Generates the complete PROJECT-CLEARWATER-MIB from base fragments.
+If the location of the Clearwater Core MIB fragment is supplied, the
+METASWITCH-CLEARWATER-CORE-MIB will be generated instead.
 
 Script should be run directly using Python 2.7 or >3.3.
 
+NOTE: If the supplied output directory already contains a file with the same
+name as the output MIB, it will be over-written!
+
 Usage:
-  cw_mib_generator.py [--cwc-mib-dir=DIR]
+  cw_mib_generator.py [--cwc-mib-dir=DIR] OUTPUT_DIR
+
+Arguments:
+    OUTPUT_DIR       Directory for writing output MIBs
 
 Options:
   --cwc-mib-dir=DIR  Directory containing Clearwater Core MIB fragment
@@ -41,8 +47,8 @@ PC_EXTRAS = "CLEARWATER-MIB-PC-EXTRAS"
 CWC_EXTRAS = "CLEARWATER-MIB-CWC-EXTRAS"
 
 # Names of the completed output MIB files
-PC_OUTPUT_MIB = "PROJECT-CLEARWATER-MIB"
-CWC_OUTPUT_MIB = "METASWITCH-CLEARWATER-CORE-MIB"
+PC_MIB_NAME = "PROJECT-CLEARWATER-MIB"
+CWC_MIB_NAME = "METASWITCH-CLEARWATER-CORE-MIB"
 
 # MIBs must only be modified via the fragments and not the auto-generated
 # files - so add this extra statement to the auto-generated MIBs.
@@ -56,26 +62,38 @@ def main(args):
     for Clearwater Core.
     """
     common_dir = os.path.dirname(os.path.realpath(__file__))
+    output_dir = os.path.abspath(args['OUTPUT_DIR'])
 
     if args['--cwc-mib-dir']:
         cwc_dir = os.path.abspath(args['--cwc-mib-dir'])
 
-        print("Generating Clearwater Core MIB at {}".format(cwc_dir))
-        generate_mib(
-            common_dir, cwc_dir, COMMON_MIB, CWC_EXTRAS, CWC_OUTPUT_MIB)
+        print("Generating Clearwater Core MIB at {}".format(output_dir))
+        generate_mib(common_dir,
+                     cwc_dir,
+                     output_dir,
+                     COMMON_MIB,
+                     CWC_EXTRAS,
+                     CWC_MIB_NAME)
         print("Successfully generated Clearwater Core MIB!")
     else:
-        print("No Clearwater Core MIB directory supplied, building Project "
-              "Clearwater MIB only")
+        # PC MIB fragment is found in the common directory, so supply
+        # common_dir as the extras directory also.
+        print("Generating Project Clearwater MIB at {}".format(output_dir))
+        generate_mib(common_dir,
+                     common_dir,
+                     output_dir,
+                     COMMON_MIB,
+                     PC_EXTRAS,
+                     PC_MIB_NAME)
+        print("Successfully generated Project Clearwater MIB!")
 
-    # PC MIB fragment is found in the common directory, so supply common_dir
-    # as the extras directory also.
-    print("Generating Project Clearwater MIB at {}".format(common_dir))
-    generate_mib(common_dir, common_dir, COMMON_MIB, PC_EXTRAS, PC_OUTPUT_MIB)
-    print("Successfully generated Project Clearwater MIB!")
 
-
-def generate_mib(common_dir, extras_dir, common_mib, extras_mib, output_mib):
+def generate_mib(common_dir,
+                 extras_dir,
+                 output_dir,
+                 common_mib_name,
+                 extras_mib_name,
+                 output_mib_name):
     """
     Generates a MIB file by combining a common MIB fragment and an extra MIB
     fragment. The output MIB is written to the same directory as the extra
@@ -84,15 +102,16 @@ def generate_mib(common_dir, extras_dir, common_mib, extras_mib, output_mib):
     Args:
         common_dir (str): Directory containing common MIB fragment.
         extras_dir (str): Directory containing extra MIB fragment.
-        common_mib (str): File name of common MIB.
-        extras_mib (str): File name of extras MIB.
-        output_mib (str): File name for writing output MIB. NOTE: This will
-            over-write any existing file with the given name in extras_dir!
+        output_dir (str): Output directory for full MIB.
+        common_mib_name (str): File name of common MIB.
+        extras_mib_name (str): File name of extras MIB.
+        output_mib_name (str): File name for full MIB. NOTE: If this file
+            already exists in output_dir, it will be over-written!
     """
 
-    common_mib_path = os.path.join(common_dir, common_mib)
-    extras_mib_path = os.path.join(extras_dir, extras_mib)
-    output_mib_path = os.path.join(extras_dir, output_mib)
+    common_mib_path = os.path.join(common_dir, common_mib_name)
+    extras_mib_path = os.path.join(extras_dir, extras_mib_name)
+    output_mib_path = os.path.join(output_dir, output_mib_name)
 
     # The MIB title line is templated, as it needs to contain the file name of
     # the MIB. The EDIT_STATEMENT is also added after the title - we don't
@@ -100,7 +119,7 @@ def generate_mib(common_dir, extras_dir, common_mib, extras_mib, output_mib):
     raw_common_data = read_mib_fragment(common_mib_path)
     common_src_template = Template(raw_common_data)
     title_statement = "{} DEFINITIONS ::= BEGIN\n\n{}".format(
-        output_mib, EDIT_STATEMENT)
+        output_mib_name, EDIT_STATEMENT)
     substitute_dict = {'title_statement': title_statement}
 
     try:
