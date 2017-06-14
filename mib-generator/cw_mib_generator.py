@@ -200,7 +200,7 @@ def verify_mib(common_dir, mib_path):
         # If errors are found in the MIB but smilint doesn't exit abnormally,
         # then it still exits with code 0, so we also need to read the stderr
         # to check for any errors.
-        p = subprocess.Popen(cmd, stderr=subprocess.PIPE)
+        p = subprocess.Popen(cmd, stderr=subprocess.PIPE, cwd=common_dir)
         _, stderr = p.communicate()
 
     except:
