@@ -2518,14 +2518,14 @@ sproutSCSCFINVITEsNoMatchingFallbackIFCsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoMatchingFallbackIFCsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Number of initial requests that attempted to use fallback IFCs but had no matching ones."
+    DESCRIPTION "Number of initial requests that attempted to use fallback iFCs but had no matching ones."
     ::= { sprout 39 }
 
 sproutSCSCFINVITEsNoMatchingFallbackIFCsEntry OBJECT-TYPE
     SYNTAX      SproutSCSCFINVITEsNoMatchingFallbackIFCsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Number of initial requests that attempted to use fallback IFCs but had no matching ones."
+    DESCRIPTION "Number of initial requests that attempted to use fallback iFCs but had no matching ones."
     INDEX       { sproutSCSCFINVITEsNoMatchingFallbackIFCsScope }
     ::= { sproutSCSCFINVITEsNoMatchingFallbackIFCsTable 1 }
 
@@ -2550,21 +2550,21 @@ sproutSCSCFINVITEsNoMatchingFallbackIFCsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Number of initial requests that attempted to use fallback IFCs but had no matching ones."
+    DESCRIPTION "Number of initial requests that attempted to use fallback iFCs but had no matching ones."
     ::= { sproutSCSCFINVITEsNoMatchingFallbackIFCsEntry 2 }
 
 sproutSCSCFINVITEsNoSharedIFCsSetTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoSharedIFCsSetEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Number of shared IFC set IDs retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    DESCRIPTION "Number of shared iFC set IDs retrieved from the HSS where the S-CSCF has no matching set of iFCs."
     ::= { sprout 40 }
 
 sproutSCSCFINVITEsNoSharedIFCsSetEntry OBJECT-TYPE
     SYNTAX      SproutSCSCFINVITEsNoSharedIFCsSetEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Number of shared IFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    DESCRIPTION "Number of shared iFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of iFCs."
     INDEX       { sproutSCSCFINVITEsNoSharedIFCsSetScope }
     ::= { sproutSCSCFINVITEsNoSharedIFCsSetTable 1 }
 
@@ -2589,21 +2589,21 @@ sproutSCSCFINVITEsNoSharedIFCsSetCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Number of shared IFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of IFCs."
+    DESCRIPTION "Number of shared iFCs set IDS retrieved from the HSS where the S-CSCF has no matching set of iFCs."
     ::= { sproutSCSCFINVITEsNoSharedIFCsSetEntry 2 }
 
 sproutSCSCFINVITEsNoMatchingIFCsTable OBJECT-TYPE
     SYNTAX SEQUENCE OF SproutSCSCFINVITEsNoMatchingIFCsEntry
     MAX-ACCESS not-accessible
     STATUS current
-    DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
+    DESCRIPTION "Number of initial requests that had no matching iFCs to apply."
     ::= { sprout 41 }
 
 sproutSCSCFINVITEsNoMatchingIFCsEntry OBJECT-TYPE
     SYNTAX      SproutSCSCFINVITEsNoMatchingIFCsEntry
     MAX-ACCESS  not-accessible
     STATUS      current
-    DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
+    DESCRIPTION "Number of initial requests that had no matching iFCs to apply."
     INDEX       { sproutSCSCFINVITEsNoMatchingIFCsScope }
     ::= { sproutSCSCFINVITEsNoMatchingIFCsTable 1 }
 
@@ -2628,7 +2628,7 @@ sproutSCSCFINVITEsNoMatchingIFCsCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Number of initial requests that had no matching IFCs to apply."
+    DESCRIPTION "Number of initial requests that had no matching iFCs to apply."
     ::= { sproutSCSCFINVITEsNoMatchingIFCsEntry 2 }
 
 sproutSCSCFBarredRequestsTable OBJECT-TYPE
