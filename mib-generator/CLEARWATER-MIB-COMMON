@@ -50,6 +50,7 @@ dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
 
 houdini         OBJECT IDENTIFIER ::= { dataConnection 13 }
 weatherwax      OBJECT IDENTIFIER ::= { dataConnection 14 }
+bifrost         OBJECT IDENTIFIER ::= { dataConnection 16 }
 
 -- Common Clearwater Module Compliance
 commonClearwaterConformance OBJECT IDENTIFIER ::= { projectClearwater 0 }
@@ -85,6 +86,7 @@ chronos          OBJECT IDENTIFIER ::= { projectClearwater 10 }
 gemini           OBJECT IDENTIFIER ::= { projectClearwater 11 }
 weatherwaxNode   OBJECT IDENTIFIER ::= { weatherwax 2 }
 bgcf             OBJECT IDENTIFIER ::= { houdini 2 }
+bifrostNode       OBJECT IDENTIFIER ::= { bifrost 2 }
 
 RequestType ::= TEXTUAL-CONVENTION
     STATUS      current
