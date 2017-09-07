@@ -2954,8 +2954,8 @@ homesteadHSSLatencyCount OBJECT-TYPE
     DESCRIPTION "The total requests over the period."
     ::= { homesteadHSSLatencyEntry 6 }
 
-homesteadCacheLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF HomesteadCacheLatencyEntry
+homesteadHsProvLatencyTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF homesteadHsProvLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of cache requests made by this Homestead
@@ -2963,26 +2963,26 @@ homesteadCacheLatencyTable OBJECT-TYPE
                  microseconds"
     ::= { homestead 3 }
 
-homesteadCacheLatencyEntry OBJECT-TYPE
-    SYNTAX      HomesteadCacheLatencyEntry
+homesteadHsProvLatencyEntry OBJECT-TYPE
+    SYNTAX      homesteadHsProvLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request
                  latency"
-    INDEX       { homesteadCacheLatencyScope }
-    ::= { homesteadCacheLatencyTable 1 }
+    INDEX       { homesteadHsProvLatencyScope }
+    ::= { homesteadHsProvLatencyTable 1 }
 
-HomesteadCacheLatencyEntry ::= SEQUENCE
+homesteadHsProvLatencyEntry ::= SEQUENCE
 {
-  homesteadCacheLatencyScope          INTEGER,
-  homesteadCacheLatencyAverage        Unsigned32,
-  homesteadCacheLatencyVariance       Unsigned32,
-  homesteadCacheLatencyHWM            Unsigned32,
-  homesteadCacheLatencyLWM            Unsigned32,
-  homesteadCacheLatencyCount          Unsigned32
+  homesteadHsProvLatencyScope          INTEGER,
+  homesteadHsProvLatencyAverage        Unsigned32,
+  homesteadHsProvLatencyVariance       Unsigned32,
+  homesteadHsProvLatencyHWM            Unsigned32,
+  homesteadHsProvLatencyLWM            Unsigned32,
+  homesteadHsProvLatencyCount          Unsigned32
 }
 
-homesteadCacheLatencyScope OBJECT-TYPE
+homesteadHsProvLatencyScope OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -2991,42 +2991,42 @@ homesteadCacheLatencyScope OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { homesteadCacheLatencyEntry 1 }
+    ::= { homesteadHsProvLatencyEntry 1 }
 
-homesteadCacheLatencyAverage OBJECT-TYPE
+homesteadHsProvLatencyAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average latency over the period."
-    ::= { homesteadCacheLatencyEntry 2 }
+    ::= { homesteadHsProvLatencyEntry 2 }
 
-homesteadCacheLatencyVariance OBJECT-TYPE
+homesteadHsProvLatencyVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the latency over the period."
-    ::= { homesteadCacheLatencyEntry 3 }
+    ::= { homesteadHsProvLatencyEntry 3 }
 
-homesteadCacheLatencyHWM OBJECT-TYPE
+homesteadHsProvLatencyHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest latency over the period."
-    ::= { homesteadCacheLatencyEntry 4 }
+    ::= { homesteadHsProvLatencyEntry 4 }
 
-homesteadCacheLatencyLWM OBJECT-TYPE
+homesteadHsProvLatencyLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest latency over the period."
-    ::= { homesteadCacheLatencyEntry 5 }
+    ::= { homesteadHsProvLatencyEntry 5 }
 
-homesteadCacheLatencyCount OBJECT-TYPE
+homesteadHsProvLatencyCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total requests over the period."
-    ::= { homesteadCacheLatencyEntry 6 }
+    ::= { homesteadHsProvLatencyEntry 6 }
 
 homesteadDigestLatencyTable OBJECT-TYPE
     SYNTAX SEQUENCE OF HomesteadDigestLatencyEntry
@@ -3727,11 +3727,11 @@ homesteadGroup OBJECT-GROUP
       homesteadHSSLatencyHWM,
       homesteadHSSLatencyLWM,
       homesteadHSSLatencyCount,
-      homesteadCacheLatencyAverage,
-      homesteadCacheLatencyVariance,
-      homesteadCacheLatencyHWM,
-      homesteadCacheLatencyLWM,
-      homesteadCacheLatencyCount,
+      homesteadHsProvLatencyAverage,
+      homesteadHsProvLatencyVariance,
+      homesteadHsProvLatencyHWM,
+      homesteadHsProvLatencyLWM,
+      homesteadHsProvLatencyCount,
       homesteadDigestLatencyAverage,
       homesteadDigestLatencyVariance,
       homesteadDigestLatencyHWM,
