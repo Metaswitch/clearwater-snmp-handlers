@@ -2955,7 +2955,7 @@ homesteadHSSLatencyCount OBJECT-TYPE
     ::= { homesteadHSSLatencyEntry 6 }
 
 homesteadHsProvLatencyTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF homesteadHsProvLatencyEntry
+    SYNTAX SEQUENCE OF HomesteadHsProvLatencyEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Latency of cache requests made by this Homestead
@@ -2964,7 +2964,7 @@ homesteadHsProvLatencyTable OBJECT-TYPE
     ::= { homestead 3 }
 
 homesteadHsProvLatencyEntry OBJECT-TYPE
-    SYNTAX      homesteadHsProvLatencyEntry
+    SYNTAX      HomesteadHsProvLatencyEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of request
@@ -2972,7 +2972,7 @@ homesteadHsProvLatencyEntry OBJECT-TYPE
     INDEX       { homesteadHsProvLatencyScope }
     ::= { homesteadHsProvLatencyTable 1 }
 
-homesteadHsProvLatencyEntry ::= SEQUENCE
+HomesteadHsProvLatencyEntry ::= SEQUENCE
 {
   homesteadHsProvLatencyScope          INTEGER,
   homesteadHsProvLatencyAverage        Unsigned32,
