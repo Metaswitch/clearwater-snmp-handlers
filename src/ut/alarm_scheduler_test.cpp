@@ -33,7 +33,7 @@ using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
 using ::testing::SaveArg;
 using ::testing::Invoke;
-    
+
 class EnterpriseTrapVarsMatcher : public MatcherInterface<netsnmp_variable_list*>
 {
 public:
@@ -62,7 +62,7 @@ public:
 
   virtual bool MatchAndExplain(netsnmp_variable_list* vl,
                                MatchResultListener* listener) const {
-    
+
     oid trap_type = *(vl->val.objid);
     vl = vl->next_variable;
     std::string MIB_version(reinterpret_cast<char const*>(vl->val.string));
@@ -76,13 +76,13 @@ public:
     std::string severity(reinterpret_cast<char const*>(vl->val.string));
     vl = vl->next_variable;
     std::string description(reinterpret_cast<char const*>(vl->val.string));
-    vl = vl->next_variable; 
+    vl = vl->next_variable;
     std::string details(reinterpret_cast<char const*>(vl->val.string));
-    vl = vl->next_variable; 
+    vl = vl->next_variable;
     std::string cause(reinterpret_cast<char const*>(vl->val.string));
-    vl = vl->next_variable; 
+    vl = vl->next_variable;
     std::string effect(reinterpret_cast<char const*>(vl->val.string));
-    vl = vl->next_variable; 
+    vl = vl->next_variable;
     std::string action(reinterpret_cast<char const*>(vl->val.string));
 
     return (_description == description) && (_details == details) && (_cause == cause)
@@ -92,17 +92,17 @@ public:
   }
 
   virtual void DescribeTo(::std::ostream* os) const {
-    *os << "trap is: " << _name <<  ", with description: " << _description 
-      << ",  details: " << _details << ", cause: " << _cause << ", effect: " << _effect 
+    *os << "trap is: " << _name <<  ", with description: " << _description
+      << ",  details: " << _details << ", cause: " << _cause << ", effect: " << _effect
       << " and action: " << _action;
   }
-  
+
   virtual void DescribeNegationTo(::std::ostream* os) const {
-     *os << "trap is not: " << _name <<  ", and doesn't have description: " << _description 
-      << ",  details: " << _details << ", cause: " << _cause << ", effect: " << _effect 
+     *os << "trap is not: " << _name <<  ", and doesn't have description: " << _description
+      << ",  details: " << _details << ", cause: " << _cause << ", effect: " << _effect
       << " and action: " << _action;
   }
- 
+
 private:
   oid _trap_type;
   std::string _MIB_version;
@@ -267,7 +267,7 @@ inline Matcher<netsnmp_variable_list*> RFCTrapVars(RFCTrapVarsMatcher::TrapType 
   return MakeMatcher(new RFCTrapVarsMatcher(trap_type, alarm_index));
 }
 
-// Simple test that raising an RFC3877 compliant alarm triggers an INFORM to be 
+// Simple test that raising an RFC3877 compliant alarm triggers an INFORM to be
 // sent immediately
 TEST_F(AlarmSchedulerTest, SetRFCAlarm)
 {
@@ -283,8 +283,8 @@ TEST_F(AlarmSchedulerTest, SetRFCAlarm)
 // Simple test that raising an Enterprise MIB style alarm triggers an INFORM to
 // be sent immediately
 TEST_F(AlarmSchedulerTest, SetEnterpriseAlarm)
-{  
-  std::set<NotificationType> snmp_notifications; 
+{
+  std::set<NotificationType> snmp_notifications;
   snmp_notifications.insert(NotificationType::ENTERPRISE);
   _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, snmp_notifications, "hostname1");
 
@@ -351,7 +351,7 @@ TEST_F(AlarmSchedulerTest, ClearAlarm)
 
 // Test that clearing a set alarm only clears the alarm after a delay
 TEST_F(AlarmSchedulerTest, SetAndClearAlarm)
-{ 
+{
   std::set<NotificationType> snmp_notifications;
   snmp_notifications.insert(NotificationType::RFC3877);
   _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, snmp_notifications, "hostname1");
@@ -371,7 +371,9 @@ TEST_F(AlarmSchedulerTest, SetAndClearAlarm)
   // cleared alarm is sent.
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
   COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::CLEAR, 1000), _, _));
+  pthread_mutex_lock(&(_alarm_scheduler->_lock));
   _alarm_scheduler->_cond->signal();
+  pthread_mutex_unlock(&(_alarm_scheduler->_lock));
   _ms.trap_complete(1, 5);
 }
 
@@ -470,13 +472,15 @@ TEST_F(AlarmSchedulerTest, AlarmFlicker)
   }
 
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
+  pthread_mutex_lock(&(_alarm_scheduler->_lock));
   _alarm_scheduler->_cond->signal();
+  pthread_mutex_unlock(&(_alarm_scheduler->_lock));
   _ms.trap_complete(1, 5);
 }
 
 // Test that a failed alarm is retried after a delay
 TEST_F(AlarmSchedulerTest, AlarmFailedToSend)
-{ 
+{
   std::set<NotificationType> snmp_notifications;
   snmp_notifications.insert(NotificationType::RFC3877);
   _alarm_scheduler = new AlarmScheduler(_alarm_table_defs, snmp_notifications, "hostname1");
@@ -500,7 +504,9 @@ TEST_F(AlarmSchedulerTest, AlarmFailedToSend)
   COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::ACTIVE,
                                        1000), _, _));
   cwtest_advance_time_ms(AlarmScheduler::ALARM_RETRY_DELAY);
+  pthread_mutex_lock(&(_alarm_scheduler->_lock));
   _alarm_scheduler->_cond->signal();
+  pthread_mutex_unlock(&(_alarm_scheduler->_lock));
   _ms.trap_complete(1, 5);
 }
 
@@ -532,7 +538,9 @@ TEST_F(AlarmSchedulerTest, AlarmFailedToSendClearedInInterval)
   COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::CLEAR,
                                        1000), _, _));
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
+  pthread_mutex_lock(&(_alarm_scheduler->_lock));
   _alarm_scheduler->_cond->signal();
+  pthread_mutex_unlock(&(_alarm_scheduler->_lock));
   _ms.trap_complete(1, 5);
 }
 
