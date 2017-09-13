@@ -49,6 +49,7 @@ cw_alarm_fvtest_COVERAGE_EXCLUSIONS := ^modules/rapidjson|^modules/cpp-common/te
 AGENT_COMMON_LDFLAGS := -lzmq \
                         -lpthread \
                         -ldl \
+                        -lboost_regex \
                         -lboost_system \
                         -lboost_filesystem \
                         `net-snmp-config --agent-libs`
