@@ -74,16 +74,25 @@ int initialize_table_ituAlarmTable(void)
   /** create the table structure itself */
   table_info = SNMP_MALLOC_TYPEDEF(netsnmp_table_registration_info);
 
+  if (!table_info)
+  {
+    // LCOV_EXCL_START
+    snmp_log(LOG_ERR, "malloc failed: initialize_table_ituAlarmTable");
+    return SNMP_ERR_GENERR;
+    // LCOV_EXCL_STOP
+  }
+
   my_handler = netsnmp_create_handler_registration("ituAlarmTable",
                                                    netsnmp_table_array_helper_handler,
                                                    ituAlarmTable_oid,
                                                    ituAlarmTable_oid_len,
                                                    HANDLER_CAN_RONLY);
             
-  if (!my_handler || !table_info)
+  if (!my_handler)
   {
     // LCOV_EXCL_START
     snmp_log(LOG_ERR, "malloc failed: initialize_table_ituAlarmTable");
+    SNMP_FREE(table_info);
     return SNMP_ERR_GENERR;
     // LCOV_EXCL_STOP
   }

@@ -51,16 +51,25 @@ int init_alarmActiveTable(std::string ip)
   /** create the table structure itself */
   table_info = SNMP_MALLOC_TYPEDEF(netsnmp_table_registration_info);
 
+  if (!table_info)
+  {
+    // LCOV_EXCL_START
+    TRC_ERROR("malloc failed: initialize_table_alarmActiveTable");
+    return SNMP_ERR_GENERR;
+    // LCOV_EXCL_STOP
+  }
+
   my_handler = netsnmp_create_handler_registration("alarmActiveTable",
                                                    netsnmp_table_array_helper_handler,
                                                    alarmActiveTable_oid,
                                                    alarmActiveTable_oid_len,
                                                    HANDLER_CAN_RONLY);
             
-  if (!my_handler || !table_info)
+  if (!my_handler)
   {
     // LCOV_EXCL_START 
     TRC_ERROR("malloc failed: initialize_table_alarmActiveTable");
+    SNMP_FREE(table_info);
     return SNMP_ERR_GENERR;
     // LCOV_EXCL_STOP
   }
