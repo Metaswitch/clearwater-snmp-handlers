@@ -169,7 +169,7 @@ private:
   // Map holding all alarms. This maps the index of an alarm to information
   // about the alarm (its current severity (the severity we last tried to send
   // to the NMS) and its representation in the heap).
-  std::map<unsigned AlarmIndex, SingleAlarmManager*> _all_alarms_state;
+  std::map<AlarmIndex, SingleAlarmManager*> _all_alarms_state;
 
   // This lock protects access to the _all_alarms_state map and the _alarm_heap,
   // and should be taken whenever reading/writing to these structures
