@@ -61,7 +61,7 @@ AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs,
                               it != _alarm_table_defs->end();
                               it++)
   {
-    std::map<unsigned AlarmIndex, SingleAlarmManager*>::iterator index =
+    std::map<AlarmIndex, SingleAlarmManager*>::iterator index =
                                       _all_alarms_state.find(it->alarm_index());
     if (index == _all_alarms_state.end())
     {
@@ -102,7 +102,7 @@ AlarmScheduler::~AlarmScheduler()
 
   _alarm_heap.clear();
 
-  for (std::pair<unsigned AlarmIndex, SingleAlarmManager*> pair : _all_alarms_state)
+  for (std::pair<AlarmIndex, SingleAlarmManager*> pair : _all_alarms_state)
   {
     delete pair.second;
   }
@@ -140,7 +140,7 @@ void AlarmScheduler::heap_sender()
       if (alarm_table_def.is_valid())
       {
         AlarmTrapSender::get_instance().send_trap(alarm_table_def);
-        std::map<unsigned AlarmIndex, SingleAlarmManager*>::iterator alarm =
+        std::map<AlarmIndex, SingleAlarmManager*>::iterator alarm =
                                  _all_alarms_state.find(alarm_timer->index());
 
         if (alarm != _all_alarms_state.end())
@@ -223,7 +223,7 @@ void AlarmScheduler::issue_alarm(const std::string& issuer,
   {
     pthread_mutex_lock(&_lock);
 
-    std::map<unsigned AlarmIndex, SingleAlarmManager*>::iterator alarm =
+    std::map<AlarmIndex, SingleAlarmManager*>::iterator alarm =
                                                   _all_alarms_state.find(index);
 
     if (alarm != _all_alarms_state.end())
@@ -277,7 +277,7 @@ void AlarmScheduler::sync_alarms()
 
   // For all alarms that we know a state for (so we've tried to send an alarm
   // state to the NMS at least once), resend the current state.
-  for (std::pair<unsigned AlarmIndex, SingleAlarmManager*> pair : _all_alarms_state)
+  for (std::pair<AlarmIndex, SingleAlarmManager*> pair : _all_alarms_state)
   {
     AlarmDef::Severity current_severity = pair.second->severity();
 
@@ -300,7 +300,7 @@ void AlarmScheduler::handle_failed_alarm(AlarmTableDef& alarm_table_def)
 
   pthread_mutex_lock(&_lock);
 
-  std::map<unsigned AlarmIndex, SingleAlarmManager*>::iterator alarm =
+  std::map<AlarmIndex, SingleAlarmManager*>::iterator alarm =
                           _all_alarms_state.find(alarm_table_def.alarm_index());
 
   if (alarm != _all_alarms_state.end())
