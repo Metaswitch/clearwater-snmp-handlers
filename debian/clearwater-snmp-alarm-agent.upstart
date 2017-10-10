@@ -10,10 +10,3 @@ post-stop exec sleep 5
 script
   /usr/share/clearwater/bin/clearwater-snmp-alarm-agent-wrapper
 end script
-
-# Be certain that the alarm agent itself is no longer running.
-# Otherwise, if the wrapper script is killed, the alarm agent
-# won't be, and we'll end up with two copies of it.
-post-stop script
-  pkill -9 -f -x '/usr/share/clearwater/bin/cw_alarm_agent.*' || true
-end script
