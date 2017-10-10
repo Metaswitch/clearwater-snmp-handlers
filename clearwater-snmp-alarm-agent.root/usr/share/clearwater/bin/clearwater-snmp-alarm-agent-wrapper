@@ -33,6 +33,11 @@ get_daemon_args()
                --log-level=$log_level"
 }
 
+# Make sure that the alarm agent itself is not already running.
+# It might be, if the wrapper script was previously killed (by the OOM killer,
+# say) leaving the grandchild cw_alarm_agent process still running.
+pkill -9 -f -x '/usr/share/clearwater/bin/cw_alarm_agent.*'
+
 # /var/run/clearwater needs to exist so we can create a UNIX socket in it
 mkdir -p /var/run/clearwater
 
