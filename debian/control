@@ -5,7 +5,7 @@ Priority: optional
 # clearwater-infrastructure explicitly checks for packages of this name when
 # updating
 Maintainer: Project Clearwater Maintainers <maintainers@projectclearwater.org>
-Build-Depends: debhelper (>= 8.0.0), build-essential, libsnmp-dev (= 5.7.2~dfsg-clearwater7), libboost-dev, libzmq3-dev
+Build-Depends: debhelper (>= 8.0.0), build-essential, libsnmp-dev (= 5.7.3~dfsg-clearwater1), libboost-dev, libzmq3-dev
 Standards-Version: 3.9.2
 Homepage: http://projectclearwater.org/
 
@@ -18,7 +18,7 @@ Package: clearwater-snmp-alarm-agent
 Architecture: any
 Breaks: clearwater-snmp-handler-alarm
 Replaces: clearwater-snmp-handler-alarm
-Depends: clearwater-snmpd, snmp (= 5.7.2~dfsg-clearwater7), libboost-filesystem1.54.0, libboost-regex1.54.0
+Depends: clearwater-snmpd, snmp (= 5.7.3~dfsg-clearwater1), libboost-filesystem1.54.0, libboost-regex1.54.0
 Description: The SNMP subagent for Clearwater alarm reporting
 
 Package: clearwater-snmp-alarm-agent-dbg
