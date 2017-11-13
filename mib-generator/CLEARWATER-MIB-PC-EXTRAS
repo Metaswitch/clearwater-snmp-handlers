@@ -348,6 +348,100 @@ bonoQueueSizeCount OBJECT-TYPE
     DESCRIPTION "The total requests over the period."
     ::= { bonoQueueSizeEntry 7 }
 
+bonoQueueSuccessFailTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BonoQueueSuccessFailEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 for SIP events put on the queue for a worker thread, and
+                 (for convenience) provides the percentage of attempts that
+                 were successful. This includes requests, responses and any
+                 callbacks that are set."
+    ::= { bono 7 }
+
+bonoQueueSuccessFailEntry OBJECT-TYPE
+    SYNTAX      BonoQueueSuccessFailEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for SIP
+                 events put on the queue for a worker thread, and the
+                 percentage of attempts that were successful."
+    INDEX       { bonoQueueSuccessFailTimeFrame,
+                  bonoQueueSuccessFailPriority,
+                  bonoQueueSuccessFailScope }
+    ::= { bonoQueueSuccessFailTable 1 }
+
+BonoQueueSuccessFailEntry ::= SEQUENCE
+{
+  bonoQueueSuccessFailTimeFrame      INTEGER,
+  bonoQueueSuccessFailPriority       INTEGER,
+  bonoQueueSuccessFailScope          OCTET STRING,
+  bonoQueueSuccessFailAttempts       Unsigned32,
+  bonoQueueSuccessFailSuccesses      Unsigned32,
+  bonoQueueSuccessFailFailures       Unsigned32,
+  bonoQueueSuccessFailSuccessPercent Unsigned32
+}
+
+bonoQueueSuccessFailTimeFrame OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { bonoQueueSuccessFailEntry 1 }
+
+bonoQueueSuccessFailPriority OBJECT-TYPE
+    SYNTAX      SIPEventPriority
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The priority of the SIP event."
+    ::= { bonoQueueSuccessFailEntry 2 }
+
+bonoQueueSuccessFailScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Statistic scope - should always take the value: node."
+    ::= { bonoQueueSuccessFailEntry 3 }
+
+bonoQueueSuccessFailAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP events on the queue over the time period."
+    ::= { bonoQueueSuccessFailEntry 4 }
+
+bonoQueueSuccessFailSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP events successfully passed to a worker thread
+                 over the time period."
+    ::= { bonoQueueSuccessFailEntry 5 }
+
+bonoQueueSuccessFailFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP events that failed to be passed to a worker
+                 thread over the time period."
+    ::= { bonoQueueSuccessFailEntry 6 }
+
+bonoQueueSuccessFailSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of SIP events on the queue over the time period
+                 that we successfully passed to a worker thread. Reported in
+                 units of ten thousandths of a percentage point. When there are
+                 zero items on the queue, the value will be 1000000 to represent
+                 100%."
+    ::= { bonoQueueSuccessFailEntry 7 }
+
 bonoGroup OBJECT-GROUP
     OBJECTS {
       bonoConnectedClients,
@@ -363,7 +457,11 @@ bonoGroup OBJECT-GROUP
       bonoQueueSizeVariance,
       bonoQueueSizeHWM,
       bonoQueueSizeLWM,
-      bonoQueueSizeCount
+      bonoQueueSizeCount,
+      bonoQueueSuccessFailAttempts,
+      bonoQueueSuccessFailSuccesses,
+      bonoQueueSuccessFailFailures,
+      bonoQueueSuccessFailSuccessPercent
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Bono"
