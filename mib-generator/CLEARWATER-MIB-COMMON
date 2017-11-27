@@ -109,6 +109,28 @@ RequestType ::= TEXTUAL-CONVENTION
                 scopeOTHER(14)
                 }
 
+SIPEventPriority ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION "Represents the priority of a SIP event."
+    SYNTAX      INTEGER {
+                priorityNormal(0),
+                priorityHigh1(1),
+                priorityHigh2(2),
+                priorityHigh3(3),
+                priorityHigh4(4),
+                priorityHigh5(5),
+                priorityHigh6(6),
+                priorityHigh7(7),
+                priorityHigh8(8),
+                priorityHigh9(9),
+                priorityHigh10(10),
+                priorityHigh11(11),
+                priorityHigh12(12),
+                priorityHigh13(13),
+                priorityHigh14(14),
+                priorityHigh15(15)
+                }
+
 -- Sprout entries
 
 sproutLatencyTable OBJECT-TYPE
@@ -2672,6 +2694,100 @@ sproutSCSCFBarredRequestsCount OBJECT-TYPE
     DESCRIPTION "Number of requests rejected because an identity was barred."
     ::= { sproutSCSCFBarredRequestsEntry 2 }
 
+sproutQueueSuccessFailTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutQueueSuccessFailEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Counts the number of attempts, successes and failures
+                 for SIP events put on the queue for a worker thread, and
+                 (for convenience) provides the percentage of attempts that
+                 were successful. This includes requests, responses and any
+                 callbacks that are set."
+    ::= { sprout 43 }
+
+sproutQueueSuccessFailEntry OBJECT-TYPE
+    SYNTAX      SproutQueueSuccessFailEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The number of attempts, successes and failures for SIP
+                 events put on the queue for a worker thread, and the
+                 percentage of attempts that were successful."
+    INDEX       { sproutQueueSuccessFailTimeFrame,
+                  sproutQueueSuccessFailPriority,
+                  sproutQueueSuccessFailScope }
+    ::= { sproutQueueSuccessFailTable 1 }
+
+SproutQueueSuccessFailEntry ::= SEQUENCE
+{
+  sproutQueueSuccessFailTimeFrame      INTEGER,
+  sproutQueueSuccessFailPriority       INTEGER,
+  sproutQueueSuccessFailScope          OCTET STRING,
+  sproutQueueSuccessFailAttempts       Unsigned32,
+  sproutQueueSuccessFailSuccesses      Unsigned32,
+  sproutQueueSuccessFailFailures       Unsigned32,
+  sproutQueueSuccessFailSuccessPercent Unsigned32
+}
+
+sproutQueueSuccessFailTimeFrame OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutQueueSuccessFailEntry 1 }
+
+sproutQueueSuccessFailPriority OBJECT-TYPE
+    SYNTAX      SIPEventPriority
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The priority of the SIP event."
+    ::= { sproutQueueSuccessFailEntry 2 }
+
+sproutQueueSuccessFailScope OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..64))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Statistic scope - should always take the value: node."
+    ::= { sproutQueueSuccessFailEntry 3 }
+
+sproutQueueSuccessFailAttempts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP events on the queue over the time period."
+    ::= { sproutQueueSuccessFailEntry 4 }
+
+sproutQueueSuccessFailSuccesses OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP events successfully passed to a worker thread
+                 over the time period."
+    ::= { sproutQueueSuccessFailEntry 5 }
+
+sproutQueueSuccessFailFailures OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of SIP events that failed to be passed to a worker
+                 thread over the time period."
+    ::= { sproutQueueSuccessFailEntry 6 }
+
+sproutQueueSuccessFailSuccessPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "/ 10000 %"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The percentage of SIP events on the queue over the time period
+                 that we successfully passed to a worker thread. Reported in
+                 units of ten thousandths of a percentage point. When there are
+                 zero items on the queue, the value will be 1000000 to represent
+                 100%."
+    ::= { sproutQueueSuccessFailEntry 7 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -2798,7 +2914,11 @@ sproutGroup OBJECT-GROUP
       sproutSCSCFINVITEsNoMatchingFallbackIFCsCount,
       sproutSCSCFINVITEsNoSharedIFCsSetCount,
       sproutSCSCFINVITEsNoMatchingIFCsCount,
-      sproutSCSCFBarredRequestsCount
+      sproutSCSCFBarredRequestsCount,
+      sproutQueueSuccessFailAttempts,
+      sproutQueueSuccessFailSuccesses,
+      sproutQueueSuccessFailFailures,
+      sproutQueueSuccessFailSuccessPercent
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
