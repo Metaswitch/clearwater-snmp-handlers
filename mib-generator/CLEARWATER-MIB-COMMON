@@ -3835,34 +3835,34 @@ homesteadCxRTRResultsCount OBJECT-TYPE
                  answer over the time period."
     ::= { homesteadCxRTRResultsEntry 4 }
 
-homesteadMemcachedQueueSizeTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF HomesteadMemcachedQueueSizeEntry
+homesteadCacheQueueSizeTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF HomesteadCacheQueueSizeEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Average Memcached queue size for this Homestead"
     ::= { homestead 16 }
 
-homesteadMemcachedQueueSizeEntry OBJECT-TYPE
-    SYNTAX      HomesteadMemcachedQueueSizeEntry
+homesteadCacheQueueSizeEntry OBJECT-TYPE
+    SYNTAX      HomesteadCacheQueueSizeEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of Memcached queue size"
-    INDEX       { homesteadMemcachedQueueSizeTimeFrame,
-                  homesteadMemcachedQueueSizeScope }
-    ::= { homesteadMemcachedQueueSizeTable 1 }
+    INDEX       { homesteadCacheQueueSizeTimeFrame,
+                  homesteadCacheQueueSizeScope }
+    ::= { homesteadCacheQueueSizeTable 1 }
 
-HomesteadMemcachedQueueSizeEntry ::= SEQUENCE
+HomesteadCacheQueueSizeEntry ::= SEQUENCE
 {
-  homesteadMemcachedQueueSizeTimeFrame      INTEGER,
-  homesteadMemcachedQueueSizeScope          OCTET STRING,
-  homesteadMemcachedQueueSizeAverage        Unsigned32,
-  homesteadMemcachedQueueSizeVariance       Unsigned32,
-  homesteadMemcachedQueueSizeHWM            Unsigned32,
-  homesteadMemcachedQueueSizeLWM            Unsigned32,
-  homesteadMemcachedQueueSizeCount          Unsigned32
+  homesteadCacheQueueSizeTimeFrame      INTEGER,
+  homesteadCacheQueueSizeScope          OCTET STRING,
+  homesteadCacheQueueSizeAverage        Unsigned32,
+  homesteadCacheQueueSizeVariance       Unsigned32,
+  homesteadCacheQueueSizeHWM            Unsigned32,
+  homesteadCacheQueueSizeLWM            Unsigned32,
+  homesteadCacheQueueSizeCount          Unsigned32
 }
 
-homesteadMemcachedQueueSizeTimeFrame OBJECT-TYPE
+homesteadCacheQueueSizeTimeFrame OBJECT-TYPE
     SYNTAX      INTEGER {
                   scopePrevious5SecondPeriod(1),
                   scopeCurrent5MinutePeriod(2),
@@ -3871,49 +3871,49 @@ homesteadMemcachedQueueSizeTimeFrame OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The period over which the statistics were collected."
-    ::= { homesteadMemcachedQueueSizeEntry 1 }
+    ::= { homesteadCacheQueueSizeEntry 1 }
 
-homesteadMemcachedQueueSizeScope OBJECT-TYPE
+homesteadCacheQueueSizeScope OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..64))
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Statistic scope - should always take the value: node."
-    ::= { homesteadMemcachedQueueSizeEntry 2 }
+    ::= { homesteadCacheQueueSizeEntry 2 }
 
-homesteadMemcachedQueueSizeAverage OBJECT-TYPE
+homesteadCacheQueueSizeAverage OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The average Memcached queue size over the period."
-    ::= { homesteadMemcachedQueueSizeEntry 3 }
+    ::= { homesteadCacheQueueSizeEntry 3 }
 
-homesteadMemcachedQueueSizeVariance OBJECT-TYPE
+homesteadCacheQueueSizeVariance OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The variance of the queue size over the period."
-    ::= { homesteadMemcachedQueueSizeEntry 4 }
+    ::= { homesteadCacheQueueSizeEntry 4 }
 
-homesteadMemcachedQueueSizeHWM OBJECT-TYPE
+homesteadCacheQueueSizeHWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The highest queue size over the period."
-    ::= { homesteadMemcachedQueueSizeEntry 5 }
+    ::= { homesteadCacheQueueSizeEntry 5 }
 
-homesteadMemcachedQueueSizeLWM OBJECT-TYPE
+homesteadCacheQueueSizeLWM OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The lowest queue size over the period."
-    ::= { homesteadMemcachedQueueSizeEntry 6 }
+    ::= { homesteadCacheQueueSizeEntry 6 }
 
-homesteadMemcachedQueueSizeCount OBJECT-TYPE
+homesteadCacheQueueSizeCount OBJECT-TYPE
     SYNTAX      Unsigned32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "The total enqueued Memcached requests over the period."
-    ::= { homesteadMemcachedQueueSizeEntry 7 }
+    ::= { homesteadCacheQueueSizeEntry 7 }
 
 homesteadGroup OBJECT-GROUP
     OBJECTS {
@@ -3952,11 +3952,11 @@ homesteadGroup OBJECT-GROUP
       homesteadCxLIRResultsCount,
       homesteadCxPPRResultsCount,
       homesteadCxRTRResultsCount,
-      homesteadMemcachedQueueSizeAverage,
-      homesteadMemcachedQueueSizeVariance,
-      homesteadMemcachedQueueSizeHWM,
-      homesteadMemcachedQueueSizeLWM,
-      homesteadMemcachedQueueSizeCount
+      homesteadCacheQueueSizeAverage,
+      homesteadCacheQueueSizeVariance,
+      homesteadCacheQueueSizeHWM,
+      homesteadCacheQueueSizeLWM,
+      homesteadCacheQueueSizeCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Homestead"
