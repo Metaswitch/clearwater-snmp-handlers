@@ -3836,14 +3836,14 @@ homesteadCxRTRResultsCount OBJECT-TYPE
     ::= { homesteadCxRTRResultsEntry 4 }
 
 homesteadMemcachedQueueSizeTable OBJECT-TYPE
-    SYNTAX SEQUENCE OF homesteadMemcachedQueueSizeEntry
+    SYNTAX SEQUENCE OF HomesteadMemcachedQueueSizeEntry
     MAX-ACCESS not-accessible
     STATUS current
     DESCRIPTION "Average Memcached queue size for this Homestead"
     ::= { homestead 16 }
 
 homesteadMemcachedQueueSizeEntry OBJECT-TYPE
-    SYNTAX      homesteadMemcachedQueueSizeEntry
+    SYNTAX      HomesteadMemcachedQueueSizeEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "The average, variance, LWM and HWM of Memcached queue size"
@@ -3851,7 +3851,7 @@ homesteadMemcachedQueueSizeEntry OBJECT-TYPE
                   homesteadMemcachedQueueSizeScope }
     ::= { homesteadMemcachedQueueSizeTable 1 }
 
-homesteadMemcachedQueueSizeEntry ::= SEQUENCE
+HomesteadMemcachedQueueSizeEntry ::= SEQUENCE
 {
   homesteadMemcachedQueueSizeTimeFrame      INTEGER,
   homesteadMemcachedQueueSizeScope          OCTET STRING,
