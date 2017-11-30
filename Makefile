@@ -16,7 +16,7 @@ PKG_MAJOR_VERSION ?= 1.0
 
 # Define DEB_NAMES and RPM_NAMES separately as we don't have RPMs for all the
 # components yet.
-DEB_NAMES := clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire
+DEB_NAMES := clearwater-snmp-handler-cdiv clearwater-snmp-alarm-agent clearwater-snmp-alarm-agent-dbg clearwater-snmp-handler-memento-as clearwater-snmp-handler-memento clearwater-snmp-handler-astaire
 RPM_NAMES := clearwater-snmp-alarm-agent
 
 # Add dependencies to deb-only and rpm-only (targets will be added by
