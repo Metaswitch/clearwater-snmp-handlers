@@ -143,7 +143,7 @@ void AlarmTrapSender::send_rfc3877_trap(const AlarmTableDef& alarm_table_def)
   snmp_set_var_objid(&var_resource_id, resource_id_oid, OID_LENGTH(resource_id_oid));
   snmp_set_var_typed_value(&var_resource_id, ASN_OBJECT_ID, (u_char*) zero_dot_zero, sizeof(zero_dot_zero));
 
-  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def); 
+  send_v2trap(&var_trap, ::alarm_trap_send_callback, (void*)&alarm_table_def);
 
   snmp_reset_var_buffers(&var_trap);
 }
