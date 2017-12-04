@@ -372,9 +372,9 @@ TEST_F(AlarmSchedulerTest, SetAndClearAlarm)
   // cleared alarm is sent.
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
   COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::CLEAR, 1000), _, _));
-  pthread_mutex_lock(&_alarm_scheduler->_lock);
+  pthread_mutex_lock(&_lock);
   _alarm_scheduler->_cond->signal();
-  pthread_mutex_unlock(&_alarm_scheduler->_lock);
+  pthread_mutex_unlock(&_lock);
   _ms.trap_complete(1, 5);
 }
 
@@ -473,9 +473,9 @@ TEST_F(AlarmSchedulerTest, AlarmFlicker)
   }
 
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
-  pthread_mutex_lock(&_alarm_scheduler->_lock);
+  pthread_mutex_lock(&_lock);
   _alarm_scheduler->_cond->signal();
-  pthread_mutex_unlock(&_alarm_scheduler->_lock);
+  pthread_mutex_unlock(&_lock);
   _ms.trap_complete(1, 5);
 }
 
@@ -495,21 +495,21 @@ TEST_F(AlarmSchedulerTest, AlarmFailedToSend)
   _ms.trap_complete(1, 5);
 
   // Now report the send as failed.
-  pthread_mutex_lock(&_alarm_scheduler->_lock);
+  pthread_mutex_lock(&_lock);
   snmp_session session;
   session.peername = strdup("peer");
   callback(NETSNMP_CALLBACK_OP_TIMED_OUT, &session, 2, NULL, correlator);
   free(session.peername);
-  pthread_mutex_unlock(&_alarm_scheduler->_lock);
+  pthread_mutex_unlock(&_lock);
 
   // Now advance time by the retry delay amount. This triggers the retry to be
   // sent
   COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::ACTIVE,
                                        1000), _, _));
   cwtest_advance_time_ms(AlarmScheduler::ALARM_RETRY_DELAY);
-  pthread_mutex_lock(&_alarm_scheduler->_lock);
+  pthread_mutex_lock(&_lock);
   _alarm_scheduler->_cond->signal();
-  pthread_mutex_unlock(&_alarm_scheduler->_lock);
+  pthread_mutex_unlock(&_lock);
   _ms.trap_complete(1, 5);
 }
 
@@ -541,9 +541,9 @@ TEST_F(AlarmSchedulerTest, AlarmFailedToSendClearedInInterval)
   COLLECT_CALL(send_v2trap(RFCTrapVars(RFCTrapVarsMatcher::CLEAR,
                                        1000), _, _));
   cwtest_advance_time_ms(AlarmScheduler::ALARM_REDUCED_DELAY);
-  pthread_mutex_lock(&_alarm_scheduler->_lock);
+  pthread_mutex_lock(&_lock);
   _alarm_scheduler->_cond->signal();
-  pthread_mutex_unlock(&_alarm_scheduler->_lock);
+  pthread_mutex_unlock(&_lock);
   _ms.trap_complete(1, 5);
 }
 
