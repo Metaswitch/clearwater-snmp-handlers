@@ -20,7 +20,7 @@ class MockAlarmScheduler : public AlarmScheduler
 public:
   MockAlarmScheduler(AlarmTableDefs* alarm_table_defs,
                      std::set<NotificationType> snmp_notifications) :
-    AlarmScheduler(alarm_table_defs, snmp_notifications, "hostname1", &_lock)
+    AlarmScheduler(alarm_table_defs, snmp_notifications, "hostname1", _lock)
   {}
 
   pthread_mutex_t _lock = PTHREAD_MUTEX_INITIALIZER;

@@ -43,7 +43,7 @@ void SingleAlarmManager::change_schedule(AlarmDef::Severity new_severity,
 AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
                                std::set<NotificationType> snmp_notifications,
                                std::string hostname,
-                               pthread_mutex_t* lock) :
+                               pthread_mutex_t& lock) :
   _terminated(false),
   _alarm_table_defs(alarm_table_defs),
   _lock(lock)
@@ -52,9 +52,9 @@ AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs,
 
   // Create the condition variables.
 #ifdef UNIT_TEST
-  _cond = new MockPThreadCondVar(_lock);
+  _cond = new MockPThreadCondVar(&_lock);
 #else
-  _cond = new CondVar(_lock);
+  _cond = new CondVar(&_lock);
 #endif
 
   // Populate the alarm state map
@@ -91,15 +91,15 @@ AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs,
 
 AlarmScheduler::~AlarmScheduler()
 {
-  pthread_mutex_lock(_lock);
+  pthread_mutex_lock(&_lock);
   _terminated = true;
   _cond->signal();
-  pthread_mutex_unlock(_lock);
+  pthread_mutex_unlock(&_lock);
 
   pthread_join(_heap_sender_thread, NULL);
   delete _cond; _cond = NULL;
 
-  pthread_mutex_destroy(_lock);
+  pthread_mutex_destroy(&_lock);
 
   _alarm_heap.clear();
 
@@ -117,7 +117,7 @@ void* AlarmScheduler::heap_sender_function(void* data)
 
 void AlarmScheduler::heap_sender()
 {
-  pthread_mutex_lock(_lock);
+  pthread_mutex_lock(&_lock);
 
   while (!_terminated)
   {
@@ -175,7 +175,7 @@ void AlarmScheduler::heap_sender()
     }
   }
 
-  pthread_mutex_unlock(_lock);
+  pthread_mutex_unlock(&_lock);
 }
 
 void AlarmScheduler::remove_outdated_alarm_from_heap(
@@ -222,7 +222,7 @@ void AlarmScheduler::issue_alarm(const std::string& issuer,
 
   if (validate_alarm_trigger(identifier, index, severity))
   {
-    pthread_mutex_lock(_lock);
+    pthread_mutex_lock(&_lock);
 
     std::map<AlarmIndex, SingleAlarmManager*>::iterator alarm =
                                                   _all_alarms_state.find(index);
@@ -262,7 +262,7 @@ void AlarmScheduler::issue_alarm(const std::string& issuer,
       // LCOV_EXCL_STOP
     }
 
-    pthread_mutex_unlock(_lock);
+    pthread_mutex_unlock(&_lock);
   }
   else
   {
@@ -274,7 +274,7 @@ void AlarmScheduler::sync_alarms()
 {
   TRC_STATUS("Resyncing all alarms");
 
-  pthread_mutex_lock(_lock);
+  pthread_mutex_lock(&_lock);
 
   // For all alarms that we know a state for (so we've tried to send an alarm
   // state to the NMS at least once), resend the current state.
@@ -291,7 +291,7 @@ void AlarmScheduler::sync_alarms()
   }
 
   _cond->signal();
-  pthread_mutex_unlock(_lock);
+  pthread_mutex_unlock(&_lock);
 }
 
 void AlarmScheduler::handle_failed_alarm(AlarmTableDef& alarm_table_def)
