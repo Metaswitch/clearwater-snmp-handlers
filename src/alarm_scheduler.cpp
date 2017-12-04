@@ -42,14 +42,15 @@ void SingleAlarmManager::change_schedule(AlarmDef::Severity new_severity,
 
 AlarmScheduler::AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
                                std::set<NotificationType> snmp_notifications,
-                               std::string hostname) :
+                               std::string hostname,
+                               pthread_mutex_t& lock) :
   _terminated(false),
-  _alarm_table_defs(alarm_table_defs)
+  _alarm_table_defs(alarm_table_defs),
+  _lock(lock)
 {
   AlarmTrapSender::get_instance().initialise(this, snmp_notifications, hostname);
 
-  // Create the lock/condition variables.
-  pthread_mutex_init(&_lock, NULL);
+  // Create the condition variables.
 #ifdef UNIT_TEST
   _cond = new MockPThreadCondVar(&_lock);
 #else
@@ -298,7 +299,8 @@ void AlarmScheduler::handle_failed_alarm(AlarmTableDef& alarm_table_def)
   TRC_DEBUG("Handling an alarm (%u) the NMS didn't respond to",
             alarm_table_def.alarm_index());
 
-  pthread_mutex_lock(&_lock);
+  // No need to take a lock - this is only called from Net-SNMP, which must
+  // already have been holding it.
 
   std::map<AlarmIndex, SingleAlarmManager*>::iterator alarm =
                           _all_alarms_state.find(alarm_table_def.alarm_index());
@@ -321,5 +323,5 @@ void AlarmScheduler::handle_failed_alarm(AlarmTableDef& alarm_table_def)
     // LCOV_EXCL_STOP
   }
 
-  pthread_mutex_unlock(&_lock);
+  // No need to release a lock - see comment at the top of the function.
 }

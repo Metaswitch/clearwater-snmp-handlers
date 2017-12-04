@@ -172,14 +172,16 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications, hostname);
-  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
-
   init_alarmModelTable(*alarm_table_defs);
   init_ituAlarmTable(*alarm_table_defs);
   init_alarmActiveTable(local_ip);
  
   init_snmp_handler_threads("clearwater-alarms");
+
+  // Construct the alarm scheduler and request listener.  This must be done
+  // after we've initialized SNMP handler threads, as they share the lock.
+  AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications, hostname, SNMP::Agent::instance()->get_lock());
+  AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
 
   // Exit if the ReqListener wasn't able to fully start
   if (!alarm_req_listener->start(&term_sem))
@@ -193,9 +195,11 @@ int main (int argc, char **argv)
   signal(SIGTERM, agent_terminate_handler);
   
   sem_wait(&term_sem);
-  snmp_terminate("clearwater-alarms");
 
   delete alarm_req_listener; alarm_req_listener = NULL;
   delete alarm_scheduler; alarm_scheduler = NULL;
+
+  snmp_terminate("clearwater-alarms");
+
   delete alarm_table_defs; alarm_table_defs = NULL;
 }

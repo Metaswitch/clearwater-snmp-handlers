@@ -125,7 +125,8 @@ public:
   // Constructor/Destructor
   AlarmScheduler(AlarmTableDefs* alarm_table_defs, 
                  std::set<NotificationType> snmp_notifications,
-                 std::string hostname);
+                 std::string hostname,
+                 pthread_mutex_t& lock);
   virtual ~AlarmScheduler();
 
   // Generates an alarmActiveState inform if the identified alarm is not
@@ -145,6 +146,7 @@ public:
   virtual void sync_alarms();
 
   // Handles the case where an INFORM sent by the trap sender timed out.
+  // _lock must already be held before calling this.
   // @params alarm_table_def - Definition of the alarm (index/severity) we
   //                           tried to send.
   void handle_failed_alarm(AlarmTableDef& alarm_table_def);
@@ -172,8 +174,9 @@ private:
   std::map<AlarmIndex, SingleAlarmManager*> _all_alarms_state;
 
   // This lock protects access to the _all_alarms_state map and the _alarm_heap,
-  // and should be taken whenever reading/writing to these structures
-  pthread_mutex_t _lock;
+  // and should be taken whenever reading/writing to these structures.  It must
+  // also protect Net-SNMP accesses.
+  pthread_mutex_t& _lock;
 #ifdef UNIT_TEST
   MockPThreadCondVar* _cond;
 #else
