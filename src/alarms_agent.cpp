@@ -178,6 +178,8 @@ int main (int argc, char **argv)
  
   init_snmp_handler_threads("clearwater-alarms");
 
+  // Construct the alarm scheduler and request listener.  This must be done
+  // after we've initialized SNMP handler threads, as they share the lock.
   AlarmScheduler* alarm_scheduler = new AlarmScheduler(alarm_table_defs, snmp_notifications, hostname, SNMP::Agent::instance()->get_lock());
   AlarmReqListener* alarm_req_listener = new AlarmReqListener(alarm_scheduler);
 

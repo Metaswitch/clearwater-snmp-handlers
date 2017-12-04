@@ -146,6 +146,7 @@ public:
   virtual void sync_alarms();
 
   // Handles the case where an INFORM sent by the trap sender timed out.
+  // _lock must already be held before calling this.
   // @params alarm_table_def - Definition of the alarm (index/severity) we
   //                           tried to send.
   void handle_failed_alarm(AlarmTableDef& alarm_table_def);
