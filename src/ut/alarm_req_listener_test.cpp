@@ -54,7 +54,7 @@ public:
     cwtest_completely_control_time();
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs, _snmp_notifications);
+    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs, _snmp_notifications, _lock);
     _alarm_req_listener = new AlarmReqListener(_alarm_scheduler);
     _alarm_req_listener->start(NULL);
     _alarm_manager = new AlarmManager();
@@ -83,6 +83,7 @@ private:
   std::set<NotificationType> _snmp_notifications;
   CapturingTestLogger _log;
   AlarmTableDefs* _alarm_table_defs;
+  pthread_mutex_t _lock = PTHREAD_MUTEX_INITIALIZER;
   MockAlarmScheduler* _alarm_scheduler;
   AlarmReqListener* _alarm_req_listener;
   AlarmManager* _alarm_manager;
@@ -102,7 +103,7 @@ public:
     cwtest_intercept_zmq(&_mz);
 
     _alarm_table_defs = new AlarmTableDefs();
-    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs, _snmp_notifications);
+    _alarm_scheduler = new MockAlarmScheduler(_alarm_table_defs, _snmp_notifications, _lock);
     _alarm_req_listener = new AlarmReqListener(_alarm_scheduler);
   }
 
@@ -122,6 +123,7 @@ private:
   int _c;
   int _s;
   AlarmTableDefs* _alarm_table_defs;
+  pthread_mutex_t _lock = PTHREAD_MUTEX_INITIALIZER;
   MockAlarmScheduler* _alarm_scheduler;
   AlarmReqListener* _alarm_req_listener;
 };
