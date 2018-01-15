@@ -2788,6 +2788,45 @@ sproutQueueSuccessFailSuccessPercent OBJECT-TYPE
                  100%."
     ::= { sproutQueueSuccessFailEntry 7 }
 
+sproutRouteToRemoteAliasTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutRouteToRemoteAliasEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of requests that were routed to a remote alias."
+    ::= { sprout 44 }
+
+sproutRouteToRemoteAliasEntry OBJECT-TYPE
+    SYNTAX      SproutRouteToRemoteAliasEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Number of requests that were routed to a remote alias."
+    INDEX       { sproutRouteToRemoteAliasScope }
+    ::= { sproutRouteToRemoteAliasTable 1 }
+
+SproutRouteToRemoteAliasEntry ::= SEQUENCE
+{
+  sproutRouteToRemoteAliasScope        INTEGER,
+  sproutRouteToRemoteAliasCount        Unsigned32
+}
+
+sproutRouteToRemoteAliasScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutRouteToRemoteAliasEntry 1 }
+
+sproutRouteToRemoteAliasCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of requests that were routed to a remote alias."
+    ::= { sproutRouteToRemoteAliasEntry 2 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
