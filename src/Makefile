@@ -34,6 +34,7 @@ cw_alarm_fvtest_SOURCES := test_main.cpp \
                            alarm.cpp \
                            alarm_tables_testing.cpp \
                            pthread_cond_var_helper.cpp \
+                           snmp_agent.cpp \
                            ${AGENT_COMMON_SOURCES}
 fvtest: run_cw_alarm_fvtest
 AGENT_COMMON_CPPFLAGS := -I../include \
