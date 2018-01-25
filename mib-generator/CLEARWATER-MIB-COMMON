@@ -2827,6 +2827,45 @@ sproutRouteToRemoteAliasCount OBJECT-TYPE
     DESCRIPTION "Number of requests that were routed to a remote alias."
     ::= { sproutRouteToRemoteAliasEntry 2 }
 
+sproutAcceptForRemoteAliasTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SproutAcceptForRemoteAliasEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Number of requests that were accepted on behalf of a remote alias."
+    ::= { sprout 45 }
+
+sproutAcceptForRemoteAliasEntry OBJECT-TYPE
+    SYNTAX      SproutAcceptForRemoteAliasEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Number of requests that were accepted on behalf of a remote alias."
+    INDEX       { sproutRouteToRemoteAliasScope }
+    ::= { sproutRouteToRemoteAliasTable 1 }
+
+SproutAcceptForRemoteAliasEntry ::= SEQUENCE
+{
+  sproutAcceptForRemoteAliasScope        INTEGER,
+  sproutAcceptForRemoteAliasCount        Unsigned32
+}
+
+sproutAcceptForRemoteAliasScope OBJECT-TYPE
+    SYNTAX      INTEGER {
+                  scopePrevious5SecondPeriod(1),
+                  scopeCurrent5MinutePeriod(2),
+                  scopePrevious5MinutePeriod(3)
+                }
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "The period over which the statistics were collected."
+    ::= { sproutAcceptForRemoteAliasEntry 1 }
+
+sproutAcceptForRemoteAliasCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Number of requests that were accepted on behalf of a remote alias."
+    ::= { sproutAcceptForRemoteAliasEntry 2 }
+
 sproutGroup OBJECT-GROUP
     OBJECTS {
       sproutLatencyAverage,
@@ -2957,7 +2996,9 @@ sproutGroup OBJECT-GROUP
       sproutQueueSuccessFailAttempts,
       sproutQueueSuccessFailSuccesses,
       sproutQueueSuccessFailFailures,
-      sproutQueueSuccessFailSuccessPercent
+      sproutQueueSuccessFailSuccessPercent,
+      sproutRouteToRemoteAliasCount,
+      sproutAcceptForRemoteAliasCount
     }
     STATUS      current
     DESCRIPTION "Statistics exposed by Sprout"
