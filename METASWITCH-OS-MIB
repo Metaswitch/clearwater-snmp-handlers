@@ -1,0 +1,78 @@
+METASWITCH-OS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+        MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
+        MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
+        InetAddressType, InetAddress FROM INET-ADDRESS-MIB
+        TEXTUAL-CONVENTION FROM SNMPv2-TC;
+
+-- Module definition
+
+  os   MODULE-IDENTITY
+        LAST-UPDATED "201705310000Z"
+        ORGANIZATION "Metaswitch"
+        CONTACT-INFO
+          "Metaswitch
+           100 Church Street
+           Enfield
+           EN2 6BQ
+           United Kingdom
+           Tel: +44 20 8366 1177"
+        DESCRIPTION  "This MIB module defines OS statistics MIBs"
+
+        REVISION      "201801250900Z" -- 25 Jan 2018
+
+        ::= { dataConnection 9 }
+
+-- The object identifier subtree for the ProjectClearwater MIBs.
+
+memberBody      OBJECT IDENTIFIER ::= { iso 2 }
+gb              OBJECT IDENTIFIER ::= { memberBody 826 }
+gbNational      OBJECT IDENTIFIER ::= { gb 0 }
+gbNatCompany    OBJECT IDENTIFIER ::= { gbNational 1 }
+dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
+
+-- Additional OS group identifiers.
+
+osGroup              OBJECT IDENTIFIER ::= { dataConnection 17 }
+
+
+-- OS Entries
+
+osFileDescriptorsMax OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Maximum number of file descriptors that OS guarantees to have
+                 available."
+    ::= { os 1 }
+
+osFileDescriptorsCur OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current number of file descriptors in use."
+    ::= { os 2 }
+
+osFileDescriptorsPerc OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current percentage of file dessciptors in user."
+    ::= { os 3 }
+
+
+fileDescriptors OBJECT-GROUP
+    OBJECTS {
+        osFileDescriptorsMax,
+        osFileDescriptorsCur,
+        osFileDescriptorsPerc
+    }
+    STATUS      current
+    DESCRIPTION "File Descriptor statistics"
+    ::= { osGroup 1 }
+
+-- End of common Clearwater MIB entries
+
+END
+
