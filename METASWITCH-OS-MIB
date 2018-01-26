@@ -2,14 +2,12 @@ METASWITCH-OS-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
         MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
-        MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF
-        InetAddressType, InetAddress FROM INET-ADDRESS-MIB
-        TEXTUAL-CONVENTION FROM SNMPv2-TC;
+        OBJECT-GROUP FROM SNMPv2-CONF;
 
 -- Module definition
 
   os   MODULE-IDENTITY
-        LAST-UPDATED "201705310000Z"
+        LAST-UPDATED "201801250900Z"
         ORGANIZATION "Metaswitch"
         CONTACT-INFO
           "Metaswitch
@@ -19,8 +17,6 @@ IMPORTS
            United Kingdom
            Tel: +44 20 8366 1177"
         DESCRIPTION  "This MIB module defines OS statistics MIBs"
-
-        REVISION      "201801250900Z" -- 25 Jan 2018
 
         ::= { dataConnection 9 }
 
