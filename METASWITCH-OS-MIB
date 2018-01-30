@@ -18,9 +18,9 @@ IMPORTS
            Tel: +44 20 8366 1177"
         DESCRIPTION  "This MIB module defines OS statistics MIBs"
 
-        ::= { dataConnection 9 }
+        ::= { dataConnection 17 }
 
--- The object identifier subtree for the ProjectClearwater MIBs.
+-- The object identifier subtree for the Metaswitch OS MIBs.
 
 memberBody      OBJECT IDENTIFIER ::= { iso 2 }
 gb              OBJECT IDENTIFIER ::= { memberBody 826 }
@@ -28,47 +28,42 @@ gbNational      OBJECT IDENTIFIER ::= { gb 0 }
 gbNatCompany    OBJECT IDENTIFIER ::= { gbNational 1 }
 dataConnection  OBJECT IDENTIFIER ::= { gbNatCompany 1578918 }
 
--- Additional OS group identifiers.
-
-osGroup              OBJECT IDENTIFIER ::= { dataConnection 17 }
-
-
 -- OS Entries
 
+osFileDescriptorsCurrent OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current number of file descriptors in use."
+    ::= { fileDescriptors 1 }
+
 osFileDescriptorsMax OBJECT-TYPE
-    SYNTAX      Unsigned32
+    SYNTAX      Integer32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Maximum number of file descriptors that OS guarantees to have
                  available."
-    ::= { os 1 }
-
-osFileDescriptorsCurrent OBJECT-TYPE
-    SYNTAX      Unsigned32
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION "Current number of file descriptors in use."
-    ::= { os 2 }
+    ::= { fileDescriptors 2 }
 
 osFileDescriptorsPercent OBJECT-TYPE
-    SYNTAX      Unsigned32
+    SYNTAX      Integer32
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION "Current percentage of file descriptors in use."
-    ::= { os 3 }
+    ::= { fileDescriptors 3 }
 
 
 fileDescriptors OBJECT-GROUP
     OBJECTS {
-        osFileDescriptorsMax,
         osFileDescriptorsCurrent,
+        osFileDescriptorsMax,
         osFileDescriptorsPercent
     }
     STATUS      current
     DESCRIPTION "File Descriptor statistics"
-    ::= { osGroup 1 }
+    ::= { os 1 }
 
--- End of common Clearwater MIB entries
+-- End of OS MIB entries
 
 END
 
