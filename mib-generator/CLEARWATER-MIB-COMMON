@@ -2839,8 +2839,8 @@ sproutAcceptForRemoteAliasEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION "Number of requests that were accepted on behalf of a remote alias."
-    INDEX       { sproutRouteToRemoteAliasScope }
-    ::= { sproutRouteToRemoteAliasTable 1 }
+    INDEX       { sproutAcceptForRemoteAliasScope }
+    ::= { sproutAcceptForRemoteAliasTable 1 }
 
 SproutAcceptForRemoteAliasEntry ::= SEQUENCE
 {
