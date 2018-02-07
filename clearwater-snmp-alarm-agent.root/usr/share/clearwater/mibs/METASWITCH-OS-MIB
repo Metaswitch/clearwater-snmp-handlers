@@ -63,6 +63,38 @@ fileDescriptors OBJECT-GROUP
     DESCRIPTION "File Descriptor statistics"
     ::= { os 1 }
 
+osFreeMemoryCurrent OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current free memory on this node (included buffers and cached)."
+    ::= { osFreeMemory 1 }
+
+osFreeMemoryMax OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Maximum available memory on this node."
+    ::= { osFreeMemory 2 }
+
+osFreeMemoryPercent OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Current percentage of free memory on this node."
+    ::= { osFreeMemory 3 }
+
+osFreeMemory OBJECT-GROUP
+    OBJECTS {
+        osFreeMemoryCurrent,
+        osFreeMemoryMax,
+        osFreeMemoryPercent
+    }
+    STATUS      current
+    DESCRIPTION "Free Memory statistics"
+    ::= { os 2 }
+
+
 -- End of OS MIB entries
 
 END
