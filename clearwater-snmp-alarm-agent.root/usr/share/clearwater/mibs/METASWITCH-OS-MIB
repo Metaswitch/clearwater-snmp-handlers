@@ -1,7 +1,7 @@
 METASWITCH-OS-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
-        MODULE-IDENTITY, OBJECT-TYPE, Unsigned32 FROM SNMPv2-SMI
+        MODULE-IDENTITY, OBJECT-TYPE, Integer32 FROM SNMPv2-SMI
         OBJECT-GROUP FROM SNMPv2-CONF;
 
 -- Module definition
@@ -67,7 +67,7 @@ osFreeMemoryCurrent OBJECT-TYPE
     SYNTAX      Integer32
     MAX-ACCESS  read-only
     STATUS      current
-    DESCRIPTION "Current free memory on this node (included buffers and cached)."
+    DESCRIPTION "Current free memory on this node (including buffers and cached)."
     ::= { osFreeMemory 1 }
 
 osFreeMemoryMax OBJECT-TYPE
