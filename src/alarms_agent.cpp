@@ -159,12 +159,12 @@ int main (int argc, char **argv)
   {
     std::string host;
     int port;
-    if (!Utils::split_host_port(ii->c_str(), host, &port))
+    if (!Utils::split_host_port(ii->c_str(), host, port))
     {
-      port = 162;
+      port = 162; 
     }
 
-    create_trap_session(const_cast<char*>(host), port, community,
+    create_trap_session(const_cast<char*>(host.c_str()), port, community,
                         SNMP_VERSION_2c, SNMP_MSG_INFORM);  
   }
 
