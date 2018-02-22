@@ -158,10 +158,17 @@ int main (int argc, char **argv)
        ii++)
   {
     std::string host;
+    std::string addr;
     int port;
-    if (!Utils::split_host_port(ii->c_str(), host, port))
+
+    addr = ii->c_str();
+    if (Utils::split_host_port(addr, host, port))
     {
-      port = 162; 
+      host = addr;
+    }
+    else
+    {
+      port = 162;
     }
 
     create_trap_session(const_cast<char*>(host.c_str()), port, community,
