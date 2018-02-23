@@ -161,9 +161,9 @@ int main (int argc, char **argv)
     std::string addr;
     int port;
 
-    # Check whether there's a port specified. We've already verified it's valid 
-    # config when it was originally added to the system, so assume any error
-    # with splitting out a port means no port is present.
+    // Check whether there's a port specified. We've already verified it's valid 
+    // config when it was originally added to the system, so assume any error
+    // with splitting out a port means no port is present.
     addr = ii->c_str();
     if (!Utils::split_host_port(addr, host, port))
     {
